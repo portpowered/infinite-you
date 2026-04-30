@@ -460,6 +460,61 @@ func TestConfigMapping_ValidationRejectsUnknownGuardType(t *testing.T) {
 	}
 }
 
+func TestConfigMapping_ValidationRejectsMatchesFieldsMissingInputKey(t *testing.T) {
+	input := &interfaces.FactoryConfig{
+		WorkTypes: []interfaces.WorkTypeConfig{{
+			Name: "task",
+			States: []interfaces.StateConfig{
+				{Name: "init", Type: interfaces.StateTypeInitial},
+				{Name: "complete", Type: interfaces.StateTypeTerminal},
+			},
+		}},
+		Workers: []interfaces.WorkerConfig{{Name: "matcher"}},
+		Workstations: []interfaces.FactoryWorkstationConfig{{
+			Name:           "processor",
+			WorkerTypeName: "matcher",
+			Inputs:         []interfaces.IOConfig{{StateName: "init", WorkTypeName: "task"}},
+			Outputs:        []interfaces.IOConfig{{StateName: "complete", WorkTypeName: "task"}},
+			Guards:         []interfaces.GuardConfig{{Type: interfaces.GuardTypeMatchesFields}},
+		}},
+	}
+
+	mapper := ConfigMapper{}
+	_, err := mapper.Map(context.Background(), input)
+	if err == nil {
+		t.Fatal("expected validation error for matches_fields guard missing matchConfig.inputKey")
+	}
+}
+
+func TestConfigMapping_ValidationRejectsMatchesFieldsEmptyInputKey(t *testing.T) {
+	input := &interfaces.FactoryConfig{
+		WorkTypes: []interfaces.WorkTypeConfig{{
+			Name: "task",
+			States: []interfaces.StateConfig{
+				{Name: "init", Type: interfaces.StateTypeInitial},
+				{Name: "complete", Type: interfaces.StateTypeTerminal},
+			},
+		}},
+		Workers: []interfaces.WorkerConfig{{Name: "matcher"}},
+		Workstations: []interfaces.FactoryWorkstationConfig{{
+			Name:           "processor",
+			WorkerTypeName: "matcher",
+			Inputs:         []interfaces.IOConfig{{StateName: "init", WorkTypeName: "task"}},
+			Outputs:        []interfaces.IOConfig{{StateName: "complete", WorkTypeName: "task"}},
+			Guards: []interfaces.GuardConfig{{
+				Type:        interfaces.GuardTypeMatchesFields,
+				MatchConfig: &interfaces.GuardMatchConfig{InputKey: " "},
+			}},
+		}},
+	}
+
+	mapper := ConfigMapper{}
+	_, err := mapper.Map(context.Background(), input)
+	if err == nil {
+		t.Fatal("expected validation error for matches_fields guard empty matchConfig.inputKey")
+	}
+}
+
 func TestConfigMapping_ValidationRejectsVisitCountGuardMissingParams(t *testing.T) {
 	input := &interfaces.FactoryConfig{
 		WorkTypes: []interfaces.WorkTypeConfig{
