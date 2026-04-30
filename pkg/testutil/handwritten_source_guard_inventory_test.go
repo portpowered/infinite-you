@@ -9,12 +9,13 @@ func TestHandwrittenSourceGuardInventory_CoversTargetedGuardsAndClassifications(
 	t.Parallel()
 
 	inventory := HandwrittenSourceGuardInventory()
-	if len(inventory) != 5 {
-		t.Fatalf("inventory entries = %d, want 5 targeted handwritten-source guards", len(inventory))
+	if len(inventory) != 6 {
+		t.Fatalf("inventory entries = %d, want 6 targeted handwritten-source guards", len(inventory))
 	}
 
 	wantGuards := map[string]struct{}{
 		"pkg/api/legacy_model_guard_test.go":                         {},
+		"pkg/config/exhaustion_rule_contract_guard_test.go":          {},
 		"pkg/petri/transition_contract_guard_test.go":                {},
 		"pkg/interfaces/world_view_contract_guard_test.go#boundary":  {},
 		"pkg/interfaces/world_view_contract_guard_test.go#canonical": {},

@@ -12,7 +12,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/portpowered/agent-factory/internal/contractguard"
 	"github.com/portpowered/agent-factory/internal/handwrittensourceguard"
 )
 
@@ -113,7 +112,7 @@ func TestFactoryWorldContractGuard_RetiredBoundaryMirrorNamesStayOutOfInterfaces
 			return err
 		}
 		if info.IsDir() {
-			if contractguard.ShouldSkipDir(".", path) {
+			if handwrittensourceguard.ShouldSkipDir("pkg/interfaces/world_view_contract_guard_test.go#boundary", ".", path) {
 				return filepath.SkipDir
 			}
 			return nil

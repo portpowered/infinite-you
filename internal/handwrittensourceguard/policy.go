@@ -33,6 +33,7 @@ func handwrittenSourceInventory() []InventoryEntry {
 	return []InventoryEntry{
 		repoRootInventoryEntry("pkg/api/legacy_model_guard_test.go"),
 		repoRootInventoryEntry("pkg/petri/transition_contract_guard_test.go"),
+		pkgRootInventoryEntry("pkg/config/exhaustion_rule_contract_guard_test.go"),
 		boundaryWorldViewInventoryEntry(),
 		pkgRootInventoryEntry("pkg/interfaces/world_view_contract_guard_test.go#canonical"),
 		pkgRootInventoryEntry("pkg/interfaces/runtime_lookup_contract_guard_test.go"),
@@ -56,6 +57,7 @@ func boundaryWorldViewInventoryEntry() InventoryEntry {
 				"pkg/interfaces/*.go",
 				"boundary mirror names are only guarded inside the handwritten interfaces package",
 			),
+			hiddenRule("hidden package metadata and nested worker state must not count as handwritten interface source"),
 		},
 	}
 }

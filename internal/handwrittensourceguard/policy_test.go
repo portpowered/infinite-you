@@ -24,6 +24,10 @@ func TestShouldSkipDir_BroadHandwrittenSourceGuardsShareCloseoutContract(t *test
 			{relativePath: "api/generated", wantSkip: true},
 			{relativePath: "interfaces", wantSkip: false},
 		},
+		"pkg/interfaces": {
+			{relativePath: ".cache", wantSkip: true},
+			{relativePath: "world_view_contract_guard_test.go", wantSkip: false},
+		},
 	}
 
 	repoRoot := filepath.Join("repo", "root")
@@ -38,6 +42,9 @@ func TestShouldSkipDir_BroadHandwrittenSourceGuardsShareCloseoutContract(t *test
 		walkRoot := repoRoot
 		if entry.WalkRoot == "pkg" {
 			walkRoot = pkgRoot
+		}
+		if entry.WalkRoot == "pkg/interfaces" {
+			walkRoot = filepath.Join(pkgRoot, "interfaces")
 		}
 
 		for _, tc := range expectations {
