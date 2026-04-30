@@ -582,6 +582,81 @@ func TestConfigMapping_MatchesFieldsGuardBuildsSelectorGuardsAcrossInputs(t *tes
 	}
 }
 
+func TestConfigMapping_MatchesFieldsGuardBuildsSelectorGuardsAcrossAllInputsByDefault(t *testing.T) {
+	input := &interfaces.FactoryConfig{
+		WorkTypes: []interfaces.WorkTypeConfig{
+			{
+				Name: "plan",
+				States: []interfaces.StateConfig{
+					{Name: "ready", Type: interfaces.StateTypeProcessing},
+				},
+			},
+			{
+				Name: "task",
+				States: []interfaces.StateConfig{
+					{Name: "ready", Type: interfaces.StateTypeProcessing},
+				},
+			},
+			{
+				Name: "asset",
+				States: []interfaces.StateConfig{
+					{Name: "ready", Type: interfaces.StateTypeProcessing},
+					{Name: "matched", Type: interfaces.StateTypeTerminal},
+				},
+			},
+		},
+		Workers: []interfaces.WorkerConfig{{Name: "matcher"}},
+		Workstations: []interfaces.FactoryWorkstationConfig{{
+			Name:           "match-triplet",
+			WorkerTypeName: "matcher",
+			Inputs: []interfaces.IOConfig{
+				{StateName: "ready", WorkTypeName: "plan"},
+				{StateName: "ready", WorkTypeName: "task"},
+				{StateName: "ready", WorkTypeName: "asset"},
+			},
+			Outputs: []interfaces.IOConfig{{StateName: "matched", WorkTypeName: "asset"}},
+			Guards: []interfaces.GuardConfig{{
+				Type:        interfaces.GuardTypeMatchesFields,
+				MatchConfig: &interfaces.GuardMatchConfig{InputKey: ".Name"},
+			}},
+		}},
+	}
+
+	mapper := ConfigMapper{}
+	outputNet, err := mapper.Map(context.Background(), input)
+	if err != nil {
+		t.Fatalf("failed to map config: %v", err)
+	}
+
+	transition := outputNet.Transitions["match-triplet"]
+	if transition == nil {
+		t.Fatal("expected transition 'match-triplet' to exist")
+	}
+	if len(transition.InputArcs) != 3 {
+		t.Fatalf("expected 3 input arcs, got %d", len(transition.InputArcs))
+	}
+
+	sourceBinding := transition.InputArcs[0].Name
+	for i := range transition.InputArcs {
+		guard, ok := transition.InputArcs[i].Guard.(*petri.MatchesFieldsGuard)
+		if !ok {
+			t.Fatalf("expected input arc %d guard to be MatchesFieldsGuard, got %T", i, transition.InputArcs[i].Guard)
+		}
+		if guard.InputKey != ".Name" {
+			t.Fatalf("unexpected selector on input arc %d: %#v", i, guard)
+		}
+		if i == 0 {
+			if guard.MatchBinding != "" {
+				t.Fatalf("expected source arc to have empty match binding, got %#v", guard)
+			}
+			continue
+		}
+		if guard.MatchBinding != sourceBinding {
+			t.Fatalf("expected input arc %d to bind against %q, got %q", i, sourceBinding, guard.MatchBinding)
+		}
+	}
+}
+
 func TestConfigMapping_ValidationRejectsVisitCountGuardMissingParams(t *testing.T) {
 	input := &interfaces.FactoryConfig{
 		WorkTypes: []interfaces.WorkTypeConfig{
