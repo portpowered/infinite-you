@@ -16,7 +16,7 @@ read the file
 ## step 2
 read the /prd and /ralph skills. 
 
-Please convert the file into the corresponding C:\Users\andre\work\portos\portos-backend\tasks/todo/{{ (index .Inputs 0).Name }}.json, as well as corresponding C:\Users\andre\work\portos\portos-backend\tasks/todo/{{ (index .Inputs 0).Name }}.md for the correpsonding prd.
+Please convert the file into the corresponding project-directory/tasks/todo/{{ (index .Inputs 0).Name }}.json, as well as corresponding project-directory/tasks/todo/{{ (index .Inputs 0).Name }}.md for the correpsonding prd.
 
 Please ensure that the prd.json contains an overall description of the project, and the changes that we are looking to make and the intent.
 

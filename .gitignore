@@ -7,3 +7,6 @@ node_modules/
 storybook-static/
 *.tsbuildinfo
 *.exe
+
+tasks/todo
+factory/inputs
