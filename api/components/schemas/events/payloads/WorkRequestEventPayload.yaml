@@ -1,0 +1,25 @@
+type: object
+additionalProperties: false
+required:
+  - type
+description: >-
+  Normalized work request entering the factory. Single-work submissions
+  accepted by POST /work are converted into this one-work request shape
+  before an event is emitted.
+properties:
+  type:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/WorkRequestType'
+  works:
+    type: array
+    items:
+      $ref: '../../../../openapi-main.yaml#/components/schemas/Work'
+  relations:
+    type: array
+    items:
+      $ref: '../../../../openapi-main.yaml#/components/schemas/Relation'
+  source:
+    type: string
+  parentLineage:
+    type: array
+    items:
+      type: string

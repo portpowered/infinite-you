@@ -1,0 +1,91 @@
+{
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "stage1",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "stage2",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "step1",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "stage1",
+          "workType": "task"
+        }
+      ],
+      "worker": "worker-a"
+    },
+    {
+      "inputs": [
+        {
+          "state": "stage1",
+          "workType": "task"
+        }
+      ],
+      "name": "step2",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "stage2",
+          "workType": "task"
+        }
+      ],
+      "worker": "worker-b"
+    },
+    {
+      "inputs": [
+        {
+          "state": "stage2",
+          "workType": "task"
+        }
+      ],
+      "name": "finish",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "worker": "worker-c"
+    }
+  ]
+}

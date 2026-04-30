@@ -1,0 +1,75 @@
+{
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "processing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "starter"
+    },
+    {
+      "name": "finisher"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "start",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "processing",
+          "workType": "task"
+        }
+      ],
+      "worker": "starter"
+    },
+    {
+      "inputs": [
+        {
+          "state": "processing",
+          "workType": "task"
+        }
+      ],
+      "name": "finish",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "worker": "finisher"
+    }
+  ]
+}

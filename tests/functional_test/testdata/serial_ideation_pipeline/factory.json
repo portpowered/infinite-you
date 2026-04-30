@@ -1,0 +1,214 @@
+{
+  "resources": [
+    {
+      "capacity": 1,
+      "name": "agent-slot"
+    }
+  ],
+  "workTypes": [
+    {
+      "name": "idea",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "planning",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "prd",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "story",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "executing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "planner"
+    },
+    {
+      "name": "converter"
+    },
+    {
+      "name": "executor"
+    },
+    {
+      "name": "reviewer"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "idea"
+        }
+      ],
+      "name": "plan-idea",
+      "onFailure": {
+        "state": "failed",
+        "workType": "idea"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "planner"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "name": "convert-prd",
+      "onFailure": {
+        "state": "failed",
+        "workType": "prd"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "converter"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "kind": "repeater",
+      "name": "execute-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "executor"
+    },
+    {
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "name": "review-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "reviewer"
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 3,
+          "type": "visit_count",
+          "workstation": "review-story"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "reviewer-loop-breaker",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "story"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    }
+  ]
+}

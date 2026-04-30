@@ -1,0 +1,38 @@
+type: object
+additionalProperties: false
+required:
+  - sequence
+  - tick
+  - eventTime
+properties:
+  sequence:
+    type: integer
+    minimum: 0
+    description: Append-only event-log sequence number.
+  tick:
+    type: integer
+    minimum: 0
+    description: Logical engine tick observed by the runtime.
+  eventTime:
+    type: string
+    format: date-time
+    description: Wall-clock event timestamp for customer explanation and diagnostics. ISO8601 timestamp.
+  requestId:
+    type: string
+    description: Canonical request identity for all request-scoped events; payload metadata must not restate it.
+  traceIds:
+    type: array
+    description: Canonical trace identifiers that contributed to this event; payloads must not restate them.
+    items:
+      type: string
+  workIds:
+    type: array
+    description: Canonical work identities correlated to this event; payloads must not restate them.
+    items:
+      type: string
+  dispatchId:
+    type: string
+    description: Canonical dispatch identity for dispatch and inference events; payloads must not restate it.
+  source:
+    type: string
+    description: Human-readable source such as api, filewatcher, replay, cron, or worker.

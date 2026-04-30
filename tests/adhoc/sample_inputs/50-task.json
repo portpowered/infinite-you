@@ -1,0 +1,257 @@
+{
+  "request_id": "sample-prd-two",
+  "type": "FACTORY_REQUEST_BATCH",
+  "works": [
+    {
+      "work_type_name": "task",
+      "name": "US-001",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-002",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-003",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-004",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-005",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-006",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-007",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-008",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-009",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-010",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-011",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-012",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-013",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-014",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-015",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-016",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-017",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-018",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-019",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-020",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-021",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-022",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-023",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-024",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-025",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-026",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-027",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-028",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-029",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-030",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-031",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-032",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-033",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-034",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-035",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-036",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-037",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-038",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-039",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-040",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-041",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-042",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-043",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-044",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-045",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-046",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-047",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-048",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-049",
+      "tags": {}
+    },
+    {
+      "work_type_name": "task",
+      "name": "US-050",
+      "tags": {}
+    }
+  ],
+  "relations": []
+}

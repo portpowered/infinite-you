@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+required:
+  - state
+properties:
+  previousState:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/FactoryState'
+  state:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/FactoryState'
+  reason:
+    type: string

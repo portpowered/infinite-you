@@ -1,0 +1,45 @@
+type: object
+additionalProperties: false
+required:
+  - scriptRequestId
+  - dispatchId
+  - transitionId
+  - attempt
+  - outcome
+  - stdout
+  - stderr
+  - durationMillis
+description: >-
+  Response details captured after a script-backed worker command returns or
+  fails before a normal exit code. Raw environment values and raw stdin
+  content are intentionally excluded from the public script event contract.
+properties:
+  scriptRequestId:
+    type: string
+    description: Identifier from the matching script request event.
+  dispatchId:
+    type: string
+  transitionId:
+    type: string
+  attempt:
+    type: integer
+    minimum: 1
+    description: One-based script attempt number for this dispatch.
+  outcome:
+    $ref: '../ScriptExecutionOutcome.yaml'
+  stdout:
+    type: string
+    description: Captured stdout text from the script execution boundary.
+  stderr:
+    type: string
+    description: Captured stderr text from the script execution boundary.
+  durationMillis:
+    type: integer
+    format: int64
+    minimum: 0
+    description: Script execution duration in milliseconds.
+  exitCode:
+    type: integer
+    description: Process exit code when the command returned one.
+  failureType:
+    $ref: '../ScriptFailureType.yaml'

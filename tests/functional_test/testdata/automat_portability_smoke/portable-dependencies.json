@@ -1,0 +1,14 @@
+{
+  "requiredTools": [
+    {
+      "name": "mangaka.exe",
+      "purpose": "OCR and translation extraction remain external to the portable factory",
+      "bundled": false
+    },
+    {
+      "name": "magick",
+      "purpose": "Image normalization remains external to the portable factory",
+      "bundled": false
+    }
+  ]
+}

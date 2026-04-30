@@ -1,0 +1,44 @@
+type: string
+description: >-
+  Canonical event vocabulary for customer-visible runtime changes.
+  Work entering the factory is represented as WORK_REQUEST, including
+  single-work submissions that are normalized into one-work requests.
+x-enum-varnames:
+  - FactoryEventTypeRunRequest
+  - FactoryEventTypeInitialStructureRequest
+  - FactoryEventTypeWorkRequest
+  - FactoryEventTypeRelationshipChangeRequest
+  - FactoryEventTypeDispatchRequest
+  - FactoryEventTypeInferenceRequest
+  - FactoryEventTypeInferenceResponse
+  - FactoryEventTypeScriptRequest
+  - FactoryEventTypeScriptResponse
+  - FactoryEventTypeDispatchResponse
+  - FactoryEventTypeFactoryStateResponse
+  - FactoryEventTypeRunResponse
+enum:
+  - RUN_REQUEST
+  - INITIAL_STRUCTURE_REQUEST
+  - WORK_REQUEST
+  - RELATIONSHIP_CHANGE_REQUEST
+  - DISPATCH_REQUEST
+  - INFERENCE_REQUEST
+  - INFERENCE_RESPONSE
+  - SCRIPT_REQUEST
+  - SCRIPT_RESPONSE
+  - DISPATCH_RESPONSE
+  - FACTORY_STATE_RESPONSE
+  - RUN_RESPONSE
+x-enum-descriptions:
+  - A factory run request was recorded and its effective runtime configuration is known.
+  - The static factory topology and configured resources are available before work moves.
+  - Work entered the factory as a normalized request.
+  - A relationship-change request between work items was recorded.
+  - A workstation request began processing a set of input work.
+  - A model-worker provider attempt is about to send a prompt to the provider.
+  - A model-worker provider attempt returned from the provider boundary.
+  - A script-backed worker is about to invoke one concrete command attempt.
+  - A script-backed worker command attempt returned or failed before a normal exit.
+  - A workstation response finished processing and produced an outcome.
+  - The factory lifecycle state response was recorded.
+  - A factory run response ended and final metadata is available.

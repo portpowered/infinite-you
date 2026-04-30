@@ -1,0 +1,56 @@
+{
+  "project": "fixture-default-project",
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "checker"
+    }
+  ],
+  "workstations": [
+    {
+      "env": {
+        "BRANCH": "{{ index (index .Inputs 0).Tags \"branch\" }}",
+        "CONTEXT_PROJECT": "{{ .Context.Project }}",
+        "PROJECT": "{{ .Context.Project }}",
+        "TOKEN_PROJECT": "{{ (index .Inputs 0).Project }}"
+      },
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "process",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "worker": "checker",
+      "workingDirectory": "/workspaces/{{ .Context.Project }}/{{ index (index .Inputs 0).Tags \"branch\" }}"
+    }
+  ]
+}

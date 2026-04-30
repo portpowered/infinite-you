@@ -1,0 +1,95 @@
+{
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "process",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "task"
+        }
+      ],
+      "worker": "processor"
+    },
+    {
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "task"
+        }
+      ],
+      "name": "review",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "worker": "reviewer"
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 3,
+          "type": "visit_count",
+          "workstation": "review"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "review-exhaustion",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "task"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    }
+  ]
+}

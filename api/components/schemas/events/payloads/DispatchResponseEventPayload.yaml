@@ -1,0 +1,55 @@
+type: object
+additionalProperties: false
+required:
+  - transitionId
+  - outcome
+description: >-
+  Customer-visible dispatch completion event. Output work is represented
+  with the same Work schema used by request submission rather than token
+  or marking-mutation internals. FactoryEvent.context owns dispatch, trace,
+  and work identity; workstation and worker topology must be derived from
+  the matching dispatch-request event plus the initial structure.
+  Provider-attempt session and safe diagnostic facts stay on inference
+  response events instead of being copied onto dispatch completion payloads.
+properties:
+  completionId:
+    type: string
+  transitionId:
+    type: string
+  currentChainingTraceId:
+    type: string
+    description: Explicit chaining-trace identifier for the dispatch currently being represented.
+  previousChainingTraceIds:
+    type: array
+    description: Explicit predecessor chaining traces consumed by this dispatch in deterministic order.
+    items:
+      type: string
+  outcome:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/WorkOutcome'
+  output:
+    type: string
+  error:
+    type: string
+  feedback:
+    type: string
+  failureReason:
+    type: string
+  failureMessage:
+    type: string
+  providerFailure:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/ProviderFailureMetadata'
+  metrics:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/WorkMetrics'
+  durationMillis:
+    type: integer
+    format: int64
+  outputWork:
+    type: array
+    items:
+      $ref: '../../../../openapi-main.yaml#/components/schemas/Work'
+  outputResources:
+    type: array
+    items:
+      $ref: '../../../../openapi-main.yaml#/components/schemas/Resource'
+  metadata:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/StringMap'

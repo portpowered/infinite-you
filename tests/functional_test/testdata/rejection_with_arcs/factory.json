@@ -1,0 +1,52 @@
+{
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "done",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "worker"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "process",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "done",
+          "workType": "task"
+        }
+      ],
+      "worker": "worker"
+    }
+  ]
+}

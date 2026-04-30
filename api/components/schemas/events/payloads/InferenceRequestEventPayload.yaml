@@ -1,0 +1,31 @@
+type: object
+additionalProperties: false
+required:
+  - inferenceRequestId
+  - attempt
+  - workingDirectory
+  - worktree
+  - prompt
+description: >-
+  Request details captured immediately before a model-worker provider
+  attempt is invoked. FactoryEvent.context owns dispatch, request, trace,
+  and work identity, and the matching dispatch-request event owns the
+  transition identifier. Prompt content is intentionally present and should
+  be treated as sensitive in recordings and diagnostics.
+properties:
+  inferenceRequestId:
+    type: string
+    description: Stable identifier correlating this provider request with its response.
+  attempt:
+    type: integer
+    minimum: 1
+    description: One-based provider attempt number for this dispatch.
+  workingDirectory:
+    type: string
+    description: Working directory resolved for the provider attempt.
+  worktree:
+    type: string
+    description: Worktree path resolved for the provider attempt.
+  prompt:
+    type: string
+    description: Rendered prompt sent to the provider.

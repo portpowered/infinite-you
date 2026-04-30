@@ -1,0 +1,40 @@
+{
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "done",
+          "type": "TERMINAL"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "logical-router"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "router",
+      "outputs": [
+        {
+          "state": "done",
+          "workType": "task"
+        }
+      ],
+      "worker": "logical-router"
+    }
+  ]
+}

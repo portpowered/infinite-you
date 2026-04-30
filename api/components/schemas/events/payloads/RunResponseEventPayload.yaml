@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+properties:
+  state:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/FactoryState'
+  reason:
+    type: string
+  wallClock:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/WallClock'
+  diagnostics:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/Diagnostics'

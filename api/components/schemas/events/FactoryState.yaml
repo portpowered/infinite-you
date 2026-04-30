@@ -1,0 +1,20 @@
+type: string
+description: Lifecycle state of the running factory.
+x-enum-varnames:
+  - FactoryStateIdle
+  - FactoryStateRunning
+  - FactoryStatePaused
+  - FactoryStateCompleted
+  - FactoryStateFailed
+enum:
+  - IDLE
+  - RUNNING
+  - PAUSED
+  - COMPLETED
+  - FAILED
+x-enum-descriptions:
+  - The factory has no active work and is waiting to start or receive input.
+  - The factory is actively processing work.
+  - The factory is intentionally paused and should not schedule new work.
+  - The factory finished all required work successfully.
+  - The factory stopped because work or runtime execution failed.

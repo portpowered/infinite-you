@@ -1,0 +1,75 @@
+# Workstations Reference
+
+Use this page when you need the current workstation authoring contract:
+topology fields, scheduling kinds, runtime `type`, and outcome routing.
+
+## Current Contract
+
+- Use `kind` for scheduling behavior: `standard`, `repeater`, or `cron`.
+- Use `type` for the runtime implementation: `MODEL_WORKSTATION` or
+  `LOGICAL_MOVE`.
+- Use `worker` for the bound worker name. Omit it only for logical routing
+  workstations such as `LOGICAL_MOVE`.
+- Route accepted results through `outputs`, rejected results through
+  `onRejection`, and failed or timed-out results through `onFailure`.
+- Use workstation-level `guards` only for `visit_count` gating. Use a guarded
+  `LOGICAL_MOVE` workstation when you need an explicit loop-breaker route.
+
+## `kind` Versus `type`
+
+`kind` answers "when should this workstation run?"
+
+- `standard` is the default fire-once step.
+- `repeater` re-runs after rejected results until the work is accepted or
+  fails.
+- `cron` runs on a schedule in service mode.
+
+`type` answers "what runtime implementation handles the step?"
+
+- `MODEL_WORKSTATION` renders a prompt and dispatches to the bound worker.
+- `LOGICAL_MOVE` moves tokens without invoking a worker.
+
+Do not use `type` to express schedule semantics, and do not use `kind` to
+replace runtime implementation.
+
+## Minimal Standard Step
+
+```json
+{
+  "name": "review-story",
+  "kind": "standard",
+  "type": "MODEL_WORKSTATION",
+  "worker": "reviewer",
+  "inputs": [{ "workType": "story", "state": "in-review" }],
+  "outputs": [{ "workType": "story", "state": "complete" }],
+  "onRejection": { "workType": "story", "state": "init" },
+  "onFailure": { "workType": "story", "state": "failed" }
+}
+```
+
+For a basic workflow step:
+
+- `outputs` handles accepted completion.
+- `onRejection` handles "not ready yet" routing.
+- `onFailure` handles execution failure or timeout.
+
+Use `repeater` when rejection should keep the same workstation active instead
+of routing to a different review state. Pair long-running review loops with a
+guarded `LOGICAL_MOVE` loop breaker so repeated rejection has an explicit
+terminal path.
+
+## When To Use Each Kind
+
+- Use `standard` for normal pipeline stages.
+- Use `repeater` for iterative agent loops.
+- Use `cron` only when the step should submit scheduled time work in service
+  mode; keep the schedule under `cron.schedule`.
+
+## Related
+
+- [CLI reference landing page](README.md)
+- [Package docs index](../README.md)
+- [Workstations and workers](../workstations.md)
+- [Factory JSON and work configuration](../work.md)
+- [Workstation guards and guarded loop breakers](../guides/workstation-guards-and-guarded-loop-breakers.md)
+- [Parent-aware fan-in](../guides/parent-aware-fan-in.md)

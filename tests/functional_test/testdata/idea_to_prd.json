@@ -1,0 +1,52 @@
+{
+  "workTypes": [
+    {
+      "name": "idea",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "prd",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "idea"
+        }
+      ],
+      "name": "plan",
+      "onFailure": {
+        "state": "failed",
+        "workType": "idea"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "worker": "planner"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+    "work_types": [
+      {
+        "name": "task",
+        "states": [
+          { "name": "init", "type": "INITIAL" },
+          { "name": "complete", "type": "TERMINAL" },
+          { "name": "failed", "type": "FAILED" }
+        ]
+      }
+    ],
+    "workers": [
+      { "name": "worker-a" }
+    ],
+    "workstations": [
+      {
+        "name": "step-one",
+        "worker": "worker-a",
+        "inputs": [{ "work_type": "task", "state": "init" }],
+        "outputs": [{ "work_type": "task", "state": "complete" }],
+        "on_failure": { "work_type": "task", "state": "failed" }
+      }
+    ]
+  }

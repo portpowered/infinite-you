@@ -1,0 +1,105 @@
+{
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "processing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "exec-worker"
+    },
+    {
+      "name": "finish-worker"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "kind": "repeater",
+      "name": "executor",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "processing",
+          "workType": "task"
+        }
+      ],
+      "worker": "exec-worker",
+      "workingDirectory": "/worktrees/{{ index (index .Inputs 0).Tags \"branch\" }}"
+    },
+    {
+      "inputs": [
+        {
+          "state": "processing",
+          "workType": "task"
+        }
+      ],
+      "name": "finisher",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "worker": "finish-worker"
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 5,
+          "type": "visit_count",
+          "workstation": "executor"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "executor-loop-breaker",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "task"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    }
+  ]
+}

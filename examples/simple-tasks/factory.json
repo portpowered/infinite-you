@@ -1,0 +1,121 @@
+{
+  "resources": [
+    {
+      "capacity": 1,
+      "name": "agent-slot"
+    }
+  ],
+  "workTypes": [
+    {
+      "name": "story",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "executor"
+    },
+    {
+      "name": "reviewer"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "execute-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "executor"
+    },
+    {
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "name": "review-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "reviewer"
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 3,
+          "type": "visit_count",
+          "workstation": "review-story"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "review-loop-breaker",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "story"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "resources": [
+    {
+      "capacity": 1,
+      "name": "slot"
+    }
+  ],
+  "workTypes": [
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "process",
+      "onFailure": {
+        "state": "failed",
+        "workType": "task"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "slot"
+        }
+      ],
+      "worker": "processor"
+    }
+  ]
+}

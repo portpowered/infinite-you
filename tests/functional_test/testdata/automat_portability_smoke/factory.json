@@ -1,0 +1,102 @@
+{
+  "project": "translate-automat-smoke",
+  "workTypes": [
+    {
+      "name": "chapter",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "staged",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "ready",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "prepare-workspace"
+    },
+    {
+      "name": "verify-external-tools"
+    }
+  ],
+  "resourceManifest": {
+    "requiredTools": [
+      {
+        "name": "mangaka.exe",
+        "command": "mangaka.exe",
+        "purpose": "OCR and translation extraction remain external to the portable factory"
+      },
+      {
+        "name": "magick",
+        "command": "magick",
+        "purpose": "Image normalization remains external to the portable factory"
+      }
+    ]
+  },
+  "workstations": [
+    {
+      "name": "prepare-automat-slice",
+      "type": "MODEL_WORKSTATION",
+      "worker": "prepare-workspace",
+      "copyReferencedScripts": true,
+      "inputs": [
+        {
+          "workType": "chapter",
+          "state": "init"
+        }
+      ],
+      "outputs": [
+        {
+          "workType": "chapter",
+          "state": "staged"
+        }
+      ],
+      "onFailure": {
+        "workType": "chapter",
+        "state": "failed"
+      },
+      "workingDirectory": "runtime/{{ (index .Inputs 0).WorkID }}",
+      "env": {
+        "AUTOMAT_DEPENDENCY_CONTRACT": "portable-dependencies.json",
+        "AUTOMAT_WORKFLOW_GUIDE": "docs/portable-workflow.md"
+      }
+    },
+    {
+      "name": "check-tool-contract",
+      "type": "MODEL_WORKSTATION",
+      "worker": "verify-external-tools",
+      "copyReferencedScripts": true,
+      "inputs": [
+        {
+          "workType": "chapter",
+          "state": "staged"
+        }
+      ],
+      "outputs": [
+        {
+          "workType": "chapter",
+          "state": "ready"
+        }
+      ],
+      "onFailure": {
+        "workType": "chapter",
+        "state": "failed"
+      },
+      "env": {
+        "AUTOMAT_DEPENDENCY_CONTRACT": "portable-dependencies.json"
+      }
+    }
+  ]
+}

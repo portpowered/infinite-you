@@ -1,0 +1,13 @@
+{
+  "request_id": "sample-prd",
+  "type": "FACTORY_REQUEST_BATCH",
+  "works": [
+    { "work_type_name": "task", "name": "alpha-test", "payload":"generated alpha", "tags": { } },
+    { "work_type_name": "task", "name": "beta-test", "payload":"generated beta", "tags": { } },
+    { "work_type_name": "task", "name": "gamma-test", "payload":"generated gamma", "tags": { } }
+  ],
+  "relations": [
+    { "type": "DEPENDS_ON", "source_work_name": "beta-test", "target_work_name": "alpha-test" },
+    { "type": "DEPENDS_ON", "source_work_name": "gamma-test", "target_work_name": "beta-test" }
+  ]
+}

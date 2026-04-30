@@ -1,0 +1,1677 @@
+openapi: 3.0.3
+info:
+  title: Agent Factory API
+  version: 0.1.0
+  license:
+    name: MIT
+  description: |
+    Current Agent Factory runtime API contract. This file captures existing
+    handler behavior for schema standardization and intentionally does not
+    redesign route names, pagination, or response fields.
+servers:
+  - url: http://localhost:8080
+    description: Local Agent Factory API server
+security: []
+tags:
+  - name: Work
+    description: Runtime work submission and inspection.
+  - name: Factory
+    description: Named factory activation and current-factory inspection.
+  - name: Runtime
+    description: Runtime state, event stream, and trace inspection.
+  - name: Workflows
+    description: Stored workflow inspection.
+paths:
+  /work:
+    post:
+      tags:
+        - Work
+      operationId: submitWork
+      summary: Submit work
+      description: Submits one work item to the running factory.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitWorkRequest'
+      responses:
+        '201':
+          description: Work was accepted for processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitWorkResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags:
+        - Work
+      operationId: listWork
+      summary: List work
+      description: Lists current work tokens from the engine state snapshot.
+      parameters:
+        - $ref: '#/components/parameters/MaxResults'
+        - $ref: '#/components/parameters/NextToken'
+      responses:
+        '200':
+          description: Current work tokens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWorkResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /work-requests/{request_id}:
+    put:
+      tags:
+        - Work
+      operationId: upsertWorkRequest
+      summary: Upsert work request
+      description: Submits or retries one canonical work request batch. The request identifier in the URL must match the request_id in the JSON body, and repeated request IDs are idempotent.
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: Stable request identifier used for idempotent submission.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkRequest'
+      responses:
+        '201':
+          description: Work request was accepted or had already been accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertWorkRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /work/{id}:
+    get:
+      tags:
+        - Work
+      operationId: getWork
+      summary: Get work token
+      description: Returns one token by token ID from the current marking.
+      parameters:
+        - $ref: '#/components/parameters/WorkOrTokenID'
+      responses:
+        '200':
+          description: Work token with history.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /events:
+    get:
+      tags:
+        - Runtime
+      operationId: getEvents
+      summary: Stream factory events
+      description: Streams current-process canonical factory events as default Server-Sent Events. Historical events are sent first in ascending tick order, followed by live events on the same connection.
+      responses:
+        '200':
+          description: Factory event stream.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events where each data frame is serialized JSON matching FactoryEvent.
+              x-event-schema:
+                $ref: '#/components/schemas/FactoryEvent'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /status:
+    get:
+      tags:
+        - Runtime
+      operationId: getStatus
+      summary: Get runtime status
+      description: Returns the current factory lifecycle status, token category counts, and resource availability from the aggregate engine snapshot.
+      responses:
+        '200':
+          description: Current runtime status summary.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /factory:
+    post:
+      tags:
+        - Factory
+      operationId: createFactory
+      summary: Create named factory
+      description: Stores one named factory definition and activates it as the current factory when the runtime is idle.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NamedFactory'
+      responses:
+        '201':
+          description: Named factory was stored and activated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamedFactory'
+        '400':
+          $ref: '#/components/responses/CreateFactoryBadRequest'
+        '409':
+          $ref: '#/components/responses/CreateFactoryConflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /factory/~current:
+    get:
+      tags:
+        - Factory
+      operationId: getCurrentFactory
+      summary: Get current named factory
+      description: Returns the active named factory from the durable current-factory pointer and canonical flattened factory payload.
+      responses:
+        '200':
+          description: Current active named factory.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamedFactory'
+        '404':
+          $ref: '#/components/responses/CurrentFactoryNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  parameters:
+    MaxResults:
+      name: maxResults
+      in: query
+      required: false
+      description: Optional positive page size. Invalid or non-positive values are ignored by current handlers.
+      schema:
+        type: integer
+        minimum: 1
+        default: 50
+    NextToken:
+      name: nextToken
+      in: query
+      required: false
+      description: Optional base64-encoded token ID cursor.
+      schema:
+        type: string
+    WorkOrTokenID:
+      name: id
+      in: path
+      required: true
+      description: Work or token identifier, depending on route.
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Request payload or parameter was invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    CreateFactoryBadRequest:
+      description: Named factory name or payload was invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidFactoryName:
+              summary: Factory name failed validation.
+              value:
+                message: Factory name must be a safe directory segment without path separators.
+                family: BAD_REQUEST
+                code: INVALID_FACTORY_NAME
+            invalidFactory:
+              summary: Factory payload failed validation.
+              value:
+                message: Factory payload is not a valid Agent Factory definition.
+                family: BAD_REQUEST
+                code: INVALID_FACTORY
+    CreateFactoryConflict:
+      description: Named factory could not be activated because the name already exists or the current runtime is not idle.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            factoryAlreadyExists:
+              summary: Factory name already exists.
+              value:
+                message: Named factory already exists.
+                family: CONFLICT
+                code: FACTORY_ALREADY_EXISTS
+            factoryNotIdle:
+              summary: Runtime is not idle.
+              value:
+                message: Current factory runtime must be idle before activation.
+                family: CONFLICT
+                code: FACTORY_NOT_IDLE
+    NotFound:
+      description: Requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    CurrentFactoryNotFound:
+      description: Current named factory was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            currentFactoryMissing:
+              summary: No current named factory is available.
+              value:
+                message: Current named factory not found.
+                family: NOT_FOUND
+                code: NOT_FOUND
+    InternalError:
+      description: Server failed while reading or building runtime state.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    SubmitWorkRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - work_type_name
+      properties:
+        name:
+          type: string
+        work_type_name:
+          type: string
+          description: Configured work type name from factory.json to submit to.
+        current_chaining_trace_id:
+          type: string
+          description: Explicit chaining-trace identifier for the submitted work.
+        trace_id:
+          type: string
+          description: Legacy trace identifier retained for compatibility; prefer current_chaining_trace_id.
+        payload:
+          description: Opaque work payload forwarded as raw JSON.
+        tags:
+          $ref: '#/components/schemas/StringMap'
+        relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Relation'
+    SubmitWorkResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - trace_id
+      properties:
+        trace_id:
+          type: string
+    UpsertWorkRequestResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - trace_id
+      properties:
+        request_id:
+          type: string
+        trace_id:
+          type: string
+
+    ListWorkResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TokenResponse'
+        paginationContext:
+          $ref: '#/components/schemas/PaginationContext'
+    PaginationContext:
+      type: object
+      additionalProperties: false
+      required:
+        - maxResults
+      properties:
+        maxResults:
+          type: integer
+        nextToken:
+          type: string
+    TokenResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - place_id
+        - work_id
+        - work_type
+        - trace_id
+        - created_at
+        - entered_at
+      properties:
+        id:
+          type: string
+        place_id:
+          type: string
+        name:
+          type: string
+        work_id:
+          type: string
+        work_type:
+          type: string
+        trace_id:
+          type: string
+        tags:
+          $ref: '#/components/schemas/StringMap'
+        created_at:
+          type: string
+          format: date-time
+        entered_at:
+          type: string
+          format: date-time
+        history:
+          $ref: '#/components/schemas/TokenHistory'
+    TokenHistory:
+      type: object
+      additionalProperties: false
+      properties:
+        total_visits:
+          $ref: '#/components/schemas/IntegerMap'
+        consecutive_failures:
+          $ref: '#/components/schemas/IntegerMap'
+        place_visits:
+          $ref: '#/components/schemas/IntegerMap'
+        last_error:
+          type: string
+    ResourceUsage:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - available
+        - total
+      properties:
+        name:
+          type: string
+        available:
+          type: integer
+        total:
+          type: integer
+    ResourceRequirement:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - capacity
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+          minimum: 1
+    StatusCategories:
+      type: object
+      additionalProperties: false
+      required:
+        - initial
+        - processing
+        - terminal
+        - failed
+      properties:
+        initial:
+          type: integer
+        processing:
+          type: integer
+        terminal:
+          type: integer
+        failed:
+          type: integer
+    StatusResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - categories
+        - factory_state
+        - runtime_status
+        - total_tokens
+      properties:
+        categories:
+          $ref: '#/components/schemas/StatusCategories'
+        factory_state:
+          type: string
+        runtime_status:
+          type: string
+        total_tokens:
+          type: integer
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceUsage'
+    ErrorFamily:
+      type: string
+      description: Stable machine-readable error family for broader client grouping.
+      enum:
+        - BAD_REQUEST
+        - CONFLICT
+        - NOT_FOUND
+        - INTERNAL_SERVER_ERROR
+      x-enum-varnames:
+        - ErrorFamilyBadRequest
+        - ErrorFamilyConflict
+        - ErrorFamilyNotFound
+        - ErrorFamilyInternalServerError
+      x-enum-descriptions:
+        - Request payload or parameter validation failed.
+        - The request conflicts with current resource state.
+        - The requested resource does not exist.
+        - The server failed while handling an otherwise valid request.
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+        - family
+        - code
+      properties:
+        message:
+          type: string
+        family:
+          $ref: '#/components/schemas/ErrorFamily'
+        code:
+          type: string
+          description: Stable machine-readable error code.
+          enum:
+            - BAD_REQUEST
+            - INVALID_FACTORY_NAME
+            - FACTORY_ALREADY_EXISTS
+            - INVALID_FACTORY
+            - FACTORY_NOT_IDLE
+            - NOT_FOUND
+            - INTERNAL_ERROR
+          x-enum-descriptions:
+            - Request payload or parameter validation failed.
+            - Named factory name validation failed.
+            - Submitted named factory already exists.
+            - Submitted named factory payload failed validation.
+            - Current factory runtime is not idle and cannot activate a new named factory.
+            - The requested resource does not exist.
+            - The server failed while handling an otherwise valid request.
+    StringMap:
+      type: object
+      additionalProperties:
+        type: string
+    IntegerMap:
+      type: object
+      additionalProperties:
+        type: integer
+    FactoryName:
+      type: string
+      minLength: 1
+      pattern: '^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$'
+      description: Customer-facing identifier for one stored named factory. Semantic validation failures return `INVALID_FACTORY_NAME`.
+      example: customer-support-triage
+    NamedFactory:
+      type: object
+      additionalProperties: false
+      description: Canonical named-factory contract used for factory activation requests and current-factory readback.
+      required:
+        - name
+        - factory
+      example:
+        name: customer-support-triage
+        factory:
+          workTypes:
+            - name: task
+              states:
+                - name: init
+                  type: INITIAL
+                - name: done
+                  type: TERMINAL
+          workers:
+            - name: planner
+              type: MODEL_WORKER
+              modelProvider: claude
+              executorProvider: script_wrap
+              model: claude-sonnet-4-20250514
+          workstations:
+            - name: plan-task
+              kind: STANDARD
+              type: MODEL_WORKSTATION
+              worker: planner
+              inputs:
+                - workType: task
+                  state: init
+              outputs:
+                - workType: task
+                  state: done
+      properties:
+        name:
+          $ref: '#/components/schemas/FactoryName'
+        factory:
+          $ref: '#/components/schemas/Factory'
+
+    FactoryWorldWorkstationRequestProjectionSlice:
+      type: object
+      additionalProperties: false
+      description: >-
+        Additive dashboard read-model contract slice that publishes
+        workstation-request projections keyed by dispatch ID without
+        reintroducing removed `/dashboard` endpoints.
+      properties:
+        workstation_requests_by_dispatch_id:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FactoryWorldWorkstationRequestView'
+    FactoryWorldRenderedPromptDiagnostic:
+      type: object
+      additionalProperties: false
+      properties:
+        system_prompt_hash:
+          type: string
+        user_message_hash:
+          type: string
+        variables:
+          $ref: '#/components/schemas/StringMap'
+    FactoryWorldProviderDiagnostic:
+      type: object
+      additionalProperties: false
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        request_metadata:
+          $ref: '#/components/schemas/StringMap'
+        response_metadata:
+          $ref: '#/components/schemas/StringMap'
+    FactoryWorldWorkDiagnostics:
+      type: object
+      additionalProperties: false
+      properties:
+        rendered_prompt:
+          $ref: '#/components/schemas/FactoryWorldRenderedPromptDiagnostic'
+        provider:
+          $ref: '#/components/schemas/FactoryWorldProviderDiagnostic'
+    FactoryWorldWorkItemRef:
+      type: object
+      additionalProperties: false
+      required:
+        - work_id
+      properties:
+        work_id:
+          type: string
+        work_type_id:
+          type: string
+        display_name:
+          type: string
+        current_chaining_trace_id:
+          type: string
+        previous_chaining_trace_ids:
+          type: array
+          items:
+            type: string
+        trace_id:
+          type: string
+    FactoryWorldTokenView:
+      type: object
+      additionalProperties: false
+      required:
+        - token_id
+        - place_id
+      properties:
+        token_id:
+          type: string
+        place_id:
+          type: string
+        name:
+          type: string
+        work_id:
+          type: string
+        work_type_id:
+          type: string
+        current_chaining_trace_id:
+          type: string
+        previous_chaining_trace_ids:
+          type: array
+          items:
+            type: string
+        trace_id:
+          type: string
+        tags:
+          $ref: '#/components/schemas/StringMap'
+    FactoryWorldMutationView:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - token_id
+      properties:
+        type:
+          type: string
+        token_id:
+          type: string
+        from_place:
+          type: string
+        to_place:
+          type: string
+        reason:
+          type: string
+        token:
+          $ref: '#/components/schemas/FactoryWorldTokenView'
+    FactoryWorldScriptRequestView:
+      type: object
+      additionalProperties: false
+      properties:
+        script_request_id:
+          type: string
+        attempt:
+          type: integer
+          minimum: 1
+        command:
+          type: string
+        args:
+          type: array
+          items:
+            type: string
+    FactoryWorldScriptResponseView:
+      type: object
+      additionalProperties: false
+      properties:
+        script_request_id:
+          type: string
+        attempt:
+          type: integer
+          minimum: 1
+        outcome:
+          type: string
+        stdout:
+          type: string
+        stderr:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+          minimum: 0
+        exit_code:
+          type: integer
+        failure_type:
+          type: string
+    FactoryWorldWorkstationRequestCountView:
+      type: object
+      additionalProperties: false
+      required:
+        - dispatched_count
+        - responded_count
+        - errored_count
+      properties:
+        dispatched_count:
+          type: integer
+          minimum: 0
+        responded_count:
+          type: integer
+          minimum: 0
+        errored_count:
+          type: integer
+          minimum: 0
+    FactoryWorldWorkstationRequestRequestView:
+      type: object
+      additionalProperties: false
+      properties:
+        started_at:
+          type: string
+        request_time:
+          type: string
+        input_work_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FactoryWorldWorkItemRef'
+        input_work_type_ids:
+          type: array
+          items:
+            type: string
+        current_chaining_trace_id:
+          type: string
+        previous_chaining_trace_ids:
+          type: array
+          items:
+            type: string
+        trace_ids:
+          type: array
+          items:
+            type: string
+        consumed_tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/FactoryWorldTokenView'
+        prompt:
+          type: string
+        working_directory:
+          type: string
+        worktree:
+          type: string
+        provider:
+          type: string
+        model:
+          type: string
+        request_metadata:
+          $ref: '#/components/schemas/StringMap'
+        script_request:
+          $ref: '#/components/schemas/FactoryWorldScriptRequestView'
+    FactoryWorldWorkstationRequestResponseView:
+      type: object
+      additionalProperties: false
+      properties:
+        outcome:
+          type: string
+        feedback:
+          type: string
+        failure_reason:
+          type: string
+        failure_message:
+          type: string
+        response_text:
+          type: string
+        error_class:
+          type: string
+        provider_session:
+          $ref: '#/components/schemas/ProviderSessionMetadata'
+        diagnostics:
+          $ref: '#/components/schemas/FactoryWorldWorkDiagnostics'
+        response_metadata:
+          $ref: '#/components/schemas/StringMap'
+        script_response:
+          $ref: '#/components/schemas/FactoryWorldScriptResponseView'
+        end_time:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+          minimum: 0
+        output_work_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FactoryWorldWorkItemRef'
+        output_mutations:
+          type: array
+          items:
+            $ref: '#/components/schemas/FactoryWorldMutationView'
+    FactoryWorldWorkstationRequestView:
+      type: object
+      additionalProperties: false
+      required:
+        - dispatch_id
+        - transition_id
+        - counts
+        - request
+      properties:
+        dispatch_id:
+          type: string
+        transition_id:
+          type: string
+        workstation_name:
+          type: string
+        counts:
+          $ref: '#/components/schemas/FactoryWorldWorkstationRequestCountView'
+        request:
+          $ref: '#/components/schemas/FactoryWorldWorkstationRequestRequestView'
+        response:
+          $ref: '#/components/schemas/FactoryWorldWorkstationRequestResponseView'
+
+    # ==== Unified Agent Factory event log schemas =======
+    FactoryEvent:
+      $ref: './components/schemas/events/FactoryEvent.yaml'
+    FactoryEventType:
+      $ref: './components/schemas/events/FactoryEventType.yaml'
+    FactoryEventContext:
+      $ref: './components/schemas/events/FactoryEventContext.yaml'
+    DispatchConsumedWorkRef:
+      $ref: './components/schemas/events/DispatchConsumedWorkRef.yaml'
+    DispatchRequestEventMetadata:
+      $ref: './components/schemas/events/DispatchRequestEventMetadata.yaml'
+    RunRequestEventPayload:
+      $ref: './components/schemas/events/payloads/RunRequestEventPayload.yaml'
+    InitialStructureRequestEventPayload:
+      $ref: './components/schemas/events/payloads/InitialStructureRequestEventPayload.yaml'
+    WorkRequestEventPayload:
+      $ref: './components/schemas/events/payloads/WorkRequestEventPayload.yaml'
+    RelationshipChangeRequestEventPayload:
+      $ref: './components/schemas/events/payloads/RelationshipChangeRequestEventPayload.yaml'
+    DispatchRequestEventPayload:
+      $ref: './components/schemas/events/payloads/DispatchRequestEventPayload.yaml'
+    InferenceRequestEventPayload:
+      $ref: './components/schemas/events/payloads/InferenceRequestEventPayload.yaml'
+    InferenceResponseEventPayload:
+      $ref: './components/schemas/events/payloads/InferenceResponseEventPayload.yaml'
+    ScriptRequestEventPayload:
+      $ref: './components/schemas/events/payloads/ScriptRequestEventPayload.yaml'
+    ScriptResponseEventPayload:
+      $ref: './components/schemas/events/payloads/ScriptResponseEventPayload.yaml'
+    DispatchResponseEventPayload:
+      $ref: './components/schemas/events/payloads/DispatchResponseEventPayload.yaml'
+    FactoryStateResponseEventPayload:
+      $ref: './components/schemas/events/payloads/FactoryStateResponseEventPayload.yaml'
+    RunResponseEventPayload:
+      $ref: './components/schemas/events/payloads/RunResponseEventPayload.yaml'
+    InferenceOutcome:
+      $ref: './components/schemas/events/InferenceOutcome.yaml'
+    ScriptExecutionOutcome:
+      $ref: './components/schemas/events/ScriptExecutionOutcome.yaml'
+    ScriptFailureType:
+      $ref: './components/schemas/events/ScriptFailureType.yaml'
+    FactoryState:
+      $ref: './components/schemas/events/FactoryState.yaml'
+    WorkOutcome:
+      $ref: './components/schemas/events/WorkOutcome.yaml'
+    ProviderFailureMetadata:
+      $ref: './components/schemas/events/ProviderFailureMetadata.yaml'
+    ProviderSessionMetadata:
+      $ref: './components/schemas/events/ProviderSessionMetadata.yaml'
+    WorkMetrics:
+      $ref: './components/schemas/events/WorkMetrics.yaml'
+    WorkDiagnostics:
+      $ref: './components/schemas/events/WorkDiagnostics.yaml'
+    RenderedPromptDiagnostic:
+      $ref: './components/schemas/events/RenderedPromptDiagnostic.yaml'
+    ProviderDiagnostic:
+      $ref: './components/schemas/events/ProviderDiagnostic.yaml'
+    CommandDiagnostic:
+      type: object
+      additionalProperties: false
+      properties:
+        command:
+          type: string
+        args:
+          type: array
+          items:
+            type: string
+        stdin:
+          type: string
+        env:
+          $ref: '#/components/schemas/StringMap'
+        stdout:
+          type: string
+        stderr:
+          type: string
+        exitCode:
+          type: integer
+        timedOut:
+          type: boolean
+        durationNanos:
+          type: integer
+          format: int64
+        workingDir:
+          type: string
+    PanicDiagnostic:
+      type: object
+      additionalProperties: false
+      properties:
+        message:
+          type: string
+        stack:
+          type: string
+    Diagnostics:
+      $ref: './components/schemas/events/Diagnostics.yaml'
+    SafeWorkDiagnostics:
+      $ref: './components/schemas/events/SafeWorkDiagnostics.yaml'
+    WallClock:
+      $ref: './components/schemas/events/WallClock.yaml'
+
+    # ==== Raw data schemas for a factor =======
+    Factory:
+      type: object
+      description: >-
+        Top-level factory.json contract. Declare the work types, resources,
+        portability resources, workers, and workstations that make up one
+        authored factory here.
+        Guarded loop breakers should be authored as guarded LOGICAL_MOVE
+        workstations using VISIT_COUNT guards instead of a top-level
+        exhaustion-rules field.
+      additionalProperties: false
+      example:
+        inputTypes:
+          - name: brief
+            type: DEFAULT
+        workTypes:
+          - name: story
+            states:
+              - name: init
+                type: INITIAL
+              - name: inReview
+                type: PROCESSING
+              - name: failed
+                type: FAILED
+              - name: complete
+                type: TERMINAL
+        resourceManifest:
+          requiredTools:
+            - name: python
+              command: python
+              purpose: Runs bundled translation scripts
+              versionArgs:
+                - --version
+          bundledFiles:
+            - type: ROOT_HELPER
+              targetPath: Makefile
+              content:
+                encoding: utf-8
+                inline: "test:\n\tgo test ./...\n"
+            - type: SCRIPT
+              targetPath: factory/scripts/setup-workspace.py
+              content:
+                encoding: utf-8
+                inline: |
+                  print("portable")
+            - type: DOC
+              targetPath: factory/docs/usage.md
+              content:
+                encoding: utf-8
+                inline: |
+                  # Usage
+        workers:
+          - name: reviewer
+            type: MODEL_WORKER
+            executorProvider: script_wrap
+            modelProvider: claude
+            model: claude-sonnet-4-20250514
+          - name: review-loop-breaker
+            type: MODEL_WORKER
+            executorProvider: script_wrap
+            modelProvider: claude
+            model: claude-sonnet-4-20250514
+        workstations:
+          - name: review-story
+            kind: REPEATER
+            type: MODEL_WORKSTATION
+            worker: reviewer
+            inputs:
+              - workType: story
+                state: init
+            outputs:
+              - workType: story
+                state: inReview
+            onRejection:
+              workType: story
+              state: init
+            onFailure:
+              workType: story
+              state: failed
+          - name: review-loop-breaker
+            worker: review-loop-breaker
+            type: LOGICAL_MOVE
+            guards:
+              - type: VISIT_COUNT
+                workstation: review-story
+                maxVisits: 3
+            inputs:
+              - workType: story
+                state: init
+            outputs:
+              - workType: story
+                state: failed
+      properties:
+        project:
+          type: string
+          description: Project identifier used as the factory-level template context fallback.
+        factoryDir:
+          type: string
+          description: Directory that contained the factory.json used for this serialized runtime config.
+        sourceDirectory:
+          type: string
+          description: Original source directory for record/replay and drift diagnostics.
+        workflowId:
+          type: string
+          description: Optional workflow identity associated with this serialized runtime config.
+        metadata:
+          $ref: '#/components/schemas/StringMap'
+          description: Free-form factory-level metadata carried through runtime serialization and replay diagnostics.
+        inputTypes:
+          type: array
+          description: Named input kinds accepted by the factory. The default input type is implicit and must not be declared.
+          items:
+            $ref: '#/components/schemas/InputType'
+        workTypes:
+          type: array
+          description: Customer-authored work item categories and the lifecycle states each one can occupy.
+          items:
+            $ref: '#/components/schemas/WorkType'
+        resources:
+          type: array
+          description: Shared capacity pools that workers or workstations can consume while work is executing.
+          items:
+            $ref: '#/components/schemas/Resource'
+        resourceManifest:
+          $ref: '#/components/schemas/ResourceManifest'
+          description: Optional portability manifest for validation-only external tools and portable bundled files. This contract is distinct from runtime-capacity resources.
+        workers:
+          type: array
+          description: Reusable worker definitions that workstations reference by name when dispatching work.
+          items:
+            $ref: '#/components/schemas/Worker'
+        workstations:
+          type: array
+          description: Processing steps that consume work, invoke workers, and emit the next work states.
+          items:
+            $ref: '#/components/schemas/Workstation'
+    ResourceManifest:
+      type: object
+      additionalProperties: false
+      description: Canonical portability manifest for Agent Factory bundles. Required tools are validation-only PATH dependencies; bundled files carry portable content for restoration inside the factory boundary.
+      properties:
+        requiredTools:
+          type: array
+          description: Declarative external tools that must already resolve on PATH. These entries are validated but not embedded or installed.
+          items:
+            $ref: '#/components/schemas/RequiredTool'
+        bundledFiles:
+          type: array
+          description: Portable bundled files that belong inside the factory boundary. Entries are explicit only, use factory-relative target paths, and must stay under the canonical script or docs roots for SCRIPT or DOC entries, or match the supported root-helper allowlist for ROOT_HELPER entries.
+          items:
+            $ref: '#/components/schemas/BundledFile'
+    RequiredTool:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - command
+      description: One declarative external tool dependency for a portable factory.
+      properties:
+        name:
+          type: string
+          description: Human-readable tool name used in manifests and validation output.
+        command:
+          type: string
+          description: Executable lookup token that must resolve on PATH.
+        purpose:
+          type: string
+          description: Optional explanation of why the portable factory requires this tool.
+        versionArgs:
+          type: array
+          description: Optional argument vector used by future validation flows to probe the tool version without changing the executable lookup token.
+          items:
+            type: string
+    BundledFile:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - targetPath
+        - content
+      description: One explicit portable bundled file entry carried by the factory portability manifest. SCRIPT files target factory/scripts/..., DOC files target factory/docs/..., and ROOT_HELPER files target supported project-root helper paths such as Makefile.
+      properties:
+        type:
+          type: string
+          enum:
+            - SCRIPT
+            - DOC
+            - ROOT_HELPER
+          description: Portable file class. SCRIPT entries target factory/scripts/..., DOC entries target factory/docs/..., and ROOT_HELPER entries target supported project-root helper files such as Makefile.
+        targetPath:
+          type: string
+          description: Canonical factory-relative restoration target for the bundled file. Absolute paths, backslash-separated paths, and paths that require dot-segment normalization are rejected.
+        content:
+          $ref: '#/components/schemas/BundledFileContent'
+    BundledFileContent:
+      type: object
+      additionalProperties: false
+      required:
+        - encoding
+        - inline
+      description: Inline content payload for a portable bundled file.
+      properties:
+        encoding:
+          type: string
+          enum:
+            - utf-8
+          description: Declared content encoding for the inline payload. V1 bundled files use UTF-8 text content.
+        inline:
+          type: string
+          description: Inline bundled file content carried in the manifest. Files under factory/scripts/, factory/docs/, and supported root helper paths are only bundled when they appear in bundledFiles.
+    InputType:
+      type: object
+      additionalProperties: false
+      description: >-
+        Declared types of inputs. Used to force the inputs of a certain work type to be of a certain shape, like a specific JSON structure.
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Input type name. The reserved name "default" is implicit.
+        type:
+          $ref: '#/components/schemas/InputKind'
+    InputKind:
+      type: string
+      x-enum-varnames:
+        - InputKindDefault
+      enum:
+        - DEFAULT
+      x-enum-descriptions:
+        - Opaque input accepted by the factory without a specialized input schema.
+      description: Kinds of input. `DEFAULT` passes opaque input through to workstations as-is.
+    WorkType:
+      type: object
+      additionalProperties: false
+      description: >-
+        A named category of work that can move through the factory. Each work
+        type declares the lifecycle states its work items can occupy.
+      required:
+        - name
+        - states
+      properties:
+        name:
+          type: string
+          description: Customer-authored work type name referenced by workstation inputs, outputs, and submitted work.
+        states:
+          type: array
+          description: Lifecycle states available for work items of this type.
+          items:
+            $ref: '#/components/schemas/WorkState'
+    WorkState:
+      type: object
+      additionalProperties: false
+      description: >-
+        A lifecycle state that a work item can occupy inside one work type.
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Customer-authored state name referenced by workstation inputs and outputs.
+        type:
+          $ref: '#/components/schemas/WorkStateType'
+          description: Lifecycle category for this state, such as initial, processing, terminal, or failed.
+    WorkStateType:
+      type: string
+      x-enum-varnames:
+        - WorkStateTypeINITIAL
+        - WorkStateTypePROCESSING
+        - WorkStateTypeTERMINAL
+        - WorkStateTypeFAILED
+      description: >-
+        Categories of work states. The factory runtime treats these categories differently for lifecycle tracking and metrics purposes.
+        Initial: The work is waiting to be picked up by a workstation.
+        Processing: The work has been partially processed, and is continuing through its lifecycle.
+        Terminal: The work has completed successfully.
+        Failed: The work has failed.
+      enum:
+        - INITIAL
+        - PROCESSING
+        - TERMINAL
+        - FAILED
+      x-enum-descriptions:
+        - Work is newly submitted and waiting for its first processing step.
+        - Work is in progress and can continue through additional workstation steps.
+        - Work completed successfully and should not be scheduled for more processing.
+        - Work reached a failed terminal state.
+    Resource:
+      description: >-
+        Shared capacity that limits how much work the factory can run at once,
+        such as worker slots or external service quotas.
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - capacity
+      properties:
+        name:
+          type: string
+          description: Resource name referenced from worker requirements and workstation resourceUsage entries.
+        capacity:
+          type: integer
+          minimum: 1
+          description: Total units of this resource available to the factory at one time.
+    Worker:
+      description: >-
+        A reusable worker definition that tells the factory how a workstation
+        should execute work, such as through a model-backed agent or a script.
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Worker name referenced by Workstation.worker.
+        type:
+          $ref: '#/components/schemas/WorkerType'
+          description: Worker implementation family to instantiate for this definition.
+        model:
+          type: string
+          description: Model identifier to request from the configured model provider when this worker uses model execution.
+        modelProvider:
+          $ref: '#/components/schemas/WorkerModelProvider'
+          description: Canonical model-provider identifier used for model routing and provider diagnostics. Current built-in values are `claude` and `codex`, which match the executable provider command IDs.
+        executorProvider:
+          $ref: '#/components/schemas/WorkerProvider'
+          description: Canonical executor adapter identifier used to select the worker execution provider or wrapper. The current public built-in value is `script_wrap`.
+        command:
+          type: string
+          description: Command to execute when this worker runs through a command or script provider.
+        args:
+          type: array
+          description: Additional command arguments passed to the configured command.
+          items:
+            type: string
+        resources:
+          type: array
+          description: Resource capacity this worker requires before it can be dispatched.
+          items:
+            $ref: '#/components/schemas/ResourceRequirement'
+        timeout:
+          type: string
+          description: Optional Go duration that caps one worker execution attempt.
+        stopToken:
+          type: string
+          description: Marker that tells model-oriented workers where to stop generated output when the provider supports it.
+        skipPermissions:
+          type: boolean
+          description: When true, bypasses permission checks for providers that support permission gating.
+        body:
+          type: string
+          description: Inline worker instructions or script body when the worker is authored directly in factory config.
+    WorkerType:
+      type: string
+      description: Worker implementation families supported by the public factory-config contract.
+      x-enum-varnames:
+        - WorkerTypeModelWorker
+        - WorkerTypeScriptWorker
+      enum:
+        - MODEL_WORKER
+        - SCRIPT_WORKER
+      x-enum-descriptions:
+        - Model-backed worker that renders prompts and dispatches through the configured model provider.
+        - Script-backed worker that executes a configured command instead of calling a model provider.
+    WorkerModelProvider:
+      type: string
+      description: Canonical model-provider identifiers supported by model workers in factory config.
+      x-enum-varnames:
+        - WorkerModelProviderClaude
+        - WorkerModelProviderCodex
+      enum:
+        - claude
+        - codex
+      x-enum-descriptions:
+        - Claude model execution routed through the `claude` provider command.
+        - Codex model execution routed through the `codex` provider command.
+    WorkerProvider:
+      type: string
+      description: Concrete worker-provider wrappers supported by the public factory-config contract.
+      x-enum-varnames:
+        - WorkerProviderScriptWrap
+      enum:
+        - script_wrap
+      x-enum-descriptions:
+        - Public worker executor adapter that shells out through the configured worker command path.
+    Workstation:
+      description: >-
+        A processing step in the factory graph. Workstations consume authored
+        work states, run a worker or logical move, and emit the next work
+        states.
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - worker
+        - inputs
+        - outputs
+      properties:
+        id:
+          type: string
+          description: Optional stable identifier for this workstation in serialized runtime and replay payloads.
+        name:
+          type: string
+          description: Customer-authored workstation name used by guards, diagnostics, and authored references.
+        kind:
+          $ref: '#/components/schemas/WorkstationKind'
+          description: Scheduling behavior for this workstation, such as STANDARD, REPEATER, or CRON execution.
+        type:
+          $ref: '#/components/schemas/WorkstationType'
+          description: Runtime workstation implementation type, equivalent to the workstation AGENTS.md frontmatter type.
+        worker:
+          type: string
+          description: Name of a worker declared in the workers list.
+        promptFile:
+          type: string
+          description: Path to a prompt template file loaded for model-oriented workstation execution.
+        outputSchema:
+          type: string
+          description: JSON schema string used to validate or parse structured model output when configured.
+        limits:
+          $ref: '#/components/schemas/WorkstationLimits'
+          description: Retry and execution ceilings applied to this workstation.
+        body:
+          type: string
+          description: Inline workstation instructions or script body when authored directly in factory config.
+        promptTemplate:
+          type: string
+          description: Inline Go template rendered into the prompt for model-oriented workstation execution.
+        cron:
+          $ref: '#/components/schemas/WorkstationCron'
+          description: Cron trigger configuration for workstations whose kind is cron.
+        inputs:
+          type: array
+          description: Work states this workstation can consume before it dispatches.
+          items:
+            $ref: '#/components/schemas/WorkstationIO'
+        outputs:
+          type: array
+          description: Work states emitted after this workstation succeeds.
+          items:
+            $ref: '#/components/schemas/WorkstationIO'
+        onRejection:
+          $ref: '#/components/schemas/WorkstationIO'
+          description: Optional destination emitted when the worker rejects the current work without a hard failure.
+        onFailure:
+          $ref: '#/components/schemas/WorkstationIO'
+          description: Optional destination emitted when the workstation fails permanently.
+        resources:
+          type: array
+          description: Resource capacity this workstation consumes while one dispatch is in flight.
+          items:
+            $ref: '#/components/schemas/ResourceRequirement'
+        copyReferencedScripts:
+          type: boolean
+          description: Copy supported referenced script files into the expanded workstation layout when config expand runs.
+        guards:
+          type: array
+          description: Guarded loop breakers should use `visit_count` guards here with a `LOGICAL_MOVE` workstation instead of top-level exhaustion rules.
+          items:
+            $ref: '#/components/schemas/WorkstationGuard'
+        stopWords:
+          type: array
+          description: Stop words authored on the topology entry for model-oriented dispatches.
+          items:
+            type: string
+        workingDirectory:
+          type: string
+          description: Go template resolved from token tags at dispatch time.
+        worktree:
+          type: string
+          description: Go template resolved and passed as the worktree path to CLI dispatchers.
+        env:
+          $ref: '#/components/schemas/StringMap'
+          description: Environment variables added to the workstation execution context.
+    WorkstationLimits:
+      type: object
+      description: Retry and execution ceilings applied to one workstation definition.
+      additionalProperties: false
+      properties:
+        maxRetries:
+          type: integer
+          description: Maximum number of retry attempts after a failed dispatch before the workstation gives up.
+        maxExecutionTime:
+          type: string
+          description: Go duration limit for one dispatch attempt before it times out.
+    WorkstationKind:
+      type: string
+      default: STANDARD
+      description: >-
+        Scheduling kind for a workstation, which determines how the engine schedules and dispatches work to it.
+        Standard workstations are scheduled as soon as their inputs are ready, and can have multiple work items in-flight at the same time. 
+        Repeater workstations are triggered whenever their inputs change, and will reloop the outputs on rejection back to the initial place.
+        Cron workstations create internal time work and dispatch their configured worker when time and input guards are satisfied.
+      x-enum-varnames:
+        - WorkstationKindStandard
+        - WorkstationKindRepeater
+        - WorkstationKindCron
+      enum:
+        - STANDARD
+        - REPEATER
+        - CRON
+      x-enum-descriptions:
+        - Schedules when its inputs are ready and emits configured outputs.
+        - Re-runs when observed inputs change and can loop rejected work back to an earlier state.
+        - Produces internal time work from a cron schedule and dispatches through the normal worker path when inputs are ready.
+    WorkstationType:
+      type: string
+      description: Runtime workstation implementation types supported by the public factory-config contract.
+      x-enum-varnames:
+        - WorkstationTypeModelWorkstation
+        - WorkstationTypeLogicalMove
+      enum:
+        - MODEL_WORKSTATION
+        - LOGICAL_MOVE
+      x-enum-descriptions:
+        - Model-backed workstation that renders prompts and dispatches work through the configured worker.
+        - Logical pass-through workstation used for routing and guarded loop-breaker transitions without model execution.
+    WorkstationCron:
+      type: object
+      description: Trigger timing for cron workstations. Cron workstations use a schedule expression; interval triggers are not supported.
+      additionalProperties: false
+      required:
+        - schedule
+      properties:
+        schedule:
+          type: string
+          description: Standard five-field cron expression used to produce internal time work while the factory service is running.
+        triggerAtStart:
+          type: boolean
+          default: false
+          description: When true, service startup submits one immediate internal time work item before waiting for the next scheduled cron fire.
+        jitter:
+          type: string
+          description: Non-negative Go duration used as the maximum deterministic delay added to scheduled time tokens. Defaults to "0s".
+        expiryWindow:
+          type: string
+          description: Positive Go duration after due_at before a stale cron time token expires and can be consumed by the system expiry transition. Defaults to the duration until the next scheduled cron fire when omitted.
+    WorkstationGuardType:
+      type: string
+      description: Guard condition that must pass before a workstation input can be used. Parent-aware fan-in guards are configured on WorkstationIO.guards.
+      x-enum-varnames:
+        - WorkstationGuardTypeVisitCount
+      enum:
+        - VISIT_COUNT
+      x-enum-descriptions:
+        - Allows or blocks work based on how many times a workstation has already handled it.
+    WorkstationGuard:
+      type: object
+      description: Guard attached to a workstation as a whole before it is allowed to consume work.
+      additionalProperties: false
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/WorkstationGuardType'
+          description: Guard condition to evaluate before this workstation is allowed to run.
+        workstation:
+          type: string
+          description: For `VISIT_COUNT` guards, the workstation whose visits are counted.
+        maxVisits:
+          type: integer
+          minimum: 1
+          description: For `VISIT_COUNT` guards, the visit threshold.
+    WorkstationIO:
+      type: object
+      description: One authored work-state reference consumed or emitted by a workstation.
+      additionalProperties: false
+      required:
+        - workType
+        - state
+      properties:
+        workType:
+          type: string
+          description: Name of the work type consumed or emitted at this edge of the workstation.
+        state:
+          type: string
+          description: Name of the work state consumed or emitted for the referenced work type.
+        guards:
+          type: array
+          description: Per-input guards that must pass before this specific input can be used.
+          items:
+            $ref: '#/components/schemas/InputGuard'
+    InputGuard:
+      type: object
+      description: Guard attached to one workstation input for parent-aware fan-in or same-name matching against another input.
+      additionalProperties: false
+      required:
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/InputGuardType'
+          description: Input guard condition to evaluate for this specific workstation input.
+        parentInput:
+          type: string
+          description: Parent workType name from another input in the same workstation.
+        matchInput:
+          type: string
+          description: Peer input workType name from another input in the same workstation for same-name matching.
+        spawnedBy:
+          type: string
+          description: Workstation that spawns the children for dynamic fanout count tracking.
+    InputGuardType:
+      type: string
+      description: Guard condition attached to a specific workstation input.
+      x-enum-varnames:
+        - InputGuardTypeAllChildrenComplete
+        - InputGuardTypeAnyChildFailed
+        - InputGuardTypeSameName
+      enum:
+        - ALL_CHILDREN_COMPLETE
+        - ANY_CHILD_FAILED
+        - SAME_NAME
+      x-enum-descriptions:
+        - This input is available only after all matching child work completes.
+        - This input is available when any matching child work fails.
+        - This input is available only when its token name exactly matches the bound token name from another input.
+    Transition:
+      type: object
+      additionalProperties: false
+      required:
+        - from
+        - to
+      properties:
+        from:
+          type: string
+          description: Source workstation name.
+        to:
+          type: string
+          description: Destination workstation name.
+    # ==== Raw data types here =======
+    WorkRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - request_id
+        - type
+      properties:
+        request_id:
+          type: string
+          description: Stable client-provided request identifier used for idempotent batch submission.
+        current_chaining_trace_id:
+          type: string
+          description: Optional default chaining-trace identifier applied to submitted work items that omit it.
+        type: 
+          $ref: '#/components/schemas/WorkRequestType'
+        works: 
+          type: array
+          description: A batch of work items to be submitted together.
+          items:
+            $ref: '#/components/schemas/Work'
+        relations:
+          type: array
+          description: Relationships between various work items.
+          items:
+            $ref: '#/components/schemas/Relation'
+    WorkRequestType:
+      description: Kind of work request accepted by the factory.
+      type: string
+      x-enum-varnames:
+        - WorkRequestTypeFactoryRequestBatch
+      enum:
+        - FACTORY_REQUEST_BATCH
+      x-enum-descriptions:
+        - Normalized request containing one or more work items and their relationships.
+    Work: 
+      type: object
+      description: >- 
+        A piece of work.
+      additionalProperties: false
+      required:
+        - name
+      properties: 
+        name:
+          type: string
+          description: A human readable name for the work, not unique
+        work_id:
+          type: string
+          description: Unique identifier for the work
+        request_id:
+          type: string
+          description: Identifier for the original request that created this work, if applicable
+        work_type_name:
+          type: string
+          description: Configured work type name from factory.json for this submitted work item.
+        state:
+          type: string
+          description: Explicit initial state for the submitted work item. Omit this to use the configured initial state for the work type.
+        current_chaining_trace_id:
+          type: string
+          description: Explicit chaining-trace identifier for this submitted work item.
+        previous_chaining_trace_ids:
+          type: array
+          description: Explicit predecessor chaining traces that directly caused this work item.
+          items:
+            type: string
+        trace_id:
+          type: string
+          description: Legacy trace identifier retained for compatibility; prefer current_chaining_trace_id.
+        payload:
+          description: Opaque work payload forwarded as raw JSON, or a binary data, or whatever else. 
+        tags:
+          $ref: '#/components/schemas/StringMap'
+          description: Key-value pairs for storing arbitrary metadata about the work. Both keys and values are strings.
+    Relation:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - source_work_name
+        - target_work_name
+      properties:
+        type:
+          $ref: '#/components/schemas/RelationType'
+        target_work_id:
+          type: string
+        target_work_name:
+          type: string
+        source_work_name:
+          type: string
+        required_state:
+          type: string
+    RelationType:
+      type: string
+      description: Relationship category between two pieces of work.
+      x-enum-varnames:
+        - RelationTypeDependsOn
+        - RelationTypeParentChild
+        - RelationTypeSpawnedBy
+      enum:
+        - DEPENDS_ON
+        - PARENT_CHILD
+        - SPAWNED_BY
+      x-enum-descriptions:
+        - Source work cannot proceed until the target work reaches the required state.
+        - Target work is a child of the source work.
+        - Target work was generated by a workstation handling the source work.

@@ -1,0 +1,11 @@
+type: object
+additionalProperties: false
+properties:
+  durationNanos:
+    type: integer
+    format: int64
+  cost:
+    type: number
+    format: double
+  retryCount:
+    type: integer

@@ -1,0 +1,59 @@
+{
+  "workTypes": [
+    {
+      "name": "plan",
+      "states": [
+        {
+          "name": "ready",
+          "type": "INITIAL"
+        }
+      ]
+    },
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "ready",
+          "type": "INITIAL"
+        },
+        {
+          "name": "matched",
+          "type": "TERMINAL"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "matcher"
+    }
+  ],
+  "workstations": [
+    {
+      "name": "match-items",
+      "worker": "matcher",
+      "inputs": [
+        {
+          "workType": "plan",
+          "state": "ready"
+        },
+        {
+          "workType": "task",
+          "state": "ready",
+          "guards": [
+            {
+              "type": "SAME_NAME",
+              "matchInput": "plan"
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "workType": "task",
+          "state": "matched"
+        }
+      ]
+    }
+  ]
+}

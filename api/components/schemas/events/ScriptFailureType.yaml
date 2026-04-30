@@ -1,0 +1,11 @@
+type: string
+description: Stable failure classification for script responses without a normal process exit code.
+x-enum-varnames:
+  - ScriptFailureTypeTimeout
+  - ScriptFailureTypeProcessError
+enum:
+  - TIMEOUT
+  - PROCESS_ERROR
+x-enum-descriptions:
+  - The command exceeded its execution deadline before returning an exit code.
+  - The command could not be started or was interrupted before returning an exit code.

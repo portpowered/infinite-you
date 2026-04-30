@@ -1,0 +1,253 @@
+[
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-run-request",
+    "type": "RUN_REQUEST",
+    "context": {
+      "sequence": 0,
+      "tick": 0,
+      "eventTime": "2026-04-21T12:00:00Z"
+    },
+    "payload": {
+      "recordedAt": "2026-04-21T12:00:00Z",
+      "factory": {}
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-initial-structure-request",
+    "type": "INITIAL_STRUCTURE_REQUEST",
+    "context": {
+      "sequence": 1,
+      "tick": 0,
+      "eventTime": "2026-04-21T12:00:01Z"
+    },
+    "payload": {
+      "factory": {}
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-work-request",
+    "type": "WORK_REQUEST",
+    "context": {
+      "sequence": 2,
+      "tick": 1,
+      "eventTime": "2026-04-21T12:00:02Z",
+      "requestId": "request-1",
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "type": "FACTORY_REQUEST_BATCH",
+      "works": [
+        {
+          "name": "draft release notes",
+          "work_id": "work-1",
+          "request_id": "request-1",
+          "work_type_name": "task"
+        }
+      ]
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-relationship-change-request",
+    "type": "RELATIONSHIP_CHANGE_REQUEST",
+    "context": {
+      "sequence": 3,
+      "tick": 1,
+      "eventTime": "2026-04-21T12:00:03Z",
+      "requestId": "request-1",
+      "workIds": [
+        "work-1",
+        "work-2"
+      ]
+    },
+    "payload": {
+      "relation": {
+        "type": "DEPENDS_ON",
+        "source_work_name": "publish release notes",
+        "target_work_name": "draft release notes"
+      }
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-dispatch-request",
+    "type": "DISPATCH_REQUEST",
+    "context": {
+      "sequence": 4,
+      "tick": 2,
+      "eventTime": "2026-04-21T12:00:04Z",
+      "dispatchId": "dispatch-1",
+      "requestId": "request-1",
+      "traceIds": [
+        "trace-1"
+      ],
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "transitionId": "transition-1",
+      "inputs": [
+        {
+          "workId": "work-1"
+        }
+      ]
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-inference-request",
+    "type": "INFERENCE_REQUEST",
+    "context": {
+      "sequence": 5,
+      "tick": 2,
+      "eventTime": "2026-04-21T12:00:05Z",
+      "dispatchId": "dispatch-1",
+      "requestId": "request-1",
+      "traceIds": [
+        "trace-1"
+      ],
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "inferenceRequestId": "inference-1",
+      "attempt": 1,
+      "workingDirectory": "/tmp/factory",
+      "worktree": "/tmp/factory/worktree",
+      "prompt": "Draft release notes."
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-inference-response",
+    "type": "INFERENCE_RESPONSE",
+    "context": {
+      "sequence": 6,
+      "tick": 2,
+      "eventTime": "2026-04-21T12:00:06Z",
+      "dispatchId": "dispatch-1",
+      "requestId": "request-1",
+      "traceIds": [
+        "trace-1"
+      ],
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "inferenceRequestId": "inference-1",
+      "attempt": 1,
+      "outcome": "SUCCEEDED",
+      "durationMillis": 125
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-script-request",
+    "type": "SCRIPT_REQUEST",
+    "context": {
+      "sequence": 7,
+      "tick": 2,
+      "eventTime": "2026-04-21T12:00:06.500Z",
+      "dispatchId": "dispatch-script-1",
+      "traceIds": [
+        "trace-1"
+      ],
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "scriptRequestId": "script-request-1",
+      "dispatchId": "dispatch-script-1",
+      "transitionId": "transition-script-1",
+      "attempt": 1,
+      "command": "script-tool",
+      "args": [
+        "--work",
+        "work-1",
+        "--project",
+        "analytics-platform"
+      ]
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-script-response",
+    "type": "SCRIPT_RESPONSE",
+    "context": {
+      "sequence": 8,
+      "tick": 2,
+      "eventTime": "2026-04-21T12:00:06.750Z",
+      "dispatchId": "dispatch-script-1",
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "scriptRequestId": "script-request-1",
+      "dispatchId": "dispatch-script-1",
+      "transitionId": "transition-script-1",
+      "attempt": 1,
+      "outcome": "FAILED_EXIT_CODE",
+      "stdout": "script stdout\n",
+      "stderr": "script stderr\n",
+      "durationMillis": 238,
+      "exitCode": 3
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-dispatch-response",
+    "type": "DISPATCH_RESPONSE",
+    "context": {
+      "sequence": 9,
+      "tick": 3,
+      "eventTime": "2026-04-21T12:00:07Z",
+      "dispatchId": "dispatch-script-1",
+      "workIds": [
+        "work-1"
+      ]
+    },
+    "payload": {
+      "transitionId": "transition-script-1",
+      "outcome": "ACCEPTED"
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-factory-state-response",
+    "type": "FACTORY_STATE_RESPONSE",
+    "context": {
+      "sequence": 10,
+      "tick": 3,
+      "eventTime": "2026-04-21T12:00:08Z"
+    },
+    "payload": {
+      "previousState": "IDLE",
+      "state": "RUNNING",
+      "reason": "work in progress"
+    }
+  },
+  {
+    "schemaVersion": "agent-factory.event.v1",
+    "id": "event-run-response",
+    "type": "RUN_RESPONSE",
+    "context": {
+      "sequence": 11,
+      "tick": 4,
+      "eventTime": "2026-04-21T12:00:09Z"
+    },
+    "payload": {
+      "state": "COMPLETED",
+      "reason": "all work finished"
+    }
+  }
+]

@@ -1,0 +1,73 @@
+{
+  "workTypes": [
+    {
+      "name": "idea",
+      "states": [
+        {
+          "name": "ready",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "design",
+      "states": [
+        {
+          "name": "ready",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "worker-a"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "ready",
+          "workType": "idea"
+        },
+        {
+          "state": "ready",
+          "workType": "design"
+        }
+      ],
+      "name": "merge-review",
+      "onFailure": {
+        "state": "failed",
+        "workType": "idea"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "idea"
+        },
+        {
+          "state": "complete",
+          "workType": "design"
+        }
+      ],
+      "worker": "worker-a"
+    }
+  ]
+}

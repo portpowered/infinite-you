@@ -1,0 +1,84 @@
+{
+  "workTypes": [
+    {
+      "name": "idea",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "prd",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "planner"
+    },
+    {
+      "name": "prd-processor"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "idea"
+        }
+      ],
+      "name": "plan",
+      "onFailure": {
+        "state": "failed",
+        "workType": "idea"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "worker": "planner"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "name": "process-prd",
+      "onFailure": {
+        "state": "failed",
+        "workType": "prd"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "prd"
+        }
+      ],
+      "worker": "prd-processor"
+    }
+  ]
+}

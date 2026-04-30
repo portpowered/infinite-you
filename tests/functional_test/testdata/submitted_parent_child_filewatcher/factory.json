@@ -1,0 +1,110 @@
+{
+  "resources": [
+    {
+      "capacity": 1,
+      "name": "story-slot"
+    }
+  ],
+  "workTypes": [
+    {
+      "name": "story-set",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "waiting",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "story",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "story-worker"
+    },
+    {
+      "name": "story-set-failure-handler"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "process-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "story-slot"
+        }
+      ],
+      "worker": "story-worker"
+    },
+    {
+      "inputs": [
+        {
+          "state": "waiting",
+          "workType": "story-set"
+        },
+        {
+          "guards": [
+            {
+              "parentInput": "story-set",
+              "type": "any_child_failed"
+            }
+          ],
+          "state": "failed",
+          "workType": "story"
+        }
+      ],
+      "name": "fail-story-set-from-child",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "story-set"
+        }
+      ],
+      "worker": "story-set-failure-handler"
+    }
+  ]
+}

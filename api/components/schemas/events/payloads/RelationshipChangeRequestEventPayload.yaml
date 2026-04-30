@@ -1,0 +1,7 @@
+type: object
+additionalProperties: false
+required:
+  - relation
+properties:
+  relation:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/Relation'

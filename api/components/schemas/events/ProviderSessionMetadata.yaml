@@ -1,0 +1,9 @@
+type: object
+additionalProperties: false
+properties:
+  provider:
+    type: string
+  kind:
+    type: string
+  id:
+    type: string

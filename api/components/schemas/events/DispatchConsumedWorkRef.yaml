@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+required:
+  - workId
+description: >-
+  Ordered reference to one consumed work item on a dispatch boundary.
+  Dispatch-request payloads keep only the consumed work identity here; work
+  type, trace, display, and other work facts must be derived from prior
+  WORK_REQUEST events plus FactoryEvent.context.
+properties:
+  workId:
+    type: string
+    description: Canonical work identity for one consumed dispatch input.

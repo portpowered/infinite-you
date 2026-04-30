@@ -1,0 +1,8 @@
+type: object
+additionalProperties: false
+description: Dashboard-facing execution diagnostics that omit raw prompts, command stdin, and command environment values.
+properties:
+  renderedPrompt:
+    $ref: './RenderedPromptDiagnostic.yaml'
+  provider:
+    $ref: './ProviderDiagnostic.yaml'

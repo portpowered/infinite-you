@@ -1,0 +1,71 @@
+{
+  "workTypes": [
+    {
+      "name": "doc",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "processing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "doc"
+        }
+      ],
+      "name": "draft",
+      "onFailure": {
+        "state": "failed",
+        "workType": "doc"
+      },
+      "outputs": [
+        {
+          "state": "processing",
+          "workType": "doc"
+        }
+      ],
+      "worker": "drafter"
+    },
+    {
+      "inputs": [
+        {
+          "state": "processing",
+          "workType": "doc"
+        }
+      ],
+      "name": "approve",
+      "onFailure": {
+        "state": "failed",
+        "workType": "doc"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "doc"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "doc"
+        }
+      ],
+      "worker": "approver"
+    }
+  ]
+}

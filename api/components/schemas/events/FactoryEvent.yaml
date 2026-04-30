@@ -1,0 +1,42 @@
+type: object
+additionalProperties: false
+description: >-
+  Versioned Agent Factory event message. This is the intended canonical
+  schema for customer event streams, history projection, record/replay
+  artifacts, and runtime diagnostics. New fields use camelCase even when
+  older REST resource schemas still contain legacy snake_case fields.
+required:
+  - schemaVersion
+  - id
+  - type
+  - context
+  - payload
+properties:
+  schemaVersion:
+    type: string
+    description: Version of the factory event envelope schema.
+    enum:
+      - agent-factory.event.v1
+    x-enum-descriptions:
+      - Initial unified Agent Factory event schema.
+  id:
+    type: string
+    description: Stable event identifier. Record/replay artifacts must preserve this value.
+  type:
+    $ref: ./FactoryEventType.yaml
+  context:
+    $ref: ./FactoryEventContext.yaml
+  payload:
+    oneOf:
+      - $ref: ./payloads/RunRequestEventPayload.yaml
+      - $ref: ./payloads/InitialStructureRequestEventPayload.yaml
+      - $ref: ./payloads/WorkRequestEventPayload.yaml
+      - $ref: ./payloads/RelationshipChangeRequestEventPayload.yaml
+      - $ref: ./payloads/DispatchRequestEventPayload.yaml
+      - $ref: ./payloads/InferenceRequestEventPayload.yaml
+      - $ref: ./payloads/InferenceResponseEventPayload.yaml
+      - $ref: ./payloads/ScriptRequestEventPayload.yaml
+      - $ref: ./payloads/ScriptResponseEventPayload.yaml
+      - $ref: ./payloads/DispatchResponseEventPayload.yaml
+      - $ref: ./payloads/FactoryStateResponseEventPayload.yaml
+      - $ref: ./payloads/RunResponseEventPayload.yaml

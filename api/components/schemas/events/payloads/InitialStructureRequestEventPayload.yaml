@@ -1,0 +1,14 @@
+type: object
+additionalProperties: false
+required:
+  - factory
+description: Runtime topology snapshot before work moves.
+properties:
+  factory:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/Factory'
+  workflowId:
+    type: string
+  sourceDirectory:
+    type: string
+  metadata:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/StringMap'

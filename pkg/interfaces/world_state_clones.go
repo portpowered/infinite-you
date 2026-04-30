@@ -1,0 +1,196 @@
+package interfaces
+
+// CloneProviderSessionMetadata returns a detached copy of canonical provider
+// session metadata.
+func CloneProviderSessionMetadata(session *ProviderSessionMetadata) *ProviderSessionMetadata {
+	if session == nil {
+		return nil
+	}
+	clone := *session
+	return &clone
+}
+
+// CloneProviderFailureMetadata returns a detached copy of canonical provider
+// failure metadata.
+func CloneProviderFailureMetadata(failure *ProviderFailureMetadata) *ProviderFailureMetadata {
+	if failure == nil {
+		return nil
+	}
+	clone := *failure
+	return &clone
+}
+
+// CloneSafeWorkDiagnostics returns a detached copy of the canonical safe
+// diagnostics boundary.
+func CloneSafeWorkDiagnostics(diagnostics *SafeWorkDiagnostics) *SafeWorkDiagnostics {
+	if diagnostics == nil {
+		return nil
+	}
+	return &SafeWorkDiagnostics{
+		RenderedPrompt: cloneSafeRenderedPromptDiagnostic(diagnostics.RenderedPrompt),
+		Provider:       cloneSafeProviderDiagnostic(diagnostics.Provider),
+	}
+}
+
+// CloneFactoryWorldDispatchCompletion returns a detached copy of one canonical
+// selected-tick dispatch completion record.
+func CloneFactoryWorldDispatchCompletion(completion FactoryWorldDispatchCompletion) FactoryWorldDispatchCompletion {
+	clone := completion
+	clone.Result.ProviderFailure = CloneProviderFailureMetadata(completion.Result.ProviderFailure)
+	clone.WorkItemIDs = cloneStringSlice(completion.WorkItemIDs)
+	clone.ConsumedInputs = cloneWorkstationInputs(completion.ConsumedInputs)
+	clone.InputWorkItems = cloneFactoryWorkItems(completion.InputWorkItems)
+	clone.OutputWorkItems = cloneFactoryWorkItems(completion.OutputWorkItems)
+	clone.PreviousChainingTraceIDs = cloneStringSlice(completion.PreviousChainingTraceIDs)
+	clone.TraceIDs = cloneStringSlice(completion.TraceIDs)
+	clone.ProviderSession = CloneProviderSessionMetadata(completion.ProviderSession)
+	clone.Diagnostics = CloneSafeWorkDiagnostics(completion.Diagnostics)
+	clone.TerminalWork = cloneFactoryTerminalWork(completion.TerminalWork)
+	return clone
+}
+
+// CloneFactoryWorldProviderSessionRecord returns a detached copy of one
+// canonical selected-tick provider-session record.
+func CloneFactoryWorldProviderSessionRecord(record FactoryWorldProviderSessionRecord) FactoryWorldProviderSessionRecord {
+	clone := record
+	clone.ProviderSession = *CloneProviderSessionMetadata(&record.ProviderSession)
+	clone.Diagnostics = CloneSafeWorkDiagnostics(record.Diagnostics)
+	clone.WorkItemIDs = cloneStringSlice(record.WorkItemIDs)
+	clone.ConsumedInputs = cloneWorkstationInputs(record.ConsumedInputs)
+	clone.PreviousChainingTraceIDs = cloneStringSlice(record.PreviousChainingTraceIDs)
+	clone.TraceIDs = cloneStringSlice(record.TraceIDs)
+	return clone
+}
+
+// CloneFactoryWorldInferenceAttemptsByDispatchID returns a detached copy of
+// selected-tick inference attempts keyed by dispatch and request ID.
+func CloneFactoryWorldInferenceAttemptsByDispatchID(
+	attemptsByDispatchID map[string]map[string]FactoryWorldInferenceAttempt,
+) map[string]map[string]FactoryWorldInferenceAttempt {
+	if len(attemptsByDispatchID) == 0 {
+		return nil
+	}
+	clone := make(map[string]map[string]FactoryWorldInferenceAttempt, len(attemptsByDispatchID))
+	for dispatchID, attempts := range attemptsByDispatchID {
+		if len(attempts) == 0 {
+			continue
+		}
+		clone[dispatchID] = make(map[string]FactoryWorldInferenceAttempt, len(attempts))
+		for requestID, attempt := range attempts {
+			clone[dispatchID][requestID] = cloneFactoryWorldInferenceAttempt(attempt)
+		}
+	}
+	if len(clone) == 0 {
+		return nil
+	}
+	return clone
+}
+
+// CloneWorkstationInputs returns a detached copy of canonical workstation
+// inputs for selected-tick runtime projections.
+func CloneWorkstationInputs(inputs []WorkstationInput) []WorkstationInput {
+	return cloneWorkstationInputs(inputs)
+}
+
+func cloneSafeRenderedPromptDiagnostic(diagnostic *SafeRenderedPromptDiagnostic) *SafeRenderedPromptDiagnostic {
+	if diagnostic == nil {
+		return nil
+	}
+	return &SafeRenderedPromptDiagnostic{
+		SystemPromptHash: diagnostic.SystemPromptHash,
+		UserMessageHash:  diagnostic.UserMessageHash,
+		Variables:        cloneStringMap(diagnostic.Variables),
+	}
+}
+
+func cloneSafeProviderDiagnostic(diagnostic *SafeProviderDiagnostic) *SafeProviderDiagnostic {
+	if diagnostic == nil {
+		return nil
+	}
+	return &SafeProviderDiagnostic{
+		Provider:         diagnostic.Provider,
+		Model:            diagnostic.Model,
+		RequestMetadata:  cloneStringMap(diagnostic.RequestMetadata),
+		ResponseMetadata: cloneStringMap(diagnostic.ResponseMetadata),
+	}
+}
+
+func cloneFactoryWorldInferenceAttempt(attempt FactoryWorldInferenceAttempt) FactoryWorldInferenceAttempt {
+	clone := attempt
+	clone.ExitCode = cloneIntPtr(attempt.ExitCode)
+	clone.ProviderSession = CloneProviderSessionMetadata(attempt.ProviderSession)
+	clone.Diagnostics = CloneSafeWorkDiagnostics(attempt.Diagnostics)
+	return clone
+}
+
+func cloneFactoryTerminalWork(terminalWork *FactoryTerminalWork) *FactoryTerminalWork {
+	if terminalWork == nil {
+		return nil
+	}
+	clone := *terminalWork
+	clone.WorkItem.PreviousChainingTraceIDs = cloneStringSlice(terminalWork.WorkItem.PreviousChainingTraceIDs)
+	clone.WorkItem.Tags = cloneStringMap(terminalWork.WorkItem.Tags)
+	return &clone
+}
+
+func cloneFactoryWorkItems(items []FactoryWorkItem) []FactoryWorkItem {
+	if len(items) == 0 {
+		return nil
+	}
+	clone := make([]FactoryWorkItem, len(items))
+	for i, item := range items {
+		clone[i] = item
+		clone[i].PreviousChainingTraceIDs = cloneStringSlice(item.PreviousChainingTraceIDs)
+		clone[i].Tags = cloneStringMap(item.Tags)
+	}
+	return clone
+}
+
+func cloneWorkstationInputs(inputs []WorkstationInput) []WorkstationInput {
+	if len(inputs) == 0 {
+		return nil
+	}
+	clone := make([]WorkstationInput, len(inputs))
+	for i, input := range inputs {
+		clone[i] = input
+		if input.WorkItem != nil {
+			item := *input.WorkItem
+			item.PreviousChainingTraceIDs = cloneStringSlice(item.PreviousChainingTraceIDs)
+			item.Tags = cloneStringMap(item.Tags)
+			clone[i].WorkItem = &item
+		}
+		if input.Resource != nil {
+			resource := *input.Resource
+			clone[i].Resource = &resource
+		}
+	}
+	return clone
+}
+
+func cloneStringMap(values map[string]string) map[string]string {
+	if values == nil {
+		return nil
+	}
+	clone := make(map[string]string, len(values))
+	for key, value := range values {
+		clone[key] = value
+	}
+	return clone
+}
+
+func cloneStringSlice(values []string) []string {
+	if len(values) == 0 {
+		return nil
+	}
+	clone := make([]string, len(values))
+	copy(clone, values)
+	return clone
+}
+
+func cloneIntPtr(value *int) *int {
+	if value == nil {
+		return nil
+	}
+	clone := *value
+	return &clone
+}

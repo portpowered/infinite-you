@@ -1,0 +1,80 @@
+{
+  "workTypes": [
+    {
+      "name": "request",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "review",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "request"
+        }
+      ],
+      "name": "handle-request",
+      "onFailure": {
+        "state": "failed",
+        "workType": "request"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "request"
+        }
+      ],
+      "worker": "request-handler"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "review"
+        }
+      ],
+      "name": "handle-review",
+      "onFailure": {
+        "state": "failed",
+        "workType": "review"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "review"
+        }
+      ],
+      "worker": "review-handler"
+    }
+  ]
+}

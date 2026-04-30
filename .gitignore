@@ -1,0 +1,4 @@
+bin/
+.playwright-mcp/
+tests/adhoc/.playwright-mcp/
+*.png

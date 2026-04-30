@@ -1,0 +1,15 @@
+type: object
+additionalProperties: false
+required:
+  - recordedAt
+  - factory
+properties:
+  recordedAt:
+    type: string
+    format: date-time
+  factory:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/Factory'
+  wallClock:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/WallClock'
+  diagnostics:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/Diagnostics'

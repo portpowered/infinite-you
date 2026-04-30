@@ -1,0 +1,80 @@
+{
+  "workTypes": [
+    {
+      "name": "story",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "executing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "executor"
+    },
+    {
+      "name": "reviewer"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "execute-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "worker": "executor",
+      "worktree": "{{ index (index .Inputs 0).Tags \"worktree_path\" }}"
+    },
+    {
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "name": "review-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "story"
+        }
+      ],
+      "worker": "reviewer"
+    }
+  ]
+}

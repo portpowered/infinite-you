@@ -1,0 +1,158 @@
+{
+  "resources": [
+    {
+      "capacity": 5,
+      "name": "agent-slot"
+    }
+  ],
+  "workTypes": [
+    {
+      "name": "story",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "executor"
+    },
+    {
+      "name": "reviewer"
+    }
+  ],
+  "workstations": [
+    {
+      "env": {
+        "AGENT_FACTORY_BRANCH": "{{ index (index .Inputs 0).Tags \"branch\" }}",
+        "AGENT_FACTORY_WORK_ID": "{{ (index .Inputs 0).WorkID }}"
+      },
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "kind": "repeater",
+      "name": "execute-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "executor",
+      "workingDirectory": "{{ index (index .Inputs 0).Tags \"worktree\" }}",
+      "worktree": ".worktrees/{{ index (index .Inputs 0).Tags \"branch\" }}/{{ (index .Inputs 0).WorkID }}"
+    },
+    {
+      "env": {
+        "AGENT_FACTORY_BRANCH": "{{ index (index .Inputs 0).Tags \"branch\" }}",
+        "AGENT_FACTORY_WORK_ID": "{{ (index .Inputs 0).WorkID }}"
+      },
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "kind": "standard",
+      "name": "review-story",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "story"
+        }
+      ],
+      "resources": [
+        {
+          "capacity": 1,
+          "name": "agent-slot"
+        }
+      ],
+      "worker": "reviewer",
+      "workingDirectory": "{{ index (index .Inputs 0).Tags \"worktree\" }}"
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 50,
+          "type": "visit_count",
+          "workstation": "execute-story"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "executor-loop-breaker",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "story"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 3,
+          "type": "visit_count",
+          "workstation": "review-story"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "review-loop-breaker",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "story"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+type: object
+additionalProperties: false
+description: >-
+  Optional non-identity dispatch metadata retained on dispatch-request events.
+  Request, trace, work, and dispatch identity must remain on
+  FactoryEvent.context rather than reappearing here.
+properties:
+  replayKey:
+    type: string
+    description: Stable replay correlation key for recorded dispatch reconstruction.

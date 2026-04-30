@@ -1,0 +1,148 @@
+{
+  "workTypes": [
+    {
+      "name": "chapter",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "processing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "page",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "parser"
+    },
+    {
+      "name": "processor"
+    },
+    {
+      "name": "completer"
+    },
+    {
+      "name": "failure-handler"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "chapter"
+        }
+      ],
+      "name": "chapter-parser",
+      "outputs": [
+        {
+          "state": "processing",
+          "workType": "chapter"
+        }
+      ],
+      "worker": "parser"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "page"
+        }
+      ],
+      "name": "page-processor",
+      "onFailure": {
+        "state": "failed",
+        "workType": "page"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "page"
+        }
+      ],
+      "worker": "processor"
+    },
+    {
+      "inputs": [
+        {
+          "state": "processing",
+          "workType": "chapter"
+        },
+        {
+          "guards": [
+            {
+              "parentInput": "chapter",
+              "spawnedBy": "chapter-parser",
+              "type": "all_children_complete"
+            }
+          ],
+          "state": "complete",
+          "workType": "page"
+        }
+      ],
+      "name": "chapter-complete",
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "chapter"
+        }
+      ],
+      "worker": "completer"
+    },
+    {
+      "inputs": [
+        {
+          "state": "processing",
+          "workType": "chapter"
+        },
+        {
+          "guards": [
+            {
+              "parentInput": "chapter",
+              "spawnedBy": "chapter-parser",
+              "type": "any_child_failed"
+            }
+          ],
+          "state": "failed",
+          "workType": "page"
+        }
+      ],
+      "name": "chapter-failed",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "chapter"
+        }
+      ],
+      "worker": "failure-handler"
+    }
+  ]
+}

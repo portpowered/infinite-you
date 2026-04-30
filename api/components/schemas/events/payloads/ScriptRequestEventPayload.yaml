@@ -1,0 +1,33 @@
+type: object
+additionalProperties: false
+required:
+  - scriptRequestId
+  - dispatchId
+  - transitionId
+  - attempt
+  - command
+  - args
+description: >-
+  Request details captured immediately before a script-backed worker invokes
+  a concrete command. Raw environment values and raw stdin content are
+  intentionally excluded from the public script event contract.
+properties:
+  scriptRequestId:
+    type: string
+    description: Stable identifier correlating this script request with its response.
+  dispatchId:
+    type: string
+  transitionId:
+    type: string
+  attempt:
+    type: integer
+    minimum: 1
+    description: One-based script attempt number for this dispatch.
+  command:
+    type: string
+    description: Concrete command name executed for this script attempt.
+  args:
+    type: array
+    description: Fully resolved command arguments passed to the script command runner.
+    items:
+      type: string

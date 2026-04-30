@@ -1,0 +1,110 @@
+{
+  "workTypes": [
+    {
+      "name": "story",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "executing",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "env": {
+        "ITERATION_ID": "{{ index (index .Inputs 0).Tags \"iteration_id\" }}",
+        "REPO": "{{ index (index .Inputs 0).Tags \"repo\" }}"
+      },
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "kind": "repeater",
+      "name": "executor",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "type": "MODEL_WORKSTATION",
+      "worker": "executor-worker",
+      "workingDirectory": "/workspaces/{{ index (index .Inputs 0).Tags \"repo\" }}/{{ index (index .Inputs 0).Tags \"branch\" }}"
+    },
+    {
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "story"
+        }
+      ],
+      "name": "reviewer",
+      "onFailure": {
+        "state": "failed",
+        "workType": "story"
+      },
+      "onRejection": {
+        "state": "init",
+        "workType": "story"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "story"
+        }
+      ],
+      "worker": "reviewer-worker"
+    },
+    {
+      "guards": [
+        {
+          "maxVisits": 3,
+          "type": "visit_count",
+          "workstation": "reviewer"
+        }
+      ],
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "story"
+        }
+      ],
+      "name": "reviewer-loop-breaker",
+      "outputs": [
+        {
+          "state": "failed",
+          "workType": "story"
+        }
+      ],
+      "type": "LOGICAL_MOVE",
+      "worker": ""
+    }
+  ]
+}

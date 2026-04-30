@@ -1,0 +1,147 @@
+{
+  "workTypes": [
+    {
+      "name": "idea",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "prd",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "code-change",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "approved",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "archived",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "planner"
+    },
+    {
+      "name": "executor"
+    },
+    {
+      "name": "reviewer"
+    },
+    {
+      "name": "archiver"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "idea"
+        }
+      ],
+      "name": "plan",
+      "onFailure": {
+        "state": "failed",
+        "workType": "idea"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "worker": "planner"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "prd"
+        }
+      ],
+      "name": "execute",
+      "onFailure": {
+        "state": "failed",
+        "workType": "prd"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "code-change"
+        }
+      ],
+      "worker": "executor"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "code-change"
+        }
+      ],
+      "name": "review",
+      "onFailure": {
+        "state": "failed",
+        "workType": "code-change"
+      },
+      "outputs": [
+        {
+          "state": "approved",
+          "workType": "code-change"
+        }
+      ],
+      "worker": "reviewer"
+    },
+    {
+      "inputs": [
+        {
+          "state": "approved",
+          "workType": "code-change"
+        }
+      ],
+      "name": "archive-gate",
+      "onFailure": {
+        "state": "failed",
+        "workType": "code-change"
+      },
+      "outputs": [
+        {
+          "state": "archived",
+          "workType": "code-change"
+        }
+      ],
+      "worker": "archiver"
+    }
+  ]
+}

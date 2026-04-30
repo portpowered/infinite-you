@@ -1,0 +1,9 @@
+type: object
+additionalProperties: false
+properties:
+  systemPromptHash:
+    type: string
+  userMessageHash:
+    type: string
+  variables:
+    $ref: '../../../openapi-main.yaml#/components/schemas/StringMap'

@@ -1,0 +1,91 @@
+{
+  "workTypes": [
+    {
+      "name": "code-change",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "in-review",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "resolving-conflicts",
+          "type": "PROCESSING"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "code-change"
+        }
+      ],
+      "name": "coding",
+      "onFailure": {
+        "state": "failed",
+        "workType": "code-change"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "code-change"
+        }
+      ],
+      "worker": "swe"
+    },
+    {
+      "inputs": [
+        {
+          "state": "in-review",
+          "workType": "code-change"
+        }
+      ],
+      "name": "review",
+      "onFailure": {
+        "state": "resolving-conflicts",
+        "workType": "code-change"
+      },
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "code-change"
+        }
+      ],
+      "worker": "reviewer"
+    },
+    {
+      "inputs": [
+        {
+          "state": "resolving-conflicts",
+          "workType": "code-change"
+        }
+      ],
+      "name": "resolve-conflicts",
+      "onFailure": {
+        "state": "failed",
+        "workType": "code-change"
+      },
+      "outputs": [
+        {
+          "state": "in-review",
+          "workType": "code-change"
+        }
+      ],
+      "worker": "conflict-resolver"
+    }
+  ]
+}

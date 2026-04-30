@@ -1,0 +1,42 @@
+type: object
+additionalProperties: false
+required:
+  - inferenceRequestId
+  - attempt
+  - outcome
+  - durationMillis
+description: >-
+  Response details captured after a model-worker provider attempt returns,
+  including success and failure outcomes correlated to the request event.
+  FactoryEvent.context owns dispatch identity, and the matching dispatch
+  request owns the transition identifier for this provider attempt. Safe
+  provider diagnostics and provider-session identifiers stay on this
+  provider-boundary event instead of being copied onto DispatchResponse.
+properties:
+  inferenceRequestId:
+    type: string
+    description: Identifier from the matching inference request event.
+  attempt:
+    type: integer
+    minimum: 1
+    description: One-based provider attempt number for this dispatch.
+  outcome:
+    $ref: '../InferenceOutcome.yaml'
+  response:
+    type: string
+    description: Provider response text when present.
+  durationMillis:
+    type: integer
+    format: int64
+    minimum: 0
+    description: Provider call duration in milliseconds.
+  providerSession:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/ProviderSessionMetadata'
+  diagnostics:
+    $ref: '../../../../openapi-main.yaml#/components/schemas/SafeWorkDiagnostics'
+  exitCode:
+    type: integer
+    description: Process exit code when the provider failure exposes one.
+  errorClass:
+    type: string
+    description: Stable failure classification when available.

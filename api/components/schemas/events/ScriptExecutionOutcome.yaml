@@ -1,0 +1,17 @@
+type: string
+description: Result category returned by one public script execution boundary.
+x-enum-varnames:
+  - ScriptExecutionOutcomeSucceeded
+  - ScriptExecutionOutcomeFailedExitCode
+  - ScriptExecutionOutcomeTimedOut
+  - ScriptExecutionOutcomeProcessError
+enum:
+  - SUCCEEDED
+  - FAILED_EXIT_CODE
+  - TIMED_OUT
+  - PROCESS_ERROR
+x-enum-descriptions:
+  - The command started and exited with code 0.
+  - The command started and exited with a non-zero status code.
+  - The command did not finish before the execution timeout expired.
+  - The command failed before returning a normal process exit code.

@@ -1,0 +1,113 @@
+{
+  "workTypes": [
+    {
+      "name": "request",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        },
+        {
+          "name": "failed",
+          "type": "FAILED"
+        }
+      ]
+    },
+    {
+      "name": "plan",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        }
+      ]
+    },
+    {
+      "name": "task",
+      "states": [
+        {
+          "name": "init",
+          "type": "INITIAL"
+        },
+        {
+          "name": "complete",
+          "type": "TERMINAL"
+        }
+      ]
+    }
+  ],
+  "workers": [
+    {
+      "name": "planner-worker"
+    },
+    {
+      "name": "finisher-worker"
+    }
+  ],
+  "workstations": [
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "request"
+        }
+      ],
+      "name": "planner",
+      "onFailure": {
+        "state": "failed",
+        "workType": "request"
+      },
+      "outputs": [
+        {
+          "state": "init",
+          "workType": "plan"
+        },
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "worker": "planner-worker"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "plan"
+        }
+      ],
+      "name": "plan-finisher",
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "plan"
+        }
+      ],
+      "worker": "finisher-worker"
+    },
+    {
+      "inputs": [
+        {
+          "state": "init",
+          "workType": "task"
+        }
+      ],
+      "name": "task-finisher",
+      "outputs": [
+        {
+          "state": "complete",
+          "workType": "task"
+        }
+      ],
+      "worker": "finisher-worker"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+properties:
+  renderedPrompt:
+    $ref: './RenderedPromptDiagnostic.yaml'
+  provider:
+    $ref: './ProviderDiagnostic.yaml'
+  command:
+    $ref: '../../../openapi-main.yaml#/components/schemas/CommandDiagnostic'
+  panic:
+    $ref: '../../../openapi-main.yaml#/components/schemas/PanicDiagnostic'
+  metadata:
+    $ref: '../../../openapi-main.yaml#/components/schemas/StringMap'

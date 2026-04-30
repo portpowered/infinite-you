@@ -1,0 +1,220 @@
+{
+  "events": [
+    {
+      "context": {
+        "eventTime": "2026-04-19T08:00:00Z",
+        "sequence": 0,
+        "tick": 0
+      },
+      "id": "factory-event/run-started",
+      "payload": {
+        "factory": {
+          "factoryDir": "fixtures/inference-events",
+          "resources": [],
+          "workTypes": [
+            {
+              "name": "task",
+              "states": [
+                {
+                  "name": "init",
+                  "type": "INITIAL"
+                },
+                {
+                  "name": "complete",
+                  "type": "TERMINAL"
+                }
+              ]
+            }
+          ],
+          "workers": [
+            {
+              "model": "test-model",
+              "name": "worker-a",
+              "type": "MODEL_WORKER"
+            }
+          ],
+          "workstations": [
+            {
+              "id": "process",
+              "inputs": [
+                {
+                  "state": "init",
+                  "workType": "task"
+                }
+              ],
+              "name": "process",
+              "outputs": [
+                {
+                  "state": "complete",
+                  "workType": "task"
+                }
+              ],
+              "promptTemplate": "Process {{ .WorkID }}.",
+              "type": "MODEL_WORKSTATION",
+              "worker": "worker-a"
+            }
+          ]
+        },
+        "recordedAt": "2026-04-19T08:00:00Z",
+        "wallClock": {
+          "startedAt": "2026-04-19T08:00:00Z"
+        }
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "RUN_REQUEST"
+    },
+    {
+      "context": {
+        "eventTime": "2026-04-19T08:00:01Z",
+        "requestId": "request-fixture-1",
+        "sequence": 1,
+        "source": "api",
+        "tick": 1,
+        "traceIds": [
+          "trace-fixture-1"
+        ],
+        "workIds": [
+          "work-fixture-1"
+        ]
+      },
+      "id": "factory-event/work-request/request-fixture-1",
+      "payload": {
+        "source": "api",
+        "type": "FACTORY_REQUEST_BATCH",
+        "works": [
+          {
+            "name": "Replay inference fixture",
+            "payload": {
+              "title": "replay inference fixture"
+            },
+            "request_id": "request-fixture-1",
+            "trace_id": "trace-fixture-1",
+            "workId": "work-fixture-1",
+            "work_type_name": "task"
+          }
+        ]
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "WORK_REQUEST"
+    },
+    {
+      "context": {
+        "dispatchId": "dispatch-fixture-1",
+        "eventTime": "2026-04-19T08:00:02Z",
+        "requestId": "request-fixture-1",
+        "sequence": 2,
+        "tick": 2,
+        "traceIds": [
+          "trace-fixture-1"
+        ],
+        "workIds": [
+          "work-fixture-1"
+        ]
+      },
+      "id": "factory-event/dispatch-created/dispatch-fixture-1",
+      "payload": {
+        "inputs": [
+          {
+            "name": "Replay inference fixture",
+            "trace_id": "trace-fixture-1",
+            "workId": "work-fixture-1",
+            "work_type_name": "task"
+          }
+        ],
+        "metadata": {
+          "replayKey": "process/work-fixture-1"
+        },
+        "transitionId": "process"
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "DISPATCH_REQUEST"
+    },
+    {
+      "context": {
+        "dispatchId": "dispatch-fixture-1",
+        "eventTime": "2026-04-19T08:00:02Z",
+        "requestId": "request-fixture-1",
+        "sequence": 3,
+        "tick": 2,
+        "traceIds": [
+          "trace-fixture-1"
+        ],
+        "workIds": [
+          "work-fixture-1"
+        ]
+      },
+      "id": "factory-event/inference-request/inference-request-fixture-1",
+      "payload": {
+        "attempt": 1,
+        "inferenceRequestId": "inference-request-fixture-1",
+        "prompt": "Process work-fixture-1.",
+        "workingDirectory": "/workspace/project",
+        "worktree": "/workspace/project/.worktrees/fixture"
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "INFERENCE_REQUEST"
+    },
+    {
+      "context": {
+        "dispatchId": "dispatch-fixture-1",
+        "eventTime": "2026-04-19T08:00:03Z",
+        "requestId": "request-fixture-1",
+        "sequence": 4,
+        "tick": 2,
+        "traceIds": [
+          "trace-fixture-1"
+        ],
+        "workIds": [
+          "work-fixture-1"
+        ]
+      },
+      "id": "factory-event/inference-response/inference-request-fixture-1",
+      "payload": {
+        "attempt": 1,
+        "durationMillis": 125,
+        "inferenceRequestId": "inference-request-fixture-1",
+        "outcome": "SUCCEEDED",
+        "response": "fixture provider response"
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "INFERENCE_RESPONSE"
+    },
+    {
+      "context": {
+        "dispatchId": "dispatch-fixture-1",
+        "eventTime": "2026-04-19T08:00:04Z",
+        "sequence": 5,
+        "tick": 3
+      },
+      "id": "factory-event/dispatch-completed/dispatch-fixture-1",
+      "payload": {
+        "completionId": "completion-fixture-1",
+        "outcome": "ACCEPTED",
+        "output": "fixture provider response",
+        "transitionId": "process"
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "DISPATCH_RESPONSE"
+    },
+    {
+      "context": {
+        "eventTime": "2026-04-19T08:00:05Z",
+        "sequence": 6,
+        "tick": 3
+      },
+      "id": "factory-event/run-finished",
+      "payload": {
+        "state": "COMPLETED",
+        "wallClock": {
+          "finishedAt": "2026-04-19T08:00:05Z",
+          "startedAt": "2026-04-19T08:00:00Z"
+        }
+      },
+      "schemaVersion": "agent-factory.event.v1",
+      "type": "RUN_RESPONSE"
+    }
+  ],
+  "recordedAt": "2026-04-19T08:00:00Z",
+  "schemaVersion": "agent-factory.replay.v1"
+}
+

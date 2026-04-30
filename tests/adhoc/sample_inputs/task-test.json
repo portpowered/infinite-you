@@ -1,0 +1,13 @@
+{
+  "request_id": "sample-prd",
+  "type": "FACTORY_REQUEST_BATCH",
+  "works": [
+    { "work_type_name": "task", "name": "US-001", "tags": { } },
+    { "work_type_name": "task", "name": "US-002", "tags": { } },
+    { "work_type_name": "task", "name": "US-003", "tags": { } }
+  ],
+  "relations": [
+    { "type": "DEPENDS_ON", "source_work_name": "US-002", "target_work_name": "US-001" },
+    { "type": "DEPENDS_ON", "source_work_name": "US-003", "target_work_name": "US-002" }
+  ]
+}

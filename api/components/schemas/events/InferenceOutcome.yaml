@@ -1,0 +1,11 @@
+type: string
+description: Result category returned by a provider inference attempt.
+x-enum-varnames:
+  - InferenceOutcomeSucceeded
+  - InferenceOutcomeFailed
+enum:
+  - SUCCEEDED
+  - FAILED
+x-enum-descriptions:
+  - The provider attempt returned a successful response.
+  - The provider attempt failed before returning a successful response.
