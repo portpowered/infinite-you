@@ -251,6 +251,133 @@ func TestMatchesFieldsGuard_ThreeInputNestedTagMismatchRejectsCandidateSet(t *te
 	assertMatchesFieldsHarnessBlocked(t, h, provider, []string{"first:ready", "second:ready", "third:ready"}, "triple:matched")
 }
 
+func TestMatchesFieldsGuard_IntegrationSmoke_GroupedExecution(t *testing.T) {
+	t.Run("matching pair dispatches through normal path", func(t *testing.T) {
+		dir := testutil.CopyFixtureDir(t, fixtureDir(t, "matches_fields_pair_guard_dir"))
+		assertMatchesFieldsPairFixtureContract(t, dir)
+
+		provider := testutil.NewMockProvider(interfaces.InferenceResponse{Content: "pair COMPLETE"})
+		h := testutil.NewServiceTestHarness(t, dir,
+			testutil.WithProvider(provider),
+			testutil.WithFullWorkerPoolAndScriptWrap(),
+		)
+
+		h.SubmitFull(context.Background(), []interfaces.SubmitRequest{{
+			Name:       "draft-alpha",
+			WorkTypeID: "draft",
+			TraceID:    "trace-integration-match-draft",
+			Tags:       map[string]string{"flavor": "vanilla"},
+		}})
+		h.SubmitFull(context.Background(), []interfaces.SubmitRequest{{
+			Name:       "review-beta",
+			WorkTypeID: "review",
+			TraceID:    "trace-integration-match-review",
+			Tags:       map[string]string{"flavor": "vanilla"},
+		}})
+
+		h.RunUntilComplete(t, 10*time.Second)
+
+		h.Assert().
+			PlaceTokenCount("pair:matched", 1).
+			HasNoTokenInPlace("draft:ready").
+			HasNoTokenInPlace("review:ready")
+
+		if provider.CallCount() != 1 {
+			t.Fatalf("expected one matcher dispatch, got %d", provider.CallCount())
+		}
+
+		events, err := h.GetFactoryEvents(context.Background())
+		if err != nil {
+			t.Fatalf("GetFactoryEvents: %v", err)
+		}
+		if got := countFactoryEvents(events, factoryapi.FactoryEventTypeDispatchRequest); got != 1 {
+			t.Fatalf("DISPATCH_REQUEST events = %d, want 1", got)
+		}
+		if got := countFactoryEvents(events, factoryapi.FactoryEventTypeDispatchResponse); got != 1 {
+			t.Fatalf("DISPATCH_RESPONSE events = %d, want 1", got)
+		}
+	})
+
+	t.Run("mismatched pair is rejected before dispatch", func(t *testing.T) {
+		dir := testutil.CopyFixtureDir(t, fixtureDir(t, "matches_fields_pair_guard_dir"))
+		assertMatchesFieldsPairFixtureContract(t, dir)
+
+		provider := testutil.NewMockProvider(interfaces.InferenceResponse{Content: "pair COMPLETE"})
+		h := testutil.NewServiceTestHarness(t, dir,
+			testutil.WithProvider(provider),
+			testutil.WithFullWorkerPoolAndScriptWrap(),
+		)
+
+		h.SubmitFull(context.Background(), []interfaces.SubmitRequest{{
+			Name:       "draft-alpha",
+			WorkTypeID: "draft",
+			TraceID:    "trace-integration-mismatch-draft",
+			Tags:       map[string]string{"flavor": "vanilla"},
+		}})
+		h.SubmitFull(context.Background(), []interfaces.SubmitRequest{{
+			Name:       "review-beta",
+			WorkTypeID: "review",
+			TraceID:    "trace-integration-mismatch-review",
+			Tags:       map[string]string{"flavor": "chocolate"},
+		}})
+
+		assertMatchesFieldsHarnessBlocked(t, h, provider, []string{"draft:ready", "review:ready"}, "pair:matched")
+
+		events, err := h.GetFactoryEvents(context.Background())
+		if err != nil {
+			t.Fatalf("GetFactoryEvents: %v", err)
+		}
+		if got := countFactoryEvents(events, factoryapi.FactoryEventTypeDispatchRequest); got != 0 {
+			t.Fatalf("DISPATCH_REQUEST events = %d, want 0", got)
+		}
+		if got := countFactoryEvents(events, factoryapi.FactoryEventTypeDispatchResponse); got != 0 {
+			t.Fatalf("DISPATCH_RESPONSE events = %d, want 0", got)
+		}
+	})
+}
+
+func assertMatchesFieldsPairFixtureContract(t *testing.T, dir string) {
+	t.Helper()
+
+	factoryJSON, err := os.ReadFile(filepath.Join(dir, interfaces.FactoryConfigFile))
+	if err != nil {
+		t.Fatalf("read factory.json: %v", err)
+	}
+	generated, err := config.GeneratedFactoryFromOpenAPIJSON(factoryJSON)
+	if err != nil {
+		t.Fatalf("GeneratedFactoryFromOpenAPIJSON: %v", err)
+	}
+	if generated.Workstations == nil || len(*generated.Workstations) != 1 {
+		t.Fatalf("generated workstations = %#v, want one guarded workstation", generated.Workstations)
+	}
+
+	guard := (*generated.Workstations)[0].Guards
+	if guard == nil || len(*guard) != 1 {
+		t.Fatalf("generated workstation guards = %#v, want one guard", guard)
+	}
+	if (*guard)[0].Type != factoryapi.WorkstationGuardTypeMatchesFields {
+		t.Fatalf("generated guard type = %q, want MATCHES_FIELDS", (*guard)[0].Type)
+	}
+	if (*guard)[0].MatchConfig == nil || (*guard)[0].MatchConfig.InputKey != `.Tags["flavor"]` {
+		t.Fatalf("generated match config = %#v, want flavor selector", (*guard)[0].MatchConfig)
+	}
+
+	loaded, err := config.LoadRuntimeConfig(dir, nil)
+	if err != nil {
+		t.Fatalf("LoadRuntimeConfig: %v", err)
+	}
+	workstation, ok := loaded.Workstation("match-pair")
+	if !ok {
+		t.Fatal("expected match-pair workstation definition")
+	}
+	if len(workstation.Guards) != 1 || workstation.Guards[0].MatchConfig == nil {
+		t.Fatalf("runtime workstation guards = %#v, want one match-config guard", workstation.Guards)
+	}
+	if workstation.Guards[0].Type != interfaces.GuardTypeMatchesFields || workstation.Guards[0].MatchConfig.InputKey != `.Tags["flavor"]` {
+		t.Fatalf("runtime guard = %#v, want matches_fields flavor selector", workstation.Guards[0])
+	}
+}
+
 func assertMatchesFieldsHarnessBlocked(
 	t *testing.T,
 	h *testutil.ServiceTestHarness,
