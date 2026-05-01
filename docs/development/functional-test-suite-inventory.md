@@ -7,14 +7,14 @@ package runtime that later cleanup stories should continue shrinking.
 
 ## Inventory Date
 
-- 2026-04-30
+- 2026-05-01
 
 ## Current Surface Summary
 
 - `tests/functional_test` currently contains 104 `_test.go` files.
 - The package also contains 18 support files whose names explicitly mark them as
   helpers, fixtures, harnesses, or server scaffolding.
-- The shared `tests/functional_test/testdata` tree currently contains 55
+- The shared `tests/functional_test/testdata` tree currently contains 54
   top-level fixture directories.
 - The package root also mixes in suite-local process artifacts:
   `CLAUDE.md`, `prd.json`, `prd.md`, and `progress.txt`.
@@ -59,7 +59,7 @@ to own and tune as separate collections:
 
 ## Major Fixture Groups
 
-The 67 top-level `testdata` directories also break down into clear clusters:
+The 54 top-level `testdata` directories also break down into clear clusters:
 
 - Pipeline and workflow fixtures:
   `batch_ideation_pipeline`, `full_ideation_pipeline`,
