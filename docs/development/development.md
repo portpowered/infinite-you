@@ -22,7 +22,9 @@ This checkout is operated from the repository root that contains `go.mod`, `Make
 - `pkg/workers/` owns worker execution contracts, provider calls, script command execution, and work-scoped metadata.
 - `pkg/replay/` owns record/replay artifact construction, side-effect matching, and deterministic replay behavior.
 - `ui/` is the Vite dashboard source. `ui/dist/` contains committed embedded assets.
-- `tests/functional_test/` contains workflow fixtures and smoke coverage.
+- `tests/functional_test/` is the current broad functional-test package; the
+  target collection split is defined in
+  [Functional Test Collection Model](functional-test-collection-model.md).
 
 ## Development Commands
 
@@ -184,6 +186,13 @@ Use [Functional Test Execution Mode Inventory](functional-test-execution-mode-in
 when migrating shortcut tests or reviewing exceptions. Keep
 `docs/processes/AGENTS.md` linked to this section instead of duplicating the
 full rule set for autonomous-agent instructions.
+
+Use [Functional Test Collection Model](functional-test-collection-model.md)
+when deciding where a functional scenario, helper, or fixture should move as
+the suite splits out of `tests/functional_test`. The target state is explicit
+package directories under `tests/functional/` plus `Makefile` lane targets;
+`testing.Short()` skips inside one large package are not the long-term
+collection boundary.
 
 The functional-test package includes
 `TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException` as a
