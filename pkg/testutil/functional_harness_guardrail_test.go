@@ -1,4 +1,4 @@
-package functional_test
+package testutil
 
 import (
 	"go/ast"
@@ -12,7 +12,10 @@ import (
 	"testing"
 )
 
-const fullWorkerPoolGuardrailMessage = "Agent Factory functional tests should build ServiceTestHarness with testutil.WithFullWorkerPoolAndScriptWrap(); mock at provider, provider command-runner, command-runner, or mock-worker command boundaries when possible"
+const (
+	fullWorkerPoolGuardrailMessage = "Agent Factory functional tests should build ServiceTestHarness with testutil.WithFullWorkerPoolAndScriptWrap(); mock at provider, provider command-runner, command-runner, or mock-worker command boundaries when possible"
+	functionalTestDir              = "../../tests/functional_test"
+)
 
 type harnessShortcutUse struct {
 	TestName string
@@ -58,10 +61,10 @@ var fullWorkerPoolGuardrailExceptions = map[string]harnessShortcutException{
 	"TestFactoryRequestBatch_TagsAccessibleInTokenPayload":           {Count: 1, Reason: "Captures raw dispatch payload to assert request-batch tag accessibility."},
 }
 
-func TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException(t *testing.T) {
+func TestFunctionalHarnessGuardrail_FullWorkerPoolShortcutUsesStayReviewed(t *testing.T) {
 	t.Parallel()
 
-	uses, err := findServiceHarnessShortcuts(".")
+	uses, err := findServiceHarnessShortcuts(functionalTestDir)
 	if err != nil {
 		t.Fatalf("scan functional tests: %v", err)
 	}
@@ -108,7 +111,7 @@ func TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException(t *testing.T
 	}
 }
 
-func TestFindServiceHarnessShortcutsFlagsMissingFullWorkerPoolOption(t *testing.T) {
+func TestFunctionalHarnessGuardrail_FindsShortcutHarnessWithoutFullWorkerPoolOption(t *testing.T) {
 	t.Parallel()
 
 	dir := t.TempDir()
