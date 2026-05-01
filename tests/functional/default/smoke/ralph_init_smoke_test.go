@@ -1,4 +1,4 @@
-package functional_test
+package smoke_test
 
 import (
 	"context"

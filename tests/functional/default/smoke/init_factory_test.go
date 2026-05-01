@@ -1,4 +1,4 @@
-package functional_test
+package smoke_test
 
 import (
 	"errors"
@@ -16,15 +16,6 @@ import (
 var retiredInitFactoryContractFields = []string{`"work_types"`, `"work_type"`, `"on_failure"`}
 var retiredInitWorkerContractFields = []string{"model_provider:", "provider:", "stop_token:", "skip_permissions:", "concurrency:", "sessionId:"}
 
-// TestInitFactory_StructureIsValid verifies that the init command creates the
-// correct directory structure with all required files:
-//
-//	factory.json               — workflow definition with workers section
-//	workers/processor/AGENTS.md — MODEL_WORKER definition
-//	workstations/process/AGENTS.md — MODEL_WORKSTATION prompt template
-//	inputs/tasks/default/      — preseed directory for the "tasks" work type
-//
-// No "factories/" subdirectory should be created.
 func TestInitFactory_StructureIsValid(t *testing.T) {
 	dir := t.TempDir()
 
@@ -32,7 +23,6 @@ func TestInitFactory_StructureIsValid(t *testing.T) {
 		t.Fatalf("Init failed: %v", err)
 	}
 
-	// Verify expected files exist.
 	expectedFiles := []string{
 		"factory.json",
 		filepath.Join("workers", "README.md"),
@@ -48,7 +38,6 @@ func TestInitFactory_StructureIsValid(t *testing.T) {
 		}
 	}
 
-	// Verify expected directories exist.
 	expectedDirs := []string{
 		filepath.Join("inputs", "tasks", "default"),
 	}
@@ -62,42 +51,27 @@ func TestInitFactory_StructureIsValid(t *testing.T) {
 		}
 	}
 
-	// Verify "factories/" subdirectory is NOT created.
 	factoriesPath := filepath.Join(dir, "factories")
 	if _, err := os.Stat(factoriesPath); err == nil {
 		t.Error("expected 'factories/' directory to NOT be created by init")
 	}
 
-	// Verify "inputs/task/" (singular) is NOT created.
 	tasksPath := filepath.Join(dir, "inputs", "task")
 	if _, err := os.Stat(tasksPath); err == nil {
 		t.Error("expected 'inputs/task/' (singular) to NOT be created; should be 'inputs/tasks/'")
 	}
 }
 
-// TestInitFactory_EndToEnd exercises the full init → run → complete lifecycle:
-//
-//  1. Run cli.Init on a temporary directory.
-//  2. Write a seed work item into the generated inputs/tasks/default/ directory.
-//  3. Start the factory service with a mock provider.
-//  4. Verify the work item flows through the pipeline to tasks:complete.
-//
-// This confirms that the init command generates a fully functional factory
-// that can be used as-is without any manual file creation.
 func TestInitFactory_EndToEnd(t *testing.T) {
 	dir := t.TempDir()
 
-	// Step 1: Run Init to generate the factory structure.
 	if err := initcmd.Init(initcmd.InitConfig{Dir: dir}); err != nil {
 		t.Fatalf("Init failed: %v", err)
 	}
 	assertGeneratedInitScaffoldCanonical(t, dir, "gpt-5-codex", "codex")
 
-	// Step 2: Write a seed file into the generated preseed directory.
 	testutil.WriteSeedFile(t, dir, "tasks", []byte(`{"title": "init factory e2e test"}`))
 
-	// Step 3: Start the factory with a mock provider that returns a successful response.
-	// The init-generated worker has no stop_token, so any non-error response is accepted.
 	work := map[string][]testutil.WorkResponse{
 		"processor": {
 			{Content: "Task processed successfully."},
@@ -110,23 +84,18 @@ func TestInitFactory_EndToEnd(t *testing.T) {
 		testutil.WithFullWorkerPoolAndScriptWrap(),
 	)
 
-	// Step 4: Run until all tokens reach a terminal state.
 	h.RunUntilComplete(t, 15*time.Second)
 
-	// Assert the work item reached the terminal "complete" state.
 	h.Assert().
 		HasTokenInPlace("tasks:complete").
 		HasNoTokenInPlace("tasks:init").
 		HasNoTokenInPlace("tasks:failed").
 		TokenCount(1)
 
-	// Verify the mock provider was called exactly once (one workstation in the pipeline).
 	if provider.CallCount("processor") != 1 {
 		t.Errorf("expected provider called 1 time, got %d", provider.CallCount("processor"))
 	}
 
-	// Verify the provider received a non-empty user message rendered from the
-	// workstation AGENTS.md template.
 	calls := provider.Calls("processor")
 	if len(calls) == 0 {
 		t.Fatal("expected at least 1 provider call")
@@ -178,8 +147,6 @@ func TestInitFactory_ClaudeEndToEndUsesClaudeStarterWorker(t *testing.T) {
 	assertInitProviderRequest(t, calls[0], "claude-sonnet-4-20250514", "claude")
 }
 
-// TestInitFactory_FailureRouting verifies that the init-generated factory
-// correctly routes work to tasks:failed when the provider returns an error.
 func TestInitFactory_FailureRouting(t *testing.T) {
 	dir := t.TempDir()
 
@@ -189,7 +156,6 @@ func TestInitFactory_FailureRouting(t *testing.T) {
 
 	testutil.WriteSeedFile(t, dir, "tasks", []byte(`{"title": "failing task"}`))
 
-	// Provider returns an error — triggers OutcomeFailed → tasks:failed.
 	work := map[string][]testutil.WorkResponse{
 		"processor": {
 			{Content: "something went wrong", Error: errors.New("provider execution failed")},
@@ -204,7 +170,6 @@ func TestInitFactory_FailureRouting(t *testing.T) {
 
 	h.RunUntilComplete(t, 15*time.Second)
 
-	// Token should end in failed state since the provider returned an error.
 	h.Assert().
 		HasTokenInPlace("tasks:failed").
 		HasNoTokenInPlace("tasks:init").
@@ -212,29 +177,23 @@ func TestInitFactory_FailureRouting(t *testing.T) {
 		TokenCount(1)
 }
 
-// TestInitFactory_Idempotent verifies that running Init twice on the same
-// directory does not overwrite existing files.
 func TestInitFactory_Idempotent(t *testing.T) {
 	dir := t.TempDir()
 
-	// First init.
 	if err := initcmd.Init(initcmd.InitConfig{Dir: dir}); err != nil {
 		t.Fatalf("first Init failed: %v", err)
 	}
 
-	// Write a custom file into the worker dir to verify it's preserved.
 	customContent := []byte("custom worker content")
 	customPath := filepath.Join(dir, "workers", "processor", "AGENTS.md")
 	if err := os.WriteFile(customPath, customContent, 0o644); err != nil {
 		t.Fatalf("write custom file: %v", err)
 	}
 
-	// Second init.
 	if err := initcmd.Init(initcmd.InitConfig{Dir: dir}); err != nil {
 		t.Fatalf("second Init failed: %v", err)
 	}
 
-	// Verify the custom file was NOT overwritten.
 	data, err := os.ReadFile(customPath)
 	if err != nil {
 		t.Fatalf("read custom file: %v", err)
