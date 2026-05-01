@@ -213,10 +213,13 @@ repository-owned runtime checker and fails if the lane takes longer than 10
 seconds on the agreed verification path.
 
 `make test-functional-extended` is the canonical opt-in slow lane while the
-remaining heavy scenarios still live in `tests/functional_test`. It expands to
-the repository-owned `service`, `replay`, and `provider` extended bundles so
-slow coverage remains intentional and reviewable instead of hiding behind ad
-hoc `go test -run ...` commands.
+remaining heavy scenarios still live in `tests/functional_test`. It runs the
+full remaining legacy package so slow coverage remains intentional and
+reviewable instead of hiding behind ad hoc `go test -run ...` commands. The
+focused `make test-functional-extended-service`,
+`make test-functional-extended-replay`, and
+`make test-functional-extended-provider` targets remain useful for debugging,
+but they do not replace the exhaustive slow-lane command.
 
 `make test` now aligns with that split: it runs the short non-stress package
 set outside the legacy mixed functional package, then enforces the default

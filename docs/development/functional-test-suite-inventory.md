@@ -104,8 +104,9 @@ Result on 2026-04-30:
 - `make test` now keeps the ordinary developer path out of
   `tests/functional_test` and enforces the `10s` default-lane budget through
   the repository-owned runtime checker
-- `make test-functional-extended` remains the canonical opt-in slow lane and
-  completed in `25.768s`
+- `make test-functional-extended` remains the canonical opt-in slow lane,
+  should continue to cover the full remaining legacy package during the
+  transition, and completed in `25.768s`
 
 ## Largest Runtime Contributors
 

@@ -95,7 +95,8 @@ test-functional-default:
 test-functional-default-budget:
 	$(GO) run ./cmd/functionalruntimecheck -budget $(FUNCTIONAL_DEFAULT_BUDGET) -timeout $(GO_TEST_TIMEOUT)
 
-test-functional-extended: test-functional-extended-service test-functional-extended-replay test-functional-extended-provider
+test-functional-extended:
+	$(GO) test ./tests/functional_test -count=1 -timeout $(GO_TEST_TIMEOUT)
 
 test-functional-extended-service:
 	$(GO) test ./tests/functional_test -run "$(FUNCTIONAL_EXTENDED_SERVICE_TESTS)" -count=1 -timeout $(GO_TEST_TIMEOUT)
