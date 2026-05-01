@@ -11,6 +11,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalfixtures "github.com/portpowered/agent-factory/tests/functional/support/fixtures"
 )
 
 // executorFunc adapts a function to the WorkerExecutor interface for tests.
@@ -325,17 +326,36 @@ func fixtureDir(t *testing.T, name string) string {
 	}
 
 	baseDir := filepath.Dir(thisFile)
-	for _, root := range []string{
-		filepath.Join(baseDir, "testdata"),
-		filepath.Join(baseDir, "..", "functional", "default", "workflow", "testdata"),
-		filepath.Join(baseDir, "..", "functional", "default", "boundary", "testdata"),
-	} {
-		candidate := filepath.Join(root, name)
-		if stat, err := os.Stat(candidate); err == nil && stat.IsDir() {
-			return candidate
-		}
+	candidate := filepath.Join(baseDir, "testdata", name)
+	if stat, err := os.Stat(candidate); err == nil && stat.IsDir() {
+		return candidate
 	}
-	return filepath.Join(baseDir, "testdata", name)
+	return candidate
+}
+
+func fixtureLoadSourceDir(t *testing.T, name string) string {
+	t.Helper()
+
+	switch name {
+	case "code_review":
+		return functionalfixtures.SharedDir(t, name)
+	case "simple_pipeline",
+		"workflow_v1_dir",
+		"workflow_v2_dir",
+		"workflow_v2_rejection_dir",
+		"multi_output_dir",
+		"multi_output_no_stopwords_dir",
+		"dependency_tracking_dir",
+		"dependency_tracking_simple_dir",
+		"dispatcher_workflow":
+		return testutil.MustRepoPath(t, filepath.ToSlash(filepath.Join("tests", "functional", "default", "workflow", "testdata", name)))
+	case "workstation_stopwords_factory_dir",
+		"workstation_stopwords_frontmatter_dir",
+		"workstation_stopwords_override_dir":
+		return testutil.MustRepoPath(t, filepath.ToSlash(filepath.Join("tests", "functional", "default", "boundary", "testdata", name)))
+	default:
+		return fixtureDir(t, name)
+	}
 }
 
 func resolvedRuntimePath(factoryDir, configuredPath string) string {
@@ -476,7 +496,7 @@ func TestFixtureDirectories_Load(t *testing.T) {
 func runFixtureDirectoryLoadSmoke(t *testing.T, tc fixtureLoadSmokeCase) {
 	t.Helper()
 
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, tc.name))
+	dir := testutil.CopyFixtureDir(t, fixtureLoadSourceDir(t, tc.name))
 	testutil.WriteSeedFile(t, dir, tc.workType, []byte(`{"title": "fixture load test"}`))
 
 	provider := testutil.NewMockProvider(tc.responses...)

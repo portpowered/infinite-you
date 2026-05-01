@@ -418,7 +418,7 @@ func TestConfigDriven_AddWorkType(t *testing.T) {
 // API and verifying completion via API response, using the full service layer.
 // Work enters via a seed file and the REST API is queried for results.
 func TestConfigDriven_RESTAPISubmitAndQuery(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "simple_pipeline"))
+	dir := testutil.CopyFixtureDir(t, fixtureLoadSourceDir(t, "simple_pipeline"))
 
 	testutil.WriteSeedFile(t, dir, "task", []byte(`{"title": "API test"}`))
 

@@ -82,7 +82,7 @@ move only when they are genuinely cross-collection seams.
 | Support package | Ownership rule |
 | --- | --- |
 | `tests/functional/support/harness` | Harness builders and service-start helpers used by multiple collections |
-| `tests/functional/support/fixtures` | Cross-collection fixture loading helpers only when the same helper is reused in multiple collections |
+| `tests/functional/support/fixtures` | Cross-collection fixture trees and any narrow helpers needed to reference that shared testdata directly |
 | `tests/functional/support/assertions` | Shared assertion helpers with stable domain meaning across collections |
 
 Keep the shared seam narrow. The current extracted support surface uses
@@ -120,6 +120,9 @@ tests/
 
 - Large fixture trees that are reused across lanes should move once into the
   narrowest shared seam that still reflects real ownership.
+- Shared collections should reference `tests/functional/support/fixtures/testdata/...`
+  explicitly rather than relying on helper search-order fallbacks between
+  collection-local and legacy `testdata/` roots.
 - Suite-local process artifacts such as `CLAUDE.md`, `prd.json`, `prd.md`, and
   `progress.txt` should not remain mixed into collection directories after the
   split; they belong with worktree process state, not functional coverage

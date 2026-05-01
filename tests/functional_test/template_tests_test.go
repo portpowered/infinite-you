@@ -79,7 +79,7 @@ func TestTemplateTests_ScriptExecutorDropsResourceTokensFromArgTemplates(t *test
 }
 
 func TestTemplateTests_ScriptWrapDropsResourceTokensFromWorkstationTemplates(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "simple_pipeline"))
+	dir := testutil.CopyFixtureDir(t, fixtureLoadSourceDir(t, "simple_pipeline"))
 	configureResourceGatedTemplateWorkstation(t, dir)
 	writeNamedWorkstationPromptTemplate(t, dir, "process", strings.Join([]string{
 		`name={{ (index .Inputs 0).Name }}`,
@@ -154,7 +154,7 @@ func TestTemplateTests_ScriptExecutorOrdersMultipleInputsByWorkstationConfigWith
 }
 
 func TestTemplateTests_ScriptWrapOrdersMultipleInputsByWorkstationConfigWithResources(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "simple_pipeline"))
+	dir := testutil.CopyFixtureDir(t, fixtureLoadSourceDir(t, "simple_pipeline"))
 	configureTwoInputResourceGatedTemplateWorkstation(t, dir, "process", "processor")
 	writeNamedWorkerAgents(t, dir, "processor", "---\ntype: MODEL_WORKER\nmodelProvider: codex\nmodel: test-model\nstopToken: COMPLETE\n---\nYou are the processor.\n")
 	writeNamedWorkstationPromptTemplate(t, dir, "process", strings.Join(twoInputTemplateArgs(), "\n"))
@@ -187,7 +187,7 @@ func TestTemplateTests_ScriptWrapOrdersMultipleInputsByWorkstationConfigWithReso
 }
 
 func TestTemplateTests_ScriptWrapClaudeResolvesWorkstationExecutionTemplates(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "simple_pipeline"))
+	dir := testutil.CopyFixtureDir(t, fixtureLoadSourceDir(t, "simple_pipeline"))
 	setWorkingDirectory(t, dir)
 	configureExecutionTemplateWorkstation(t, dir)
 	writeNamedWorkerAgents(t, dir, "processor", buildModelWorkerConfig(workers.ModelProviderClaude, "test-claude-model"))
@@ -219,7 +219,7 @@ func TestTemplateTests_ScriptWrapClaudeResolvesWorkstationExecutionTemplates(t *
 }
 
 func TestTemplateTests_ScriptWrapCodexResolvesWorkstationExecutionTemplates(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "simple_pipeline"))
+	dir := testutil.CopyFixtureDir(t, fixtureLoadSourceDir(t, "simple_pipeline"))
 	setWorkingDirectory(t, dir)
 	configureExecutionTemplateWorkstation(t, dir)
 	writeNamedWorkerAgents(t, dir, "processor", buildModelWorkerConfig(workers.ModelProviderCodex, "test-codex-model"))

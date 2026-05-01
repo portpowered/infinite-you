@@ -228,6 +228,12 @@ functional scenarios should join `tests/functional/default/...` so they remain
 inside the ordinary developer path; slower coverage belongs in the documented
 extended lane instead of re-entering `tests/functional_test` by default.
 
+If a functional fixture tree is reused across collections, move it to
+`tests/functional/support/fixtures/testdata/` and have each caller reference
+that explicit shared path directly. Do not hide fixture ownership behind
+fallback helpers that search both collection-local and legacy `testdata/`
+roots.
+
 The functional-test package includes
 `TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException` as a
 lightweight guardrail. New `testutil.NewServiceTestHarness(...)` calls should

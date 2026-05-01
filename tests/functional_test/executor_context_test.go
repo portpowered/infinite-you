@@ -7,6 +7,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	"github.com/portpowered/agent-factory/tests/functional/support/fixtures"
 	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
@@ -14,7 +15,7 @@ import (
 // contains input token colors carrying the original payload and tags submitted
 // with the work item.
 func TestExecutorContext_InputTokenColors(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "code_review"))
+	dir := testutil.CopyFixtureDir(t, fixtures.SharedDir(t, "code_review"))
 
 	payload := []byte(`{"feature": "dark mode", "priority": "high"}`)
 	testutil.WriteSeedRequest(t, dir, interfaces.SubmitRequest{
@@ -69,7 +70,7 @@ func TestExecutorContext_InputTokenColors(t *testing.T) {
 // the rejection feedback is propagated to the executor's next dispatch via the
 // _rejection_feedback tag on the input token.
 func TestExecutorContext_RejectionFeedback(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "code_review"))
+	dir := testutil.CopyFixtureDir(t, fixtures.SharedDir(t, "code_review"))
 
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"feature": "auth"}`))
 
@@ -118,7 +119,7 @@ func TestExecutorContext_RejectionFeedback(t *testing.T) {
 // relations (e.g., PARENT_CHILD), the dispatched WorkDispatch carries those
 // relations on the input token so the executor can track lineage.
 func TestExecutorContext_ParentLineage(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "code_review"))
+	dir := testutil.CopyFixtureDir(t, fixtures.SharedDir(t, "code_review"))
 
 	testutil.WriteSeedRequest(t, dir, interfaces.SubmitRequest{
 		WorkTypeID:  "code-change",

@@ -6,10 +6,11 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	"github.com/portpowered/agent-factory/tests/functional/support/fixtures"
 )
 
 func TestArchiveTerminal_NoFurtherFiring(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "code_review"))
+	dir := testutil.CopyFixtureDir(t, fixtures.SharedDir(t, "code_review"))
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"feature": "settings page"}`))
 
 	provider := testutil.NewMockWorkerMapProvider(map[string][]interfaces.InferenceResponse{
@@ -39,7 +40,7 @@ func TestArchiveTerminal_NoFurtherFiring(t *testing.T) {
 }
 
 func TestArchiveTerminal_MultipleTokensAllTerminate(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "code_review"))
+	dir := testutil.CopyFixtureDir(t, fixtures.SharedDir(t, "code_review"))
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"feature": "A"}`))
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"feature": "B"}`))
 

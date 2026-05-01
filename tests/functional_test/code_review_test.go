@@ -6,6 +6,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	"github.com/portpowered/agent-factory/tests/functional/support/fixtures"
 )
 
 // TestCodeReviewLoop validates the code-review retry loop via config:
@@ -14,7 +15,7 @@ import (
 //	When:  reviewer rejects once, then accepts
 //	Then:  token completes after two coding iterations, rejection feedback propagated
 func TestCodeReviewLoop(t *testing.T) {
-	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "code_review"))
+	dir := testutil.CopyFixtureDir(t, fixtures.SharedDir(t, "code_review"))
 
 	testutil.WriteSeedFile(t, dir, "code-change", []byte("implement feature X"))
 
