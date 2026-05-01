@@ -14,8 +14,12 @@ import (
 
 const (
 	fullWorkerPoolGuardrailMessage = "Agent Factory functional tests should build ServiceTestHarness with testutil.WithFullWorkerPoolAndScriptWrap(); mock at provider, provider command-runner, command-runner, or mock-worker command boundaries when possible"
-	functionalTestDir              = "../../tests/functional_test"
 )
+
+var functionalTestRoots = []string{
+	"../../tests/functional_test",
+	"../../tests/functional/default",
+}
 
 type harnessShortcutUse struct {
 	TestName string
@@ -59,12 +63,14 @@ var fullWorkerPoolGuardrailExceptions = map[string]harnessShortcutException{
 	"TestServiceHarness_CustomExecutor_Precedence":                   {Count: 1, Reason: "Harness contract test for custom executor precedence over MockWorker."},
 	"TestStatelessExecution_ThinDispatchCarriesLookupReferencesOnly": {Count: 1, Reason: "Captures raw dispatch fields to assert thin stateless execution contracts."},
 	"TestFactoryRequestBatch_TagsAccessibleInTokenPayload":           {Count: 1, Reason: "Captures raw dispatch payload to assert request-batch tag accessibility."},
+	"TestMultiOutput_NoStopWordsConfigured":                          {Count: 1, Reason: "Uses ordered MockWorker outcomes to assert multi-output completion when stop words are intentionally disabled."},
+	"TestWorkflowModificationRejectionLoop":                          {Count: 1, Reason: "Uses ordered MockWorker outcomes to assert workflow reload rejection and retry behavior."},
 }
 
 func TestFunctionalHarnessGuardrail_FullWorkerPoolShortcutUsesStayReviewed(t *testing.T) {
 	t.Parallel()
 
-	uses, err := findServiceHarnessShortcuts(functionalTestDir)
+	uses, err := findServiceHarnessShortcuts(functionalTestRoots...)
 	if err != nil {
 		t.Fatalf("scan functional tests: %v", err)
 	}
@@ -148,49 +154,56 @@ func TestFullWorkerPoolHarness(t *testing.T) {
 	}
 }
 
-func findServiceHarnessShortcuts(dir string) ([]harnessShortcutUse, error) {
+func findServiceHarnessShortcuts(dirs ...string) ([]harnessShortcutUse, error) {
 	fset := token.NewFileSet()
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
 
 	var uses []harnessShortcutUse
-	for _, entry := range entries {
-		name := entry.Name()
-		if entry.IsDir() || !strings.HasSuffix(name, "_test.go") {
-			continue
-		}
-
-		path := filepath.Join(dir, name)
-		file, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, decl := range file.Decls {
-			fn, ok := decl.(*ast.FuncDecl)
-			if !ok || fn.Body == nil || !strings.HasPrefix(fn.Name.Name, "Test") {
-				continue
+	for _, dir := range dirs {
+		if err := filepath.WalkDir(dir, func(path string, d os.DirEntry, walkErr error) error {
+			if walkErr != nil {
+				return walkErr
+			}
+			if d.IsDir() || !strings.HasSuffix(d.Name(), "_test.go") {
+				return nil
 			}
 
-			ast.Inspect(fn.Body, func(node ast.Node) bool {
-				call, ok := node.(*ast.CallExpr)
-				if !ok || !isServiceHarnessConstructor(call) {
-					return true
-				}
-				if callContainsFullWorkerPoolOption(call) {
-					return true
+			file, err := parser.ParseFile(fset, path, nil, parser.ParseComments)
+			if err != nil {
+				return err
+			}
+
+			for _, decl := range file.Decls {
+				fn, ok := decl.(*ast.FuncDecl)
+				if !ok || fn.Body == nil || !strings.HasPrefix(fn.Name.Name, "Test") {
+					continue
 				}
 
-				pos := fset.Position(call.Pos())
-				uses = append(uses, harnessShortcutUse{
-					TestName: fn.Name.Name,
-					File:     filepath.Base(pos.Filename),
-					Line:     pos.Line,
+				ast.Inspect(fn.Body, func(node ast.Node) bool {
+					call, ok := node.(*ast.CallExpr)
+					if !ok || !isServiceHarnessConstructor(call) {
+						return true
+					}
+					if callContainsFullWorkerPoolOption(call) {
+						return true
+					}
+
+					pos := fset.Position(call.Pos())
+					relativePath, err := filepath.Rel(".", pos.Filename)
+					if err != nil {
+						relativePath = pos.Filename
+					}
+					uses = append(uses, harnessShortcutUse{
+						TestName: fn.Name.Name,
+						File:     filepath.ToSlash(relativePath),
+						Line:     pos.Line,
+					})
+					return true
 				})
-				return true
-			})
+			}
+
+			return nil
+		}); err != nil {
+			return nil, err
 		}
 	}
 
