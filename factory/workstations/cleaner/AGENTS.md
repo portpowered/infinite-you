@@ -19,7 +19,7 @@ stub and do not read or edit it as a second backlog surface.
 run git pull and make the workspace be up to date to remote
 
 ## Step 1 - read
-0. read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`, `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`, and `factory/logs/agent-fails.replay.json` to understand the current repository-maintainer workflow state before proposing cleanup work
+0. read `factory/logs/meta/view.md`, `factory/logs/meta/progress.tsx`, `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`, and `factory/logs/agent-fails.replay.json` to understand the current repository-maintainer workflow state before proposing cleanup work
 1. read `docs/standards/STANDARDS.md`, `factory/README.md`, `docs/development/root-factory-artifact-contract-inventory.md`, `docs/processes/factory-workstation-relevant-files.md`, and `docs/guides/batch-inputs.md` so your cleanup ideas stay aligned with the repository's public workflow contract
 2. read the code under `./`, read recent PRs associated with your previous requests, and inspect the current checked-in workflow inputs under `factory/inputs/` to see any previous cleanup attempts that have already been made
 
