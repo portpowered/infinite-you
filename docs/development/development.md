@@ -39,6 +39,10 @@ make api-smoke
 make test
 make test-full
 make test-functional-default
+make test-functional-extended
+make test-functional-extended-service
+make test-functional-extended-replay
+make test-functional-extended-provider
 make release-surface-smoke
 make lint
 make script-timeout-companion-smoke-100
@@ -201,6 +205,12 @@ collection boundary.
 migrated default collections under `tests/functional/default/...`. Use it when
 reviewing or iterating on the split without re-running the remaining legacy
 package surface.
+
+`make test-functional-extended` is the canonical opt-in slow lane while the
+remaining heavy scenarios still live in `tests/functional_test`. It expands to
+the repository-owned `service`, `replay`, and `provider` extended bundles so
+slow coverage remains intentional and reviewable instead of hiding behind ad
+hoc `go test -run ...` commands.
 
 The functional-test package includes
 `TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException` as a

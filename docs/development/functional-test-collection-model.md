@@ -148,6 +148,12 @@ Later stories should converge on these command responsibilities:
 | `make test` | Keep the repository's ordinary developer path wired to the default functional lane rather than the full historical package |
 | Focused smoke targets | Continue to exist for repeated or high-signal scenarios when they provide extra stability evidence |
 
+Until the physical migration into `tests/functional/extended/...` is complete,
+the canonical extended-lane targets may point at curated regex bundles inside
+`tests/functional_test`. Keep those bundles grouped by the same service,
+replay, and provider categories named above, and retire the regex routing as
+soon as the owning scenarios move into explicit package directories.
+
 ## Migration Order
 
 1. Create the destination collection directories and move the clearest fast-lane

@@ -13,6 +13,9 @@ CRON_TIME_WORK_SMOKE_TIMEOUT ?= 120s
 CURRENT_FACTORY_WATCHER_SWITCH_SMOKE_TEST := TestCurrentFactoryWatcherSwitchSmoke_ActivatedFactoryOwnsWatchedInputWithoutDuplicateConsumption
 CURRENT_FACTORY_WATCHER_SWITCH_SMOKE_COUNT ?= 1
 CURRENT_FACTORY_WATCHER_SWITCH_SMOKE_TIMEOUT ?= 120s
+FUNCTIONAL_EXTENDED_SERVICE_TESTS := Test(E2E_FactoryDispatchesAndCompletes|E2E_FactoryDispatchesMultipleWork|IntegrationSmoke_ScriptTimeoutCompanionRequeuesBeforeLaterCompletion|IntegrationSmoke_ScriptAndProviderWorkersShareCommandRunner|ServiceModeSmoke_EmptyStartupIdleSubmissionAndPostCompletionIdleStayReachableUntilCanceled|ObservabilitySmoke_CanonicalServiceSnapshotMatchesStateAndDashboardAcrossRuntimeTransitions|CurrentFactoryWatcherSwitchSmoke_ActivatedFactoryOwnsWatchedInputWithoutDuplicateConsumption|IntegrationSmoke_TimeoutCancelsProcessTreeAndClearsActiveExecution|IntegrationSmoke_TimeoutRequeuesWorkAndSucceedsOnLaterAttempt)$$
+FUNCTIONAL_EXTENDED_REPLAY_TESTS := Test(RecordReplayEndToEnd_.*|ExportImportSmoke_ExportedFactoryCanBeReimportedThroughCustomerPath|EndToEndEventReplaySmoke_BackendEventsReconstructSelectedTicksForWebsiteTimeline|FactoryOnlySerializationSmoke_RecordReplayUsesRunStartedFactoryPayload|AutomatPortabilityFixture_.*)$$
+FUNCTIONAL_EXTENDED_PROVIDER_TESTS := Test(ProviderErrorSmoke_.*|ReviewRetryLoopBreaker_.*|ScriptExecutor_.*)$$
 
 ifeq ($(OS),Windows_NT)
 	BINARY_NAME := agent-factory.exe
@@ -37,7 +40,7 @@ endif
 
 GO_TEST_TIMEOUT ?= 300s
 
-.PHONY: default build intall bundle-api generate-api generate-go-api generate-ui-api api-smoke docs-reference-check docs-reference-smoke test test-full test-functional-default script-timeout-companion-smoke-100 cron-time-work-smoke current-factory-watcher-switch-smoke release-surface-smoke artifact-contract-closeout lint deadcode public-surface-check test-race fmt vet deps deps-tidy dashboard-verify ui-deps ui-build ui-test ui-storybook ui-test-storybook clean
+.PHONY: default build intall bundle-api generate-api generate-go-api generate-ui-api api-smoke docs-reference-check docs-reference-smoke test test-full test-functional-default test-functional-extended test-functional-extended-service test-functional-extended-replay test-functional-extended-provider script-timeout-companion-smoke-100 cron-time-work-smoke current-factory-watcher-switch-smoke release-surface-smoke artifact-contract-closeout lint deadcode public-surface-check test-race fmt vet deps deps-tidy dashboard-verify ui-deps ui-build ui-test ui-storybook ui-test-storybook clean
 
 default:
 	$(MAKE) generate-api
@@ -85,6 +88,17 @@ test-full:
 
 test-functional-default:
 	$(GO) test ./tests/functional/default/... -count=1 -timeout $(GO_TEST_TIMEOUT)
+
+test-functional-extended: test-functional-extended-service test-functional-extended-replay test-functional-extended-provider
+
+test-functional-extended-service:
+	$(GO) test ./tests/functional_test -run "$(FUNCTIONAL_EXTENDED_SERVICE_TESTS)" -count=1 -timeout $(GO_TEST_TIMEOUT)
+
+test-functional-extended-replay:
+	$(GO) test ./tests/functional_test -run "$(FUNCTIONAL_EXTENDED_REPLAY_TESTS)" -count=1 -timeout $(GO_TEST_TIMEOUT)
+
+test-functional-extended-provider:
+	$(GO) test ./tests/functional_test -run "$(FUNCTIONAL_EXTENDED_PROVIDER_TESTS)" -count=1 -timeout $(GO_TEST_TIMEOUT)
 
 script-timeout-companion-smoke-100:
 	$(GO) test ./tests/functional_test -run $(SCRIPT_TIMEOUT_COMPANION_SMOKE_TEST) -count=$(SCRIPT_TIMEOUT_COMPANION_SMOKE_COUNT) -timeout $(SCRIPT_TIMEOUT_COMPANION_SMOKE_TIMEOUT)
