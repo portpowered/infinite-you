@@ -14,6 +14,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/factory"
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 	"go.uber.org/zap"
 )
 
@@ -200,7 +201,7 @@ func TestConfigDriven_DynamicFanout_ThreeChildren(t *testing.T) {
 		interfaces.InferenceResponse{Content: "Chapter finalized. COMPLETE"},
 	)
 
-	parserExec := &fanoutParserExecutor{childCount: 3}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 3}
 
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -217,8 +218,8 @@ func TestConfigDriven_DynamicFanout_ThreeChildren(t *testing.T) {
 		HasNoTokenInPlace("chapter:processing").
 		HasNoTokenInPlace("page:init")
 
-	if parserExec.callCount() != 1 {
-		t.Errorf("expected parser called 1 time, got %d", parserExec.callCount())
+	if parserExec.CallCount() != 1 {
+		t.Errorf("expected parser called 1 time, got %d", parserExec.CallCount())
 	}
 	if provider.CallCount() != 4 {
 		t.Errorf("expected provider called 4 times, got %d", provider.CallCount())
@@ -237,8 +238,8 @@ func TestConfigDriven_DynamicFanout_AnyChildFailedRoutesParent(t *testing.T) {
 		interfaces.InferenceResponse{Content: "Chapter failure recorded. COMPLETE"},
 	)
 
-	parserExec := &fanoutParserExecutor{childCount: 3}
-	processorExec := &failOnNthPageExecutor{failOn: 2}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 3}
+	processorExec := &functionalharness.FailOnNthPageExecutor{FailOn: 2}
 
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -251,7 +252,7 @@ func TestConfigDriven_DynamicFanout_AnyChildFailedRoutesParent(t *testing.T) {
 
 	if err := h.RunUntilCompleteError(15 * time.Second); err != nil {
 		marking := h.Marking()
-		t.Fatalf("RunUntilComplete: %v; token places: %#v", err, tokenPlaces(*marking))
+		t.Fatalf("RunUntilComplete: %v; token places: %#v", err, functionalharness.TokenPlaces(*marking))
 	}
 
 	h.Assert().
@@ -263,8 +264,8 @@ func TestConfigDriven_DynamicFanout_AnyChildFailedRoutesParent(t *testing.T) {
 		HasNoTokenInPlace("chapter:complete").
 		HasNoTokenInPlace("page:init")
 
-	if parserExec.callCount() != 1 {
-		t.Errorf("expected parser called 1 time, got %d", parserExec.callCount())
+	if parserExec.CallCount() != 1 {
+		t.Errorf("expected parser called 1 time, got %d", parserExec.CallCount())
 	}
 	if provider.CallCount() != 1 {
 		t.Errorf("expected failure handler provider call only, got %d", provider.CallCount())
@@ -283,7 +284,7 @@ func TestConfigDriven_DynamicFanout_OneChild(t *testing.T) {
 		interfaces.InferenceResponse{Content: "Chapter finalized. COMPLETE"},
 	)
 
-	parserExec := &fanoutParserExecutor{childCount: 1}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 1}
 
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -300,8 +301,8 @@ func TestConfigDriven_DynamicFanout_OneChild(t *testing.T) {
 		HasNoTokenInPlace("chapter:processing").
 		HasNoTokenInPlace("page:init")
 
-	if parserExec.callCount() != 1 {
-		t.Errorf("expected parser called 1 time, got %d", parserExec.callCount())
+	if parserExec.CallCount() != 1 {
+		t.Errorf("expected parser called 1 time, got %d", parserExec.CallCount())
 	}
 	if provider.CallCount() != 2 {
 		t.Errorf("expected provider called 2 times, got %d", provider.CallCount())
@@ -321,7 +322,7 @@ func TestConfigDriven_DynamicFanout_ZeroChildren(t *testing.T) {
 		interfaces.InferenceResponse{Content: "Chapter finalized. COMPLETE"},
 	)
 
-	parserExec := &fanoutParserExecutor{childCount: 0}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 0}
 
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -336,8 +337,8 @@ func TestConfigDriven_DynamicFanout_ZeroChildren(t *testing.T) {
 		HasNoTokenInPlace("chapter:init").
 		HasNoTokenInPlace("chapter:processing")
 
-	if parserExec.callCount() != 1 {
-		t.Errorf("expected parser called 1 time, got %d", parserExec.callCount())
+	if parserExec.CallCount() != 1 {
+		t.Errorf("expected parser called 1 time, got %d", parserExec.CallCount())
 	}
 }
 
@@ -355,7 +356,7 @@ func TestConfigDriven_DynamicFanout_ParentCompletes(t *testing.T) {
 		interfaces.InferenceResponse{Content: "Chapter finalized. COMPLETE"},
 	)
 
-	parserExec := &fanoutParserExecutor{childCount: 2}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 2}
 
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),

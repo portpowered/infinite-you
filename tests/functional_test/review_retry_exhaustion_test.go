@@ -6,6 +6,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestReviewRetryLoopBreaker_TerminatesAfterMaxRetries verifies that the
@@ -15,12 +16,12 @@ func TestReviewRetryLoopBreaker_TerminatesAfterMaxRetries(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "review_retry_exhaustion"))
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"feature": "auth"}`))
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		rejectedProviderResponse("missing tests"),
-		acceptedProviderResponse(),
-		rejectedProviderResponse("still no tests"),
-		acceptedProviderResponse(),
-		rejectedProviderResponse("tests still missing"),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.RejectedProviderResponse("missing tests"),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.RejectedProviderResponse("still no tests"),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.RejectedProviderResponse("tests still missing"),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -30,10 +31,10 @@ func TestReviewRetryLoopBreaker_TerminatesAfterMaxRetries(t *testing.T) {
 	h.RunUntilComplete(t, 10*time.Second)
 
 	// Verify the loop ran exactly 3 times.
-	if got := len(providerCallsForWorker(provider, "swe")); got != 3 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "swe")); got != 3 {
 		t.Errorf("expected swe called 3 times, got %d", got)
 	}
-	if got := len(providerCallsForWorker(provider, "reviewer")); got != 3 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "reviewer")); got != 3 {
 		t.Errorf("expected reviewer called 3 times, got %d", got)
 	}
 
@@ -79,19 +80,19 @@ func TestReviewRetryLoopBreaker_FeedbackPropagated(t *testing.T) {
 	}
 
 	// First dispatch should have no rejection feedback.
-	firstColor := firstInputToken(calls[0].InputTokens).Color
+	firstColor := functionalharness.FirstInputToken(calls[0].InputTokens).Color
 	if _, ok := firstColor.Tags["_rejection_feedback"]; ok {
 		t.Error("first swe dispatch should not have _rejection_feedback tag")
 	}
 
 	// Second dispatch should carry first rejection feedback.
-	secondColor := firstInputToken(calls[1].InputTokens).Color
+	secondColor := functionalharness.FirstInputToken(calls[1].InputTokens).Color
 	if fb := secondColor.Tags["_rejection_feedback"]; fb != "add unit tests" {
 		t.Errorf("second dispatch: expected feedback %q, got %q", "add unit tests", fb)
 	}
 
 	// Third dispatch should carry second rejection feedback.
-	thirdColor := firstInputToken(calls[2].InputTokens).Color
+	thirdColor := functionalharness.FirstInputToken(calls[2].InputTokens).Color
 	if fb := thirdColor.Tags["_rejection_feedback"]; fb != "tests incomplete" {
 		t.Errorf("third dispatch: expected feedback %q, got %q", "tests incomplete", fb)
 	}
@@ -104,10 +105,10 @@ func TestReviewRetryLoopBreaker_SucceedsBeforeLimit(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "review_retry_exhaustion"))
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"feature": "login"}`))
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		rejectedProviderResponse("needs work"),
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.RejectedProviderResponse("needs work"),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -117,10 +118,10 @@ func TestReviewRetryLoopBreaker_SucceedsBeforeLimit(t *testing.T) {
 	h.RunUntilComplete(t, 10*time.Second)
 
 	// SWE called twice (initial + after rejection), reviewer called twice.
-	if got := len(providerCallsForWorker(provider, "swe")); got != 2 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "swe")); got != 2 {
 		t.Errorf("expected swe called 2 times, got %d", got)
 	}
-	if got := len(providerCallsForWorker(provider, "reviewer")); got != 2 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "reviewer")); got != 2 {
 		t.Errorf("expected reviewer called 2 times, got %d", got)
 	}
 

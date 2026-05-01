@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestRejection_NoRejectionArcs_FailsToken verifies that when an executor
@@ -15,7 +16,7 @@ func TestRejection_NoRejectionArcs_FailsToken(t *testing.T) {
 
 	testutil.WriteSeedFile(t, dir, "task", []byte("work payload"))
 
-	provider := testutil.NewMockProvider(rejectedProviderResponse("not good enough"))
+	provider := testutil.NewMockProvider(functionalharness.RejectedProviderResponse("not good enough"))
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
 		testutil.WithFullWorkerPoolAndScriptWrap())
@@ -40,8 +41,8 @@ func TestRejection_NoRejectionArcs_ReleasesResources(t *testing.T) {
 	testutil.WriteSeedFile(t, dir, "task", []byte("second item"))
 
 	provider := testutil.NewMockProvider(
-		rejectedProviderResponse("not good enough"),
-		acceptedProviderResponse(),
+		functionalharness.RejectedProviderResponse("not good enough"),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -64,8 +65,8 @@ func TestRejection_WithRejectionArcs_RoutesViaArcs(t *testing.T) {
 	testutil.WriteSeedFile(t, dir, "task", []byte("work"))
 
 	provider := testutil.NewMockProvider(
-		rejectedProviderResponse("needs work"),
-		acceptedProviderResponse(),
+		functionalharness.RejectedProviderResponse("needs work"),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -88,7 +89,7 @@ func TestRejection_NoRejectionArcs_FailureRecordSet(t *testing.T) {
 
 	testutil.WriteSeedFile(t, dir, "task", []byte("work"))
 
-	provider := testutil.NewMockProvider(rejectedProviderResponse("missing tests"))
+	provider := testutil.NewMockProvider(functionalharness.RejectedProviderResponse("missing tests"))
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
 		testutil.WithFullWorkerPoolAndScriptWrap())

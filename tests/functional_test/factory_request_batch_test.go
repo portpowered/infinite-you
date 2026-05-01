@@ -13,6 +13,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/factory/projections"
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestFactoryRequestBatch_CreatesOneTokenPerWorkItem validates that a
@@ -83,7 +84,7 @@ func TestFactoryRequestBatch_TagsAccessibleInTokenPayload(t *testing.T) {
 		t.Fatal("expected at least one input token in dispatch")
 	}
 
-	tags := firstInputToken(checker.lastDispatch.InputTokens).Color.Tags
+	tags := functionalharness.FirstInputToken(checker.lastDispatch.InputTokens).Color.Tags
 
 	// Verify parent tags propagated.
 	if tags["branch"] != "feature/test" {
@@ -159,7 +160,7 @@ func TestFactoryRequestBatch_FactoryProjectConfigWinsOverProjectTagForProviderCo
 	if len(call.InputTokens) == 0 {
 		t.Fatal("expected provider request input tokens")
 	}
-	tags := firstInputToken(call.InputTokens).Color.Tags
+	tags := functionalharness.FirstInputToken(call.InputTokens).Color.Tags
 	if tags["project"] != "billing-api" {
 		t.Fatalf("normalized token project tag = %q, want billing-api", tags["project"])
 	}
@@ -227,7 +228,7 @@ func TestFactoryRequestBatch_FactoryProjectConfigFlowsToProviderContext(t *testi
 	if len(call.InputTokens) == 0 {
 		t.Fatal("expected provider request input tokens")
 	}
-	tags := firstInputToken(call.InputTokens).Color.Tags
+	tags := functionalharness.FirstInputToken(call.InputTokens).Color.Tags
 	if tags["project"] != "" {
 		t.Fatalf("normalized token project tag = %q, want no project tag override", tags["project"])
 	}

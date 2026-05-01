@@ -10,6 +10,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/testutil"
 	"github.com/portpowered/agent-factory/pkg/testutil/runtimefixtures"
 	"github.com/portpowered/agent-factory/pkg/workers"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestLogicalMove_Success verifies the success path: a LOGICAL_MOVE workstation
@@ -81,7 +82,7 @@ type capturePayloadExecutor struct {
 
 func (c *capturePayloadExecutor) Execute(_ context.Context, d interfaces.WorkDispatch) (interfaces.WorkResult, error) {
 	if len(d.InputTokens) > 0 {
-		c.capturedPayload = firstInputToken(d.InputTokens).Color.Payload
+		c.capturedPayload = functionalharness.FirstInputToken(d.InputTokens).Color.Payload
 	}
 	return interfaces.WorkResult{
 		DispatchID:   d.DispatchID,

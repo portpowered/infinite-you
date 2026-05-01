@@ -12,6 +12,7 @@ import (
 	factoryapi "github.com/portpowered/agent-factory/pkg/api/generated"
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 const cleanupSmokeProject = "acme-inventory"
@@ -113,7 +114,7 @@ func assertCleanupSmokeRuntimeContext(t *testing.T, dir string, call interfaces.
 	if len(call.InputTokens) != 1 {
 		t.Fatalf("provider input tokens = %d, want 1", len(call.InputTokens))
 	}
-	assertCleanupSmokeTags(t, "provider input token", firstInputToken(call.InputTokens).Color.Tags)
+	assertCleanupSmokeTags(t, "provider input token", functionalharness.FirstInputToken(call.InputTokens).Color.Tags)
 }
 
 func assertCleanupSmokeEvents(t *testing.T, events []factoryapi.FactoryEvent) {

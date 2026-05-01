@@ -7,6 +7,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestConcurrencyLimit_BlocksExcessDispatches verifies that with resource
@@ -137,7 +138,7 @@ func TestConcurrencyLimit_ResourceReleasedOnExecutorPanic_Inline(t *testing.T) {
 	testutil.WriteSeedFile(t, dir, "task", []byte(`{"title": "panic-inline"}`))
 
 	h := testutil.NewServiceTestHarness(t, dir)
-	h.SetCustomExecutor("processor", &panickingExecutor{})
+	h.SetCustomExecutor("processor", &functionalharness.PanickingExecutor{})
 
 	h.RunUntilComplete(t, 10*time.Second)
 
@@ -169,7 +170,7 @@ func TestConcurrencyLimit_ResourceReleasedOnExecutorPanic_Async(t *testing.T) {
 	testutil.WriteSeedFile(t, dir, "task", []byte(`{"title": "panic-async"}`))
 
 	h := testutil.NewServiceTestHarness(t, dir, testutil.WithRunAsync())
-	h.SetCustomExecutor("processor", &panickingExecutor{})
+	h.SetCustomExecutor("processor", &functionalharness.PanickingExecutor{})
 
 	h.RunUntilComplete(t, 10*time.Second)
 

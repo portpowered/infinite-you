@@ -9,6 +9,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestMultiInputGuard_PartialChildren_BlocksGuard verifies that the
@@ -25,7 +26,7 @@ func TestMultiInputGuard_PartialChildren_BlocksGuard(t *testing.T) {
 
 	h := testutil.NewServiceTestHarness(t, dir)
 
-	parserExec := &fanoutParserExecutor{childCount: 3}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 3}
 	h.SetCustomExecutor("parser", parserExec)
 	h.MockWorker("processor",
 		interfaces.WorkResult{Outcome: interfaces.OutcomeAccepted},
@@ -55,7 +56,7 @@ func TestMultiInputGuard_AllChildrenComplete(t *testing.T) {
 
 	h := testutil.NewServiceTestHarness(t, dir)
 
-	parserExec := &fanoutParserExecutor{childCount: 3}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 3}
 	h.SetCustomExecutor("parser", parserExec)
 	h.MockWorker("processor",
 		interfaces.WorkResult{Outcome: interfaces.OutcomeAccepted},
@@ -170,7 +171,7 @@ func (e *multiChapterParserExecutor) Execute(_ context.Context, dispatch interfa
 
 	parentWorkID := ""
 	if len(dispatch.InputTokens) > 0 {
-		parentWorkID = firstInputToken(dispatch.InputTokens).Color.WorkID
+		parentWorkID = functionalharness.FirstInputToken(dispatch.InputTokens).Color.WorkID
 	}
 
 	childCount := 0

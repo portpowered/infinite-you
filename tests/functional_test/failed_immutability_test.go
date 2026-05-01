@@ -7,6 +7,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestFailedImmutability_CannotBeReDispatched verifies that a token in the
@@ -37,10 +38,10 @@ func TestFailedImmutability_CannotBeReDispatched(t *testing.T) {
 		HasNoTokenInPlace("code-change:complete")
 
 	// SWE called exactly once (the initial dispatch), reviewer never called.
-	if got := len(providerCallsForWorker(provider, "swe")); got != 1 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "swe")); got != 1 {
 		t.Errorf("expected swe called once, got %d", got)
 	}
-	if got := len(providerCallsForWorker(provider, "reviewer")); got != 0 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "reviewer")); got != 0 {
 		t.Errorf("expected reviewer never called, got %d", got)
 	}
 }
@@ -52,7 +53,7 @@ func TestFailedImmutability_ReviewerFailure(t *testing.T) {
 	testutil.WriteSeedFile(t, dir, "code-change", []byte(`{"task": "risky-change"}`))
 	provider := testutil.NewMockProviderWithErrors(
 		[]interfaces.InferenceResponse{
-			acceptedProviderResponse(),
+			functionalharness.AcceptedProviderResponse(),
 			{},
 		},
 		[]error{
@@ -72,7 +73,7 @@ func TestFailedImmutability_ReviewerFailure(t *testing.T) {
 		PlaceTokenCount("code-change:failed", 1).
 		HasNoTokenInPlace("code-change:complete")
 
-	if got := len(providerCallsForWorker(provider, "reviewer")); got != 1 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "reviewer")); got != 1 {
 		t.Errorf("expected reviewer called once, got %d", got)
 	}
 }

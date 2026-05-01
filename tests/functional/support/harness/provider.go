@@ -1,4 +1,4 @@
-package functional_test
+package harness
 
 import (
 	"github.com/portpowered/agent-factory/pkg/interfaces"
@@ -6,15 +6,15 @@ import (
 	"github.com/portpowered/agent-factory/pkg/workers"
 )
 
-func acceptedProviderResponse() interfaces.InferenceResponse {
+func AcceptedProviderResponse() interfaces.InferenceResponse {
 	return interfaces.InferenceResponse{Content: "COMPLETE"}
 }
 
-func rejectedProviderResponse(content string) interfaces.InferenceResponse {
+func RejectedProviderResponse(content string) interfaces.InferenceResponse {
 	return interfaces.InferenceResponse{Content: content}
 }
 
-func acceptedCommandResults(count int) []workers.CommandResult {
+func AcceptedCommandResults(count int) []workers.CommandResult {
 	results := make([]workers.CommandResult, count)
 	for i := range results {
 		results[i] = workers.CommandResult{Stdout: []byte("Done. COMPLETE")}
@@ -22,7 +22,7 @@ func acceptedCommandResults(count int) []workers.CommandResult {
 	return results
 }
 
-func providerCallsForWorker(provider *testutil.MockProvider, workerType string) []interfaces.ProviderInferenceRequest {
+func ProviderCallsForWorker(provider *testutil.MockProvider, workerType string) []interfaces.ProviderInferenceRequest {
 	var calls []interfaces.ProviderInferenceRequest
 	for _, call := range provider.Calls() {
 		if call.WorkerType == workerType {
@@ -32,7 +32,7 @@ func providerCallsForWorker(provider *testutil.MockProvider, workerType string) 
 	return calls
 }
 
-func providerCommandRequestsForWorker(runner *testutil.ProviderCommandRunner, workerType string) []workers.CommandRequest {
+func ProviderCommandRequestsForWorker(runner *testutil.ProviderCommandRunner, workerType string) []workers.CommandRequest {
 	var requests []workers.CommandRequest
 	for _, request := range runner.Requests() {
 		if request.WorkerType == workerType {

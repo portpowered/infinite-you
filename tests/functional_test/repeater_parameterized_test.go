@@ -6,6 +6,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestRepeater_RefiresOnRejectedStopsOnAccepted verifies that a repeater
@@ -158,7 +159,7 @@ func TestParameterizedFields_WorkingDirectoryResolvesFromTags(t *testing.T) {
 	if len(capture.lastDispatch.InputTokens) == 0 {
 		t.Fatal("expected at least one input token")
 	}
-	tags := firstInputToken(capture.lastDispatch.InputTokens).Color.Tags
+	tags := functionalharness.FirstInputToken(capture.lastDispatch.InputTokens).Color.Tags
 	if tags["branch"] != "feature-abc" {
 		t.Errorf("expected tag branch=feature-abc, got %q", tags["branch"])
 	}

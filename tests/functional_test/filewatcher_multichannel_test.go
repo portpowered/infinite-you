@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestMultiChannelFileWatcher_DefaultSubmission confirms that a seed file
@@ -16,7 +17,7 @@ func TestMultiChannelFileWatcher_DefaultSubmission(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "filewatcher_flow"))
 	testutil.WriteSeedFile(t, dir, "task", []byte(`{"title": "default item"}`))
 
-	provider := testutil.NewMockProvider(acceptedProviderResponse())
+	provider := testutil.NewMockProvider(functionalharness.AcceptedProviderResponse())
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
 		testutil.WithFullWorkerPoolAndScriptWrap())
@@ -44,7 +45,7 @@ func TestMultiChannelFileWatcher_ExecutionIDSubmission(t *testing.T) {
 		t.Fatalf("write work file: %v", err)
 	}
 
-	provider := testutil.NewMockProvider(acceptedProviderResponse())
+	provider := testutil.NewMockProvider(functionalharness.AcceptedProviderResponse())
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
 		testutil.WithFullWorkerPoolAndScriptWrap())
@@ -75,8 +76,8 @@ func TestMultiChannelFileWatcher_DynamicExecDir(t *testing.T) {
 	}
 
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),

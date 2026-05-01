@@ -6,6 +6,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestDependencyTracking_BlocksUntilSatisfied validates that a token with a
@@ -39,10 +40,10 @@ func TestDependencyTracking_BlocksUntilSatisfied(t *testing.T) {
 	})
 
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -59,7 +60,7 @@ func TestDependencyTracking_BlocksUntilSatisfied(t *testing.T) {
 		PlaceTokenCount("task:complete", 2)
 
 	// Starter called exactly 2 times total (once for A, once for B).
-	if got := len(providerCallsForWorker(provider, "starter")); got != 2 {
+	if got := len(functionalharness.ProviderCallsForWorker(provider, "starter")); got != 2 {
 		t.Errorf("expected starter called 2 times, got %d", got)
 	}
 }
@@ -70,7 +71,7 @@ func TestDependencyTracking_NoDepsPassThrough(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "dependency_tracking_simple_dir"))
 	testutil.WriteSeedFile(t, dir, "task", []byte("no deps"))
 
-	provider := testutil.NewMockProvider(acceptedProviderResponse())
+	provider := testutil.NewMockProvider(functionalharness.AcceptedProviderResponse())
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
 		testutil.WithFullWorkerPoolAndScriptWrap(),

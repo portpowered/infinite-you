@@ -6,6 +6,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestMultiChannelGuard_FileDropToCompletion confirms end-to-end: a chapter
@@ -18,7 +19,7 @@ func TestMultiChannelGuard_FileDropToCompletion(t *testing.T) {
 
 	h := testutil.NewServiceTestHarness(t, dir)
 
-	parserExec := &fanoutParserExecutor{childCount: 3}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 3}
 	h.SetCustomExecutor("parser", parserExec)
 	h.MockWorker("processor",
 		interfaces.WorkResult{Outcome: interfaces.OutcomeAccepted},
@@ -55,7 +56,7 @@ func TestMultiChannelGuard_GuardBlocksUntilAllPagesComplete(t *testing.T) {
 
 	h := testutil.NewServiceTestHarness(t, dir)
 
-	parserExec := &fanoutParserExecutor{childCount: 3}
+	parserExec := &functionalharness.FanoutParserExecutor{ChildCount: 3}
 	h.SetCustomExecutor("parser", parserExec)
 	h.MockWorker("processor",
 		interfaces.WorkResult{Outcome: interfaces.OutcomeAccepted},

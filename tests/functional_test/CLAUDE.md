@@ -74,7 +74,7 @@ Remaining custom executors and why MockProvider is insufficient:
 - `sleepyExecutor` / `channelExecutor` (dispatch_timing) — requires controlled execution timing
 - `blockingExecutor` (dashboard_inflight, runtime_state) — blocks mid-execution for state snapshot
 - `barrierMockExecutor` (e2e concurrency) — barrier synchronization across concurrent dispatches
-- `fanoutParserExecutor` (testhelpers) — dynamic SpawnedWork generation based on input
+- `support/harness.FanoutParserExecutor` — dynamic SpawnedWork generation based on input
 - `capturePayloadExecutor` (logical_move) — payload inspection across logical moves
 - `spawningExecutor` (name_propagation) — dynamic child token creation with names
 - `multiCapturingExecutor` (ralph_loop) — captures dispatches across iteration loops

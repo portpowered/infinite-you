@@ -7,6 +7,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestExecutorContext_InputTokenColors verifies that the dispatched WorkDispatch
@@ -23,8 +24,8 @@ func TestExecutorContext_InputTokenColors(t *testing.T) {
 	})
 
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -33,7 +34,7 @@ func TestExecutorContext_InputTokenColors(t *testing.T) {
 
 	h.RunUntilComplete(t, 10*time.Second)
 
-	sweCalls := providerCallsForWorker(provider, "swe")
+	sweCalls := functionalharness.ProviderCallsForWorker(provider, "swe")
 	if len(sweCalls) != 1 {
 		t.Fatalf("expected swe called 1 time, got %d", len(sweCalls))
 	}
@@ -43,7 +44,7 @@ func TestExecutorContext_InputTokenColors(t *testing.T) {
 		t.Fatal("dispatch has no input tokens")
 	}
 
-	color := firstInputToken(dispatch.InputTokens).Color
+	color := functionalharness.FirstInputToken(dispatch.InputTokens).Color
 
 	// Verify payload is carried through.
 	if !bytes.Equal(color.Payload, payload) {
@@ -92,13 +93,13 @@ func TestExecutorContext_RejectionFeedback(t *testing.T) {
 	calls := sweMock.Calls()
 
 	// First dispatch should have no rejection feedback.
-	firstColor := firstInputToken(calls[0].InputTokens).Color
+	firstColor := functionalharness.FirstInputToken(calls[0].InputTokens).Color
 	if _, ok := firstColor.Tags["_rejection_feedback"]; ok {
 		t.Error("first dispatch should not have _rejection_feedback tag")
 	}
 
 	// Second dispatch should carry the rejection feedback.
-	secondColor := firstInputToken(calls[1].InputTokens).Color
+	secondColor := functionalharness.FirstInputToken(calls[1].InputTokens).Color
 	feedback, ok := secondColor.Tags["_rejection_feedback"]
 	if !ok {
 		t.Fatal("second dispatch missing _rejection_feedback tag")
@@ -143,8 +144,8 @@ func TestExecutorContext_ParentLineage(t *testing.T) {
 	})
 
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),
@@ -153,7 +154,7 @@ func TestExecutorContext_ParentLineage(t *testing.T) {
 
 	h.RunUntilComplete(t, 10*time.Second)
 
-	sweCalls := providerCallsForWorker(provider, "swe")
+	sweCalls := functionalharness.ProviderCallsForWorker(provider, "swe")
 	if len(sweCalls) != 1 {
 		t.Fatalf("expected swe called 1 time, got %d", len(sweCalls))
 	}
@@ -163,7 +164,7 @@ func TestExecutorContext_ParentLineage(t *testing.T) {
 		t.Fatal("dispatch has no input tokens")
 	}
 
-	color := firstInputToken(dispatch.InputTokens).Color
+	color := functionalharness.FirstInputToken(dispatch.InputTokens).Color
 
 	// Verify WorkID is preserved.
 	if color.WorkID != "child-work-1" {

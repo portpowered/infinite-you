@@ -7,6 +7,7 @@ import (
 
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestResourceGated_DispatchTokenName verifies that when a workstation uses
@@ -25,8 +26,8 @@ func TestResourceGated_DispatchTokenName(t *testing.T) {
 	testutil.WriteSeedFile(t, dir, "task", []byte(`{"title": "item-beta"}`))
 
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProvider(provider),

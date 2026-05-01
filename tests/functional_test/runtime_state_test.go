@@ -17,6 +17,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/petri"
 	"github.com/portpowered/agent-factory/pkg/testutil"
 	"github.com/portpowered/agent-factory/pkg/workers"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestRuntimeState_ThreeStagePipeline validates that a 3-stage pipeline processes
@@ -102,7 +103,7 @@ func TestRuntimeState_FailureRouting(t *testing.T) {
 	}, 20)
 	if err != nil {
 		snap := h.eng.GetMarking()
-		t.Fatalf("failure routing did not complete: %v (tokens: %v)", err, tokenPlaces(snap))
+		t.Fatalf("failure routing did not complete: %v (tokens: %v)", err, functionalharness.TokenPlaces(snap))
 	}
 
 	snap := h.eng.GetMarking()

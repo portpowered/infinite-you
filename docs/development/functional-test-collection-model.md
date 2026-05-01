@@ -85,6 +85,12 @@ move only when they are genuinely cross-collection seams.
 | `tests/functional/support/fixtures` | Cross-collection fixture loading helpers only when the same helper is reused in multiple collections |
 | `tests/functional/support/assertions` | Shared assertion helpers with stable domain meaning across collections |
 
+Keep the shared seam narrow. The current extracted support surface uses
+`tests/functional/support/harness` for provider-response helpers plus shared
+token and executor helpers that already span multiple scenario files.
+Collection-specific helpers should continue to stay beside the scenarios that
+own them.
+
 Anything used by only one collection stays local to that collection directory,
 even if it is a helper file.
 

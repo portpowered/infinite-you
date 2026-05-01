@@ -11,6 +11,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/factory"
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // TestNamePropagation_InPromptTemplate verifies that the Name field is
@@ -125,7 +126,7 @@ func (s *spawningExecutor) Execute(_ context.Context, dispatch interfaces.WorkDi
 	if callNum == 1 {
 		parentWorkID := ""
 		if len(dispatch.InputTokens) > 0 {
-			parentWorkID = firstInputToken(dispatch.InputTokens).Color.WorkID
+			parentWorkID = functionalharness.FirstInputToken(dispatch.InputTokens).Color.WorkID
 		}
 		result.SpawnedWork = []interfaces.TokenColor{
 			{
@@ -207,7 +208,7 @@ func TestNamePropagation_SpawnedChildWork(t *testing.T) {
 	if len(calls) < 1 {
 		t.Fatal("expected at least 1 dispatch to spawning executor")
 	}
-	if firstInputToken(calls[0].InputTokens).Color.Name != "parent-task" {
-		t.Errorf("expected parent Name 'parent-task' in dispatch, got %q", firstInputToken(calls[0].InputTokens).Color.Name)
+	if functionalharness.FirstInputToken(calls[0].InputTokens).Color.Name != "parent-task" {
+		t.Errorf("expected parent Name 'parent-task' in dispatch, got %q", functionalharness.FirstInputToken(calls[0].InputTokens).Color.Name)
 	}
 }

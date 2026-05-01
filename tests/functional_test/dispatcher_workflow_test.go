@@ -10,6 +10,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/testutil"
 	"github.com/portpowered/agent-factory/pkg/workers"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
 // ---------------------------------------------------------------------------
@@ -28,7 +29,7 @@ func TestDispatcherWorkflow_SingleSeedFile(t *testing.T) {
 		TraceID:    originTraceID,
 	})
 
-	runner := testutil.NewProviderCommandRunner(acceptedCommandResults(3)...)
+	runner := testutil.NewProviderCommandRunner(functionalharness.AcceptedCommandResults(3)...)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProviderCommandRunner(runner),
 		testutil.WithFullWorkerPoolAndScriptWrap(),
@@ -44,13 +45,13 @@ func TestDispatcherWorkflow_SingleSeedFile(t *testing.T) {
 		HasNoTokenInPlace("prd:in-review").
 		HasNoTokenInPlace("prd:failed")
 
-	if got := len(providerCommandRequestsForWorker(runner, "planner")); got != 1 {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "planner")); got != 1 {
 		t.Errorf("expected planner called 1 time, got %d", got)
 	}
-	if got := len(providerCommandRequestsForWorker(runner, "executor")); got != 1 {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "executor")); got != 1 {
 		t.Errorf("expected executor called 1 time, got %d", got)
 	}
-	if got := len(providerCommandRequestsForWorker(runner, "reviewer")); got != 1 {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "reviewer")); got != 1 {
 		t.Errorf("expected reviewer called 1 time, got %d", got)
 	}
 
@@ -74,7 +75,7 @@ func TestDispatcherWorkflow_TwoSeedFiles(t *testing.T) {
 		TraceID:    "trace-beta",
 	})
 
-	runner := testutil.NewProviderCommandRunner(acceptedCommandResults(6)...)
+	runner := testutil.NewProviderCommandRunner(functionalharness.AcceptedCommandResults(6)...)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProviderCommandRunner(runner),
 		testutil.WithFullWorkerPoolAndScriptWrap(),
@@ -84,13 +85,13 @@ func TestDispatcherWorkflow_TwoSeedFiles(t *testing.T) {
 
 	h.Assert().PlaceTokenCount("prd:complete", 2)
 
-	if got := len(providerCommandRequestsForWorker(runner, "planner")); got != 2 {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "planner")); got != 2 {
 		t.Errorf("expected planner called 2 times, got %d", got)
 	}
-	if got := len(providerCommandRequestsForWorker(runner, "executor")); got != 2 {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "executor")); got != 2 {
 		t.Errorf("expected executor called 2 times, got %d", got)
 	}
-	if got := len(providerCommandRequestsForWorker(runner, "reviewer")); got != 2 {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "reviewer")); got != 2 {
 		t.Errorf("expected reviewer called 2 times, got %d", got)
 	}
 }
@@ -105,7 +106,7 @@ func TestDispatcherWorkflow_MultipleSeedFiles(t *testing.T) {
 		testutil.WriteSeedFile(t, dir, "idea", fmt.Appendf(nil, `{"title": "idea-%d"}`, i))
 	}
 
-	runner := testutil.NewProviderCommandRunner(acceptedCommandResults(n * 3)...)
+	runner := testutil.NewProviderCommandRunner(functionalharness.AcceptedCommandResults(n * 3)...)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProviderCommandRunner(runner),
 		testutil.WithFullWorkerPoolAndScriptWrap(),
@@ -115,13 +116,13 @@ func TestDispatcherWorkflow_MultipleSeedFiles(t *testing.T) {
 
 	h.Assert().PlaceTokenCount("prd:complete", n)
 
-	if got := len(providerCommandRequestsForWorker(runner, "planner")); got != n {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "planner")); got != n {
 		t.Errorf("expected planner called %d times, got %d", n, got)
 	}
-	if got := len(providerCommandRequestsForWorker(runner, "executor")); got != n {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "executor")); got != n {
 		t.Errorf("expected executor called %d times, got %d", n, got)
 	}
-	if got := len(providerCommandRequestsForWorker(runner, "reviewer")); got != n {
+	if got := len(functionalharness.ProviderCommandRequestsForWorker(runner, "reviewer")); got != n {
 		t.Errorf("expected reviewer called %d times, got %d", n, got)
 	}
 }
@@ -147,7 +148,7 @@ func TestDispatcherWorkflow_ExecutionPoolIsolation(t *testing.T) {
 		TraceID:    "trace-iso-2",
 	})
 
-	runner := testutil.NewProviderCommandRunner(acceptedCommandResults(6)...)
+	runner := testutil.NewProviderCommandRunner(functionalharness.AcceptedCommandResults(6)...)
 	h := testutil.NewServiceTestHarness(t, dir,
 		testutil.WithProviderCommandRunner(runner),
 		testutil.WithFullWorkerPoolAndScriptWrap(),
@@ -155,7 +156,7 @@ func TestDispatcherWorkflow_ExecutionPoolIsolation(t *testing.T) {
 
 	h.RunUntilComplete(t, 10*time.Second)
 
-	dispatches := providerCommandRequestsForWorker(runner, "executor")
+	dispatches := functionalharness.ProviderCommandRequestsForWorker(runner, "executor")
 	if len(dispatches) != 2 {
 		t.Fatalf("expected 2 executor dispatches, got %d", len(dispatches))
 	}
@@ -166,7 +167,7 @@ func TestDispatcherWorkflow_ExecutionPoolIsolation(t *testing.T) {
 		if len(d.InputTokens) == 0 {
 			t.Fatal("executor dispatch has no input tokens")
 		}
-		tokenIDs[firstInputToken(d.InputTokens).ID] = true
+		tokenIDs[functionalharness.FirstInputToken(d.InputTokens).ID] = true
 	}
 	if len(tokenIDs) != 2 {
 		t.Errorf("expected 2 distinct input token IDs in executor dispatches, got %d unique", len(tokenIDs))
@@ -250,7 +251,7 @@ func (r *traceAwareReviewCommandRunner) Run(_ context.Context, req workers.Comma
 
 	traceID := ""
 	if len(req.InputTokens) > 0 {
-		traceID = firstInputToken(req.InputTokens).Color.TraceID
+		traceID = functionalharness.FirstInputToken(req.InputTokens).Color.TraceID
 	}
 
 	r.mu.Lock()

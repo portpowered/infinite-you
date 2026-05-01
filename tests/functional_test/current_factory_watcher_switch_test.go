@@ -13,6 +13,7 @@ import (
 	"github.com/portpowered/agent-factory/pkg/interfaces"
 	"github.com/portpowered/agent-factory/pkg/service"
 	"github.com/portpowered/agent-factory/pkg/testutil"
+	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 )
@@ -29,9 +30,9 @@ func TestCurrentFactoryWatcherSwitchSmoke_ActivatedFactoryOwnsWatchedInputWithou
 	}
 
 	provider := testutil.NewMockProvider(
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
-		acceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
+		functionalharness.AcceptedProviderResponse(),
 	)
 	core, observedLogs := observer.New(zap.InfoLevel)
 	svc, err := service.BuildFactoryService(context.Background(), &service.FactoryServiceConfig{
