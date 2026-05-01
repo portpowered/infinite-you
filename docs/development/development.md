@@ -39,6 +39,7 @@ make api-smoke
 make test
 make test-full
 make test-functional-default
+make test-functional-default-budget
 make test-functional-extended
 make test-functional-extended-service
 make test-functional-extended-replay
@@ -206,11 +207,23 @@ migrated default collections under `tests/functional/default/...`. Use it when
 reviewing or iterating on the split without re-running the remaining legacy
 package surface.
 
+`make test-functional-default-budget` is the enforced closeout gate for that
+same lane. It reruns the canonical default-lane package set through the
+repository-owned runtime checker and fails if the lane takes longer than 10
+seconds on the agreed verification path.
+
 `make test-functional-extended` is the canonical opt-in slow lane while the
 remaining heavy scenarios still live in `tests/functional_test`. It expands to
 the repository-owned `service`, `replay`, and `provider` extended bundles so
 slow coverage remains intentional and reviewable instead of hiding behind ad
 hoc `go test -run ...` commands.
+
+`make test` now aligns with that split: it runs the short non-stress package
+set outside the legacy mixed functional package, then enforces the default
+functional-lane budget through `make test-functional-default-budget`. New fast
+functional scenarios should join `tests/functional/default/...` so they remain
+inside the ordinary developer path; slower coverage belongs in the documented
+extended lane instead of re-entering `tests/functional_test` by default.
 
 The functional-test package includes
 `TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException` as a

@@ -1,9 +1,9 @@
 # Functional Test Suite Inventory
 
-This inventory captures the current `tests/functional_test` surface before the
-suite is reorganized into explicit collections. It records what is mixed
-together today, the dominant fixture/support seams, and the baseline runtime
-that future cleanup stories must improve.
+This inventory captures the current `tests/functional_test` surface during the
+transition into explicit collections. It records what is still mixed together
+in the legacy package, the dominant fixture/support seams, and the broad
+package runtime that later cleanup stories should continue shrinking.
 
 ## Inventory Date
 
@@ -11,10 +11,10 @@ that future cleanup stories must improve.
 
 ## Current Surface Summary
 
-- `tests/functional_test` currently contains 117 `_test.go` files.
-- The package also contains 19 support files whose names explicitly mark them as
+- `tests/functional_test` currently contains 104 `_test.go` files.
+- The package also contains 18 support files whose names explicitly mark them as
   helpers, fixtures, harnesses, or server scaffolding.
-- The shared `tests/functional_test/testdata` tree currently contains 67
+- The shared `tests/functional_test/testdata` tree currently contains 55
   top-level fixture directories.
 - The package root also mixes in suite-local process artifacts:
   `CLAUDE.md`, `prd.json`, `prd.md`, and `progress.txt`.
@@ -36,12 +36,11 @@ same directory as the behavioral tests:
 - `functional_server_test.go`
 - `pipeline_helpers_test.go`
 - `provider_error_corpus_helpers_test.go`
-- `provider_harness_helpers_test.go`
 - `replay_regression_harness_test.go`
 - `service_harness_test.go`
 - `short_skip_test.go`
-- `testhelpers_test.go`
 - `token_identity_helpers_test.go`
+- `utilities_test.go`
 - `work_request_helpers_test.go`
 
 ## Dominant Coverage Themes
@@ -83,7 +82,7 @@ The 67 top-level `testdata` directories also break down into clear clusters:
 
 ## Runtime Baseline
 
-The broad package baseline was captured with:
+The broad legacy-package baseline was captured with:
 
 ```powershell
 go test ./tests/functional_test -count=1
@@ -91,23 +90,22 @@ go test ./tests/functional_test -count=1
 
 Result on 2026-04-30:
 
-- Package runtime: `148.576s`
-- Three tests were skipped:
-  `TestBatchIdeationPipeline_ConcurrencyLimit2`,
-  `TestMultiChannelGuard_ExecutionIDPropagation`, and
-  `TestMultiChannelGuard_DynamicExecDirWithGuard`
+- Package runtime: `75.157s`
 
-The repository short lane was also checked with:
+The repository default verification lane now uses:
 
 ```powershell
-go test -short ./... -timeout 300s
+make test
 ```
 
 Result on 2026-04-30:
 
-- `tests/functional_test` still took `130.711s` inside the short lane
-- This confirms the repository does not yet have a separate fast default
-  functional collection
+- `make test-functional-default-budget` completed in `2.554s`
+- `make test` now keeps the ordinary developer path out of
+  `tests/functional_test` and enforces the `10s` default-lane budget through
+  the repository-owned runtime checker
+- `make test-functional-extended` remains the canonical opt-in slow lane and
+  completed in `25.768s`
 
 ## Largest Runtime Contributors
 
@@ -169,7 +167,9 @@ Use these commands to refresh the inventory after structural changes:
 
 ```powershell
 go test ./tests/functional_test -count=1
-go test -short ./... -timeout 300s
+make test-functional-default-budget
+make test-functional-extended
+make test
 Get-ChildItem tests/functional_test -Filter *_test.go | Measure-Object
 Get-ChildItem tests/functional_test/testdata -Directory | Measure-Object
 ```

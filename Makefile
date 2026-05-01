@@ -4,6 +4,8 @@ BIN_DIR     := bin
 BUN         ?= bun
 GO          ?= go
 INSTALL_DIR := $(or $(GOBIN),$(shell $(GO) env GOPATH)/bin)
+FUNCTIONAL_DEFAULT_BUDGET ?= 10s
+SHORT_TEST_PACKAGES := ./cmd/... ./internal/... ./pkg/... ./tests/adhoc
 SCRIPT_TIMEOUT_COMPANION_SMOKE_TEST := TestIntegrationSmoke_ScriptTimeoutCompanionRequeuesBeforeLaterCompletion
 SCRIPT_TIMEOUT_COMPANION_SMOKE_COUNT ?= 100
 SCRIPT_TIMEOUT_COMPANION_SMOKE_TIMEOUT ?= 120s
@@ -40,7 +42,7 @@ endif
 
 GO_TEST_TIMEOUT ?= 300s
 
-.PHONY: default build intall bundle-api generate-api generate-go-api generate-ui-api api-smoke docs-reference-check docs-reference-smoke test test-full test-functional-default test-functional-extended test-functional-extended-service test-functional-extended-replay test-functional-extended-provider script-timeout-companion-smoke-100 cron-time-work-smoke current-factory-watcher-switch-smoke release-surface-smoke artifact-contract-closeout lint deadcode public-surface-check test-race fmt vet deps deps-tidy dashboard-verify ui-deps ui-build ui-test ui-storybook ui-test-storybook clean
+.PHONY: default build intall bundle-api generate-api generate-go-api generate-ui-api api-smoke docs-reference-check docs-reference-smoke test test-full test-functional-default test-functional-default-budget test-functional-extended test-functional-extended-service test-functional-extended-replay test-functional-extended-provider script-timeout-companion-smoke-100 cron-time-work-smoke current-factory-watcher-switch-smoke release-surface-smoke artifact-contract-closeout lint deadcode public-surface-check test-race fmt vet deps deps-tidy dashboard-verify ui-deps ui-build ui-test ui-storybook ui-test-storybook clean
 
 default:
 	$(MAKE) generate-api
@@ -81,13 +83,17 @@ docs-reference-smoke:
 	$(GO) test ./tests/functional_test -run TestReferenceDocsSurface_ -count=1 -timeout $(GO_TEST_TIMEOUT)
 
 test:
-	$(GO) test -short ./... -timeout $(GO_TEST_TIMEOUT)
+	$(GO) test -short $(SHORT_TEST_PACKAGES) -timeout $(GO_TEST_TIMEOUT)
+	$(MAKE) test-functional-default-budget
 
 test-full:
 	$(GO) test ./... -timeout $(GO_TEST_TIMEOUT)
 
 test-functional-default:
 	$(GO) test ./tests/functional/default/... -count=1 -timeout $(GO_TEST_TIMEOUT)
+
+test-functional-default-budget:
+	$(GO) run ./cmd/functionalruntimecheck -budget $(FUNCTIONAL_DEFAULT_BUDGET) -timeout $(GO_TEST_TIMEOUT)
 
 test-functional-extended: test-functional-extended-service test-functional-extended-replay test-functional-extended-provider
 
@@ -110,7 +116,7 @@ current-factory-watcher-switch-smoke:
 	$(GO) test ./tests/functional_test -run $(CURRENT_FACTORY_WATCHER_SWITCH_SMOKE_TEST) -count=$(CURRENT_FACTORY_WATCHER_SWITCH_SMOKE_COUNT) -timeout $(CURRENT_FACTORY_WATCHER_SWITCH_SMOKE_TIMEOUT)
 
 release-surface-smoke:
-	$(GO) test ./tests/functional_test -run TestProjectAgnosticCleanupSmoke_ -count=1 -timeout $(GO_TEST_TIMEOUT)
+	$(GO) test ./tests/functional_test -run TestCleanupSmoke_ -count=1 -timeout $(GO_TEST_TIMEOUT)
 	$(GO) test ./pkg/cli/init -run TestInit_GeneratedCustomerFacingFilesDoNotContainPortOS -count=1 -timeout $(GO_TEST_TIMEOUT)
 	$(MAKE) public-surface-check
 

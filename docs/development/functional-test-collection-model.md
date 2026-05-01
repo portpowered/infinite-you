@@ -144,6 +144,7 @@ Later stories should converge on these command responsibilities:
 | Target | Responsibility |
 | --- | --- |
 | `make test-functional-default` | Run only the default functional collections under `tests/functional/default/...` |
+| `make test-functional-default-budget` | Enforce the same default functional lane against the 10-second runtime budget |
 | `make test-functional-extended` | Run the opt-in extended collections under `tests/functional/extended/...` |
 | `make test` | Keep the repository's ordinary developer path wired to the default functional lane rather than the full historical package |
 | Focused smoke targets | Continue to exist for repeated or high-signal scenarios when they provide extra stability evidence |
