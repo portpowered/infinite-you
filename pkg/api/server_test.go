@@ -1373,6 +1373,78 @@ func TestGetDashboardUI_FallbacksToIndexForClientRoutes(t *testing.T) {
 	}
 }
 
+func TestGetDashboardUI_BundleUsesCanonicalPublicEndpoints(t *testing.T) {
+	mf := &testutil.MockFactory{
+		Marking: &petri.MarkingSnapshot{
+			Tokens: make(map[string]*interfaces.Token),
+		},
+	}
+	logger, _ := zap.NewDevelopment()
+	server := httptest.NewServer(NewServer(mf, 8080, logger).Handler())
+	defer server.Close()
+
+	resp, err := http.Get(server.URL + "/dashboard/ui")
+	if err != nil {
+		t.Fatalf("GET /dashboard/ui: %v", err)
+	}
+	body, err := io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+	if err != nil {
+		t.Fatalf("read /dashboard/ui: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("GET /dashboard/ui status = %d, want 200", resp.StatusCode)
+	}
+
+	matches := regexp.MustCompile(`(?:src|href)="(/dashboard/ui/assets/[^"]+)"`).FindAllStringSubmatch(string(body), -1)
+	if len(matches) == 0 {
+		t.Fatalf("dashboard shell did not reference embedded assets: %s", string(body))
+	}
+
+	workTracePattern := regexp.MustCompile(`["'` + "`" + `]/work/[^"'` + "`" + `]+/trace(?:["'` + "`" + `/?]|$)`)
+	removedEndpointPatterns := map[string]*regexp.Regexp{
+		"/state":            regexp.MustCompile(`["'` + "`" + `]/state(?:["'` + "`" + `/?]|$)`),
+		"/traces/":          regexp.MustCompile(`["'` + "`" + `]/traces/`),
+		"/workflows":        regexp.MustCompile(`["'` + "`" + `]/workflows(?:["'` + "`" + `/?]|$)`),
+		"/dashboard/stream": regexp.MustCompile(`["'` + "`" + `]/dashboard/stream(?:["'` + "`" + `/?]|$)`),
+	}
+
+	foundEventsEndpoint := false
+	for _, match := range matches {
+		assetPath := match[1]
+		if !strings.HasSuffix(assetPath, ".js") {
+			continue
+		}
+
+		assetResp, err := http.Get(server.URL + assetPath)
+		if err != nil {
+			t.Fatalf("GET %s: %v", assetPath, err)
+		}
+		assetBody, err := io.ReadAll(assetResp.Body)
+		_ = assetResp.Body.Close()
+		if err != nil {
+			t.Fatalf("read %s: %v", assetPath, err)
+		}
+		if assetResp.StatusCode != http.StatusOK {
+			t.Fatalf("GET %s status = %d, want 200", assetPath, assetResp.StatusCode)
+		}
+
+		bundle := string(assetBody)
+		foundEventsEndpoint = foundEventsEndpoint || strings.Contains(bundle, "/events")
+		for removed, pattern := range removedEndpointPatterns {
+			if pattern.MatchString(bundle) {
+				t.Fatalf("dashboard bundle %s still references removed endpoint %q", assetPath, removed)
+			}
+		}
+		if workTracePattern.MatchString(bundle) {
+			t.Fatalf("dashboard bundle %s still references removed work trace endpoint", assetPath)
+		}
+	}
+	if !foundEventsEndpoint {
+		t.Fatal("dashboard bundle did not reference canonical /events stream endpoint")
+	}
+}
+
 // portos:func-length-exception owner=agent-factory reason=legacy-events-stream-smoke review=2026-07-18 removal=split-history-and-live-stream-assertions-before-next-events-api-change
 func TestGetEvents_ReplaysHistoryThenStreamsLiveEventsInOrder(t *testing.T) {
 	eventTime := time.Date(2026, 4, 8, 12, 0, 0, 0, time.UTC)

@@ -402,20 +402,26 @@ func TestNewRootCommand_DoesNotExposeRemovedAuditStateSurfaces(t *testing.T) {
 	root := NewRootCommand()
 
 	for _, subcommand := range root.Commands() {
-		if subcommand.Name() == "audit" {
-			t.Fatal("audit command should not be registered")
-		}
-		if subcommand.Name() == "status" {
-			t.Fatal("status command should not be registered")
+		switch subcommand.Name() {
+		case "audit", "status", "trace", "formattraceexplorer":
+			t.Fatalf("%s command should not be registered", subcommand.Name())
 		}
 	}
 
-	root.SetOut(io.Discard)
-	root.SetErr(io.Discard)
-	root.SetArgs([]string{"audit", "state-surfaces"})
+	for _, args := range [][]string{
+		{"audit", "state-surfaces"},
+		{"formattraceexplorer"},
+		{"status"},
+		{"trace"},
+	} {
+		root := NewRootCommand()
+		root.SetOut(io.Discard)
+		root.SetErr(io.Discard)
+		root.SetArgs(args)
 
-	if err := root.Execute(); err == nil {
-		t.Fatal("expected removed audit state-surfaces command to fail")
+		if err := root.Execute(); err == nil {
+			t.Fatalf("expected removed command %q to fail", strings.Join(args, " "))
+		}
 	}
 }
 

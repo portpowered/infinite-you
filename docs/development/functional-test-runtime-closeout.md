@@ -6,7 +6,7 @@ extended, and remaining legacy-package paths.
 
 ## Inventory Date
 
-- 2026-04-30
+- 2026-05-01
 
 ## Canonical Commands
 
@@ -20,13 +20,13 @@ extended, and remaining legacy-package paths.
 
 ## Measured Runtime
 
-Measured on 2026-04-30 from the repository root in this worktree:
+Measured on 2026-05-01 from the repository root in this worktree:
 
 | Command | Runtime | Result |
 | --- | --- | --- |
-| `make test-functional-default-budget` | `2.554s` | Pass |
-| `make test-functional-extended` | `25.768s` | Pass |
-| `go test ./tests/functional_test -count=1` | `75.157s` | Pass |
+| `make test-functional-default-budget` | `2.723s` | Pass |
+| `make test-functional-extended` | `72.182s` | Pass |
+| `go test ./tests/functional_test -count=1` | `72.182s` | Pass |
 
 ## Closeout Notes
 
