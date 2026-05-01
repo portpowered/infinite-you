@@ -29,21 +29,18 @@
   - `docs/processes/factory-workstation-relevant-files.md` and the checked-in
     meta instructions also treat `factory/logs/meta/asks.md` as the only live
     customer backlog
-- the remaining control-plane drift is now concentrated in the progress
-  surface:
-  - `factory/logs/meta/progress.tsx` is still the tracked file on `HEAD`
-  - `factory/logs/meta/progress.txt` was missing before this pass even though
-    the contract docs and maintainer instructions expect it
+- the checked-in progress surface is now singular again:
+  - `factory/logs/meta/progress.txt` is the only tracked meta progress surface
+  - `factory/logs/meta/progress.tsx` has been retired and is now an obsolete
+    contract path that must stay absent
 
 ## current blockers
 
 1. the checked-in meta world-state surfaces had drifted behind `main` and were
    still describing solved inbox residue as if it were repository truth.
-2. the canonical checked-in progress surface was missing even though the public
-   workflow contract and maintainer prompts expect `factory/logs/meta/progress.txt`.
-3. the tracked legacy `factory/logs/meta/progress.tsx` surface still conflicts
-   with the documented `progress.txt` contract and can mislead future
-   maintainers about which path is canonical.
+2. the progress-surface cleanup still needs a narrow closeout pass across any
+   remaining prompt, doc, test, or guard references before the lane can be
+   considered fully reconciled.
 
 ## theory of mind
 
@@ -52,8 +49,8 @@
   broad feature ask from the non-urgent backlog.
 - the checked-in ask backlog and live workflow inboxes are now cleaner than the
   prior world model claimed.
-- the immediate risk has shifted from inbox residue to contract drift around
-  the meta progress surface.
+- the immediate risk has narrowed from a competing tracked progress artifact to
+  any remaining reference drift around the canonical meta progress path.
 - local ignored files under `factory/inputs/**` and `factory/logs/meta/*` are
   not repository truth and should be verified with `git ls-files` before they
   influence the checked-in world model.
@@ -68,11 +65,11 @@
 
 - do not start the release, CI/CD, throttle-guard, or website-quality asks yet.
 - keep the checked-in meta surfaces current with `main`.
-- restore `factory/logs/meta/progress.txt` as the canonical checked-in progress
+- keep `factory/logs/meta/progress.txt` as the canonical checked-in progress
   surface for this workflow.
-- dispatch one narrow cleanup idea that retires the legacy tracked
-  `factory/logs/meta/progress.tsx` path and reconciles any prompt or guard
-  references that still imply the wrong control-plane file.
+- finish one narrow cleanup pass that reconciles any remaining prompt, doc,
+  test, or guard references now that the legacy tracked
+  `factory/logs/meta/progress.tsx` path is retired.
 - after that progress-surface lane lands, reassess whether the next move should
   be another narrow control-plane pass or the highest-value non-urgent customer
   ask.

@@ -111,6 +111,11 @@ var artifactContractEntries = []ArtifactContractEntry{
 		Reason:         "Checked-in meta progress surface consumed by the cleaner workflow.",
 	},
 	{
+		Path:           "factory/logs/meta/progress.tsx",
+		Classification: ArtifactObsolete,
+		Reason:         "Legacy meta progress component path retired in favor of the canonical checked-in text progress surface.",
+	},
+	{
 		Path:           "factory/logs/agent-fails.json",
 		Classification: ArtifactCheckedIn,
 		Reason:         "Checked-in event-stream sample used for replay conversion coverage.",
