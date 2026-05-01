@@ -1,4 +1,4 @@
-package functional_test
+package workflow_test
 
 import (
 	"context"
@@ -13,12 +13,6 @@ import (
 	functionalharness "github.com/portpowered/agent-factory/tests/functional/support/harness"
 )
 
-// ---------------------------------------------------------------------------
-// Happy-path tests
-// ---------------------------------------------------------------------------
-
-// TestDispatcherWorkflow_SingleSeedFile exercises the full dispatcher pipeline:
-// idea → planner → prd → executor → in-review → reviewer → complete.
 func TestDispatcherWorkflow_SingleSeedFile(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "dispatcher_workflow"))
 
@@ -55,12 +49,9 @@ func TestDispatcherWorkflow_SingleSeedFile(t *testing.T) {
 		t.Errorf("expected reviewer called 1 time, got %d", got)
 	}
 
-	// Verify token lineage: prd traces back to original idea.
 	h.Assert().TokenHasTraceID("prd:complete", originTraceID)
 }
 
-// TestDispatcherWorkflow_TwoSeedFiles verifies 2 independent ideas flow through
-// the planner → executor → reviewer pipeline.
 func TestDispatcherWorkflow_TwoSeedFiles(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "dispatcher_workflow"))
 
@@ -96,8 +87,6 @@ func TestDispatcherWorkflow_TwoSeedFiles(t *testing.T) {
 	}
 }
 
-// TestDispatcherWorkflow_MultipleSeedFiles verifies N=5 ideas flow through the
-// full pipeline independently.
 func TestDispatcherWorkflow_MultipleSeedFiles(t *testing.T) {
 	const n = 5
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "dispatcher_workflow"))
@@ -127,13 +116,6 @@ func TestDispatcherWorkflow_MultipleSeedFiles(t *testing.T) {
 	}
 }
 
-// ---------------------------------------------------------------------------
-// Execution pool isolation
-// ---------------------------------------------------------------------------
-
-// TestDispatcherWorkflow_ExecutionPoolIsolation verifies that 2 seed files
-// produce independent executor dispatches with distinct input tokens,
-// confirming that concurrent work items use separate worker slots.
 func TestDispatcherWorkflow_ExecutionPoolIsolation(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "dispatcher_workflow"))
 
@@ -161,7 +143,6 @@ func TestDispatcherWorkflow_ExecutionPoolIsolation(t *testing.T) {
 		t.Fatalf("expected 2 executor dispatches, got %d", len(dispatches))
 	}
 
-	// Verify dispatches have different input tokens (different work items).
 	tokenIDs := make(map[string]bool)
 	for _, d := range dispatches {
 		if len(d.InputTokens) == 0 {
@@ -176,14 +157,6 @@ func TestDispatcherWorkflow_ExecutionPoolIsolation(t *testing.T) {
 	h.Assert().PlaceTokenCount("prd:complete", 2)
 }
 
-// ---------------------------------------------------------------------------
-// Review failure / retry
-// ---------------------------------------------------------------------------
-
-// TestDispatcherWorkflow_ReviewFailurePerItem verifies that the reviewer can
-// reject work, the executor retries, and the retry limit (max_visits=3 on the
-// exhaustion rule) applies per work item, not globally. Two ideas are seeded:
-// one is always rejected (exhausts and fails), the other is accepted.
 func TestDispatcherWorkflow_ReviewFailurePerItem(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "dispatcher_workflow"))
 
@@ -198,8 +171,6 @@ func TestDispatcherWorkflow_ReviewFailurePerItem(t *testing.T) {
 		TraceID:    "trace-will-pass",
 	})
 
-	// Use a trace-aware provider command runner: reject items with trace "trace-will-fail",
-	// accept items with trace "trace-will-pass".
 	runner := &traceAwareReviewCommandRunner{
 		rejectTraceID: "trace-will-fail",
 		callCounts:    make(map[string]int),
@@ -211,14 +182,9 @@ func TestDispatcherWorkflow_ReviewFailurePerItem(t *testing.T) {
 
 	h.RunUntilComplete(t, 15*time.Second)
 
-	// The passing item should complete.
 	h.Assert().HasTokenInPlace("prd:complete")
-
-	// The failing item should be in failed state after exhaustion.
 	h.Assert().HasTokenInPlace("prd:failed")
 
-	// Verify call counts: the rejected trace should have been reviewed exactly 3 times
-	// (max_visits=3 on the exhaustion rule).
 	runner.mu.Lock()
 	failCount := runner.callCounts["trace-will-fail"]
 	passCount := runner.callCounts["trace-will-pass"]
@@ -232,12 +198,6 @@ func TestDispatcherWorkflow_ReviewFailurePerItem(t *testing.T) {
 	}
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-// traceAwareReviewCommandRunner rejects reviewer commands whose input token
-// TraceID matches rejectTraceID, and accepts all other provider commands.
 type traceAwareReviewCommandRunner struct {
 	rejectTraceID string
 	mu            sync.Mutex

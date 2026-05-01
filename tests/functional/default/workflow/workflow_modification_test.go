@@ -1,4 +1,4 @@
-package functional_test
+package workflow_test
 
 import (
 	"testing"
@@ -8,15 +8,9 @@ import (
 	"github.com/portpowered/agent-factory/pkg/testutil"
 )
 
-// TestWorkflowModificationAndReload validates that different workflow versions
-// produce correct results when loaded from config:
-//
-//	Given: V1 config (2-transition pipeline) and V2 config (3-transition pipeline with review)
-//	When:  work is submitted to each version independently
-//	Then:  V1 completes via 2 transitions, V2 completes via 3 transitions
 func TestWorkflowModificationAndReload(t *testing.T) {
 	skipSlowFunctionalSmokeInShort(t, "slow workflow reload smoke")
-	// --- V1 workflow: init → process → processing → finalize → complete ---
+
 	v1Dir := testutil.CopyFixtureDir(t, fixtureDir(t, "workflow_v1_dir"))
 	testutil.WriteSeedFile(t, v1Dir, "task", []byte("v1 work item"))
 
@@ -29,10 +23,8 @@ func TestWorkflowModificationAndReload(t *testing.T) {
 		testutil.WithProvider(providerV1),
 		testutil.WithFullWorkerPoolAndScriptWrap(),
 	)
-
 	h1.RunUntilComplete(t, 10*time.Second)
 
-	// V1 completes via 2-transition path.
 	h1.Assert().
 		HasTokenInPlace("task:complete").
 		HasNoTokenInPlace("task:init").
@@ -46,7 +38,6 @@ func TestWorkflowModificationAndReload(t *testing.T) {
 		t.Errorf("v1: expected finalizer called 1 time, got %d", providerV1.CallCount("finalizer"))
 	}
 
-	// --- V2 workflow: adds review step between processing and complete ---
 	v2Dir := testutil.CopyFixtureDir(t, fixtureDir(t, "workflow_v2_dir"))
 	testutil.WriteSeedFile(t, v2Dir, "task", []byte("v2 work item"))
 
@@ -60,10 +51,8 @@ func TestWorkflowModificationAndReload(t *testing.T) {
 		testutil.WithProvider(providerV2),
 		testutil.WithFullWorkerPoolAndScriptWrap(),
 	)
-
 	h2.RunUntilComplete(t, 10*time.Second)
 
-	// V2 completes via 3-transition path.
 	h2.Assert().
 		HasTokenInPlace("task:complete").
 		HasNoTokenInPlace("task:init").
@@ -82,12 +71,6 @@ func TestWorkflowModificationAndReload(t *testing.T) {
 	}
 }
 
-// TestWorkflowModificationRejectionLoop validates that a v2 workflow
-// with a rejection loop works correctly when loaded from config:
-//
-//	Given: V2 config with rejection routing from approve back to init
-//	When:  approver rejects once, then accepts
-//	Then:  token completes after one rejection loop
 func TestWorkflowModificationRejectionLoop(t *testing.T) {
 	dir := testutil.CopyFixtureDir(t, fixtureDir(t, "workflow_v2_rejection_dir"))
 	testutil.WriteSeedFile(t, dir, "doc", []byte("needs-revision draft"))
@@ -104,7 +87,6 @@ func TestWorkflowModificationRejectionLoop(t *testing.T) {
 
 	h.RunUntilComplete(t, 10*time.Second)
 
-	// Completes after one rejection loop.
 	h.Assert().
 		HasTokenInPlace("doc:complete").
 		HasNoTokenInPlace("doc:init").
@@ -119,15 +101,9 @@ func TestWorkflowModificationRejectionLoop(t *testing.T) {
 	}
 }
 
-// TestWorkflowModificationPreservesIndependentWorkflows verifies that
-// running two different configs independently produces isolated results:
-//
-//	Given: Two independent workflow configs
-//	When:  each runs work items to completion
-//	Then:  neither workflow's results are affected by the other
 func TestWorkflowModificationPreservesIndependentWorkflows(t *testing.T) {
 	skipSlowFunctionalSmokeInShort(t, "slow independent-workflow reload smoke")
-	// Workflow A: simple pipeline.
+
 	dirA := testutil.CopyFixtureDir(t, fixtureDir(t, "simple_pipeline"))
 	testutil.WriteSeedFile(t, dirA, "task", []byte("item for A"))
 
@@ -143,7 +119,6 @@ func TestWorkflowModificationPreservesIndependentWorkflows(t *testing.T) {
 
 	hA.Assert().HasTokenInPlace("task:complete").TokenCount(1)
 
-	// Workflow B: 2-transition pipeline (different config).
 	dirB := testutil.CopyFixtureDir(t, fixtureDir(t, "workflow_v1_dir"))
 	testutil.WriteSeedFile(t, dirB, "task", []byte("task for B"))
 
@@ -160,7 +135,6 @@ func TestWorkflowModificationPreservesIndependentWorkflows(t *testing.T) {
 
 	hB.Assert().HasTokenInPlace("task:complete").TokenCount(1)
 
-	// Verify A's state is unaffected after B's execution.
 	hA.Assert().
 		HasTokenInPlace("task:complete").
 		HasNoTokenInPlace("task:init").

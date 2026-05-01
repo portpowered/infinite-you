@@ -22,8 +22,10 @@ This checkout is operated from the repository root that contains `go.mod`, `Make
 - `pkg/workers/` owns worker execution contracts, provider calls, script command execution, and work-scoped metadata.
 - `pkg/replay/` owns record/replay artifact construction, side-effect matching, and deterministic replay behavior.
 - `ui/` is the Vite dashboard source. `ui/dist/` contains committed embedded assets.
-- `tests/functional_test/` is the current broad functional-test package; the
-  target collection split is defined in
+- `tests/functional/default/` now owns the migrated fast-lane collections that
+  can run independently of the legacy package.
+- `tests/functional_test/` still contains the remaining mixed functional-test
+  package during the transition; the target collection split is defined in
   [Functional Test Collection Model](functional-test-collection-model.md).
 
 ## Development Commands
@@ -36,6 +38,7 @@ make generate-api
 make api-smoke
 make test
 make test-full
+make test-functional-default
 make release-surface-smoke
 make lint
 make script-timeout-companion-smoke-100
@@ -193,6 +196,11 @@ the suite splits out of `tests/functional_test`. The target state is explicit
 package directories under `tests/functional/` plus `Makefile` lane targets;
 `testing.Short()` skips inside one large package are not the long-term
 collection boundary.
+
+`make test-functional-default` is the canonical fast-lane command for the
+migrated default collections under `tests/functional/default/...`. Use it when
+reviewing or iterating on the split without re-running the remaining legacy
+package surface.
 
 The functional-test package includes
 `TestFunctionalTestsUseFullWorkerPoolHarnessOrDocumentException` as a
