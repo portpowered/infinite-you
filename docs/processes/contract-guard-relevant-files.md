@@ -15,3 +15,4 @@ This file inventories the broad contract guards that scan filesystem roots with 
 
 - Broad handwritten-source guards should keep package-specific generated-path exclusions explicit at each `contractguard.ShouldSkipDir(...)` call site even when hidden-directory handling is shared.
 - The inventory separates handwritten-source scans from generated-output exclusions so future guard cleanup can document ownership decisions in code and in this file together.
+- Ordered contract inventories should assert normalized path uniqueness in the code-owned source before comparing mirrored docs, so duplicate entries fail at the mechanism instead of surfacing later as doc drift.

@@ -40,6 +40,7 @@ func TestArtifactContractInventory_ClassifiesTargetedRootArtifacts(t *testing.T)
 func TestArtifactContractInventory_DocumentationMatchesClassifications(t *testing.T) {
 	docEntries := parseArtifactContractInventoryDoc(t)
 	codeEntries := ArtifactContract()
+	assertUniqueNormalizedArtifactContractPaths(t, codeEntries)
 
 	if len(docEntries) != len(codeEntries) {
 		t.Fatalf("inventory doc entries = %d, want %d", len(docEntries), len(codeEntries))
@@ -128,6 +129,19 @@ func normalizeArtifactContractDocPath(path string) string {
 		return ""
 	}
 	return strings.TrimSuffix(normalized, "/")
+}
+
+func assertUniqueNormalizedArtifactContractPaths(t *testing.T, entries []ArtifactContractEntry) {
+	t.Helper()
+
+	seen := make(map[string]int, len(entries))
+	for i, entry := range entries {
+		normalized := normalizeArtifactContractDocPath(entry.Path)
+		if firstIndex, ok := seen[normalized]; ok {
+			t.Fatalf("artifact contract contains duplicate normalized path %q at entries[%d] and entries[%d]", normalized, firstIndex, i)
+		}
+		seen[normalized] = i
+	}
 }
 
 func assertCheckedInArtifactTracked(t *testing.T, repoRoot string, rel string) {
