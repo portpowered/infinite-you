@@ -14,6 +14,11 @@ unless a checked-in maintainer document explicitly redirects ownership there.
 If you encounter `factory/meta/asks.md`, treat it as a redirect-only legacy
 stub and do not read or edit it as a second backlog surface.
 
+The canonical checked-in meta progress surface for this workflow is
+`factory/logs/meta/progress.txt`. Treat any other progress file path as legacy
+or workspace-local unless a checked-in maintainer document explicitly
+redirects ownership there.
+
 # Steps
 ## step 0 - update the repo
 run git pull and make the workspace be up to date to remote
