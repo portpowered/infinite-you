@@ -24,9 +24,9 @@ Measured on 2026-05-01 from the repository root in this worktree:
 
 | Command | Runtime | Result |
 | --- | --- | --- |
-| `make test-functional-default-budget` | `2.723s` | Pass |
-| `make test-functional-extended` | `72.182s` | Pass |
-| `go test ./tests/functional_test -count=1` | `72.182s` | Pass |
+| `make test-functional-default-budget` | `1.991s` | Pass |
+| `make test-functional-extended` | `125.153s` | Pass |
+| `go test ./tests/functional_test -count=1` | `122.912s` | Pass |
 
 ## Closeout Notes
 

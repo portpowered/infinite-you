@@ -11,8 +11,8 @@ package runtime that later cleanup stories should continue shrinking.
 
 ## Current Surface Summary
 
-- `tests/functional_test` currently contains 104 `_test.go` files.
-- The package also contains 18 support files whose names explicitly mark them as
+- `tests/functional_test` currently contains 102 `_test.go` files.
+- The package also contains 17 support files whose names explicitly mark them as
   helpers, fixtures, harnesses, or server scaffolding.
 - The shared `tests/functional_test/testdata` tree currently contains 54
   top-level fixture directories.
@@ -31,7 +31,6 @@ same directory as the behavioral tests:
 - `event_history_dispatch_helpers_test.go`
 - `export_import_fixture_test.go`
 - `export_import_harness_test.go`
-- `functional_harness_guardrail_test.go`
 - `functional_server_override_regression_test.go`
 - `functional_server_test.go`
 - `pipeline_helpers_test.go`
@@ -55,7 +54,7 @@ to own and tune as separate collections:
 | API, dashboard, and service-mode coverage | `e2e_test.go`, `generated_api_smoke_test.go`, `named_factory_api_test.go`, `dashboard_engine_state_test.go`, `dashboard_snapshot_test.go`, `current_factory_watcher_switch_test.go` | `e2e`, `service_simple`, `submitted_parent_child_filewatcher` | These tests pay for live server or service harness setup but are still stored in the same bucket as pure fixture checks. |
 | Replay, export/import, serialization, and portability | `export_import_e2e_smoke_test.go`, `record_replay_end_to_end_test.go`, `replay_regression_harness_test.go`, `event_replay_smoke_test.go`, `factory_only_serialization_smoke_test.go`, `automat_portability_fixture_test.go` | `automat_portability_smoke`, `factory_request_batch`, `service_parameterized_success` | The suite combines artifact-format checks, replay projections, and full round-trip runtime scenarios. |
 | Provider, script, and mock-worker execution behavior | `provider_error_smoke_test.go`, `script_executor_test.go`, `mock_workers_smoke_test.go`, `integration_smoke_test.go`, `timeout_cleanup_smoke_test.go` | `script_executor_dir`, `retry_exhaustion`, `review_retry_exhaustion` | These tests are some of the most expensive because they exercise retries, throttling, subprocesses, or timeout cleanup. |
-| Fixture, harness, and policy guardrails | `functional_harness_guardrail_test.go`, `service_harness_test.go`, `provider_harness_helpers_test.go`, `short_skip_test.go` | `tags_test`, `same_name_guard_dir` | Support and guardrail seams are already first-class concerns, but they currently share ownership with scenario files instead of sitting in explicit support collections. |
+| Fixture, harness, and policy guardrails | `service_harness_test.go`, `export_import_harness_test.go`, `functional_server_test.go`, `short_skip_test.go` | `tags_test`, `same_name_guard_dir` | Support and harness seams are still first-class concerns in the legacy package, even after the reviewed source-scan guard moved into `pkg/testutil`. |
 
 ## Major Fixture Groups
 
@@ -88,9 +87,9 @@ The broad legacy-package baseline was captured with:
 go test ./tests/functional_test -count=1
 ```
 
-Result on 2026-04-30:
+Result on 2026-05-01:
 
-- Package runtime: `75.157s`
+- Package runtime: `122.912s`
 
 The repository default verification lane now uses:
 
@@ -98,15 +97,15 @@ The repository default verification lane now uses:
 make test
 ```
 
-Result on 2026-04-30:
+Result on 2026-05-01:
 
-- `make test-functional-default-budget` completed in `2.554s`
+- `make test-functional-default-budget` completed in `1.991s`
 - `make test` now keeps the ordinary developer path out of
   `tests/functional_test` and enforces the `10s` default-lane budget through
   the repository-owned runtime checker
 - `make test-functional-extended` remains the canonical opt-in slow lane,
   should continue to cover the full remaining legacy package during the
-  transition, and completed in `25.768s`
+  transition, and completed in `125.153s`
 
 ## Largest Runtime Contributors
 
