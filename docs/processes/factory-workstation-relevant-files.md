@@ -25,6 +25,7 @@ work inputs.
 - Treat `factory/inputs/task/default/` as the live standalone task inbox, not as a checked-in template catalog; clean checkouts may only contain `.gitkeep`.
 - Treat `factory/logs/meta/asks.md` as the only checked-in customer-ask backlog; if another path mentions asks, use this file as the ownership source of truth.
 - Treat `factory/logs/meta/progress.txt` as the only checked-in maintainer progress log; if another progress path appears, treat it as legacy or workspace-local until a checked-in maintainer document explicitly redirects ownership there.
+- Keep the root `.gitignore` allowlist aligned with the canonical checked-in meta surfaces: preserve `factory/logs/meta/progress.txt`, `factory/logs/meta/asks.md`, and `factory/logs/meta/view.md`, and do not re-allow legacy progress aliases.
 - Before redispatching a checked-in workflow-input markdown file, verify that the lane is not already landed on `main`; stale inbox residue should be treated as cleanup, not as a fresh request.
 - When a legacy maintainer path must remain for compatibility, reduce it to a redirect-only stub that names the canonical checked-in surface and carries no duplicated backlog content.
 - If a legacy checked-in path remains as a redirect-only stub, classify that stub explicitly in `docs/development/root-factory-artifact-contract-inventory.md` and `internal/testpath/artifact_contract.go` so the redirect contract stays test-enforced.

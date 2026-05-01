@@ -75,6 +75,51 @@ func TestArtifactContractInventory_LegacyMetaAskPathRemainsRedirectOnlyStub(t *t
 	}
 }
 
+func TestArtifactContractInventory_CleanerPromptUsesCanonicalMetaProgressPath(t *testing.T) {
+	path := MustClassifiedArtifactPath(t, "factory/workstations/cleaner/AGENTS.md", ArtifactCheckedIn)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read cleaner prompt: %v", err)
+	}
+
+	content := string(data)
+	for _, want := range []string{
+		"The canonical checked-in meta progress surface for this workflow is",
+		"`factory/logs/meta/progress.txt`",
+		"Treat any other progress file path as legacy",
+	} {
+		if !strings.Contains(content, want) {
+			t.Fatalf("cleaner prompt missing canonical progress guidance %q", want)
+		}
+	}
+	if strings.Contains(content, "factory/logs/meta/progress.tsx") {
+		t.Fatalf("cleaner prompt should not reference retired progress path:\n%s", content)
+	}
+}
+
+func TestArtifactContractInventory_GitIgnorePreservesOnlyCanonicalMetaProgressPath(t *testing.T) {
+	path := MustRepoPath(t, ".gitignore")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read .gitignore: %v", err)
+	}
+
+	content := string(data)
+	for _, want := range []string{
+		"factory/logs/meta/*",
+		"!factory/logs/meta/asks.md",
+		"!factory/logs/meta/progress.txt",
+		"!factory/logs/meta/view.md",
+	} {
+		if !strings.Contains(content, want) {
+			t.Fatalf(".gitignore missing canonical meta log rule %q", want)
+		}
+	}
+	if strings.Contains(content, "progress.tsx") {
+		t.Fatalf(".gitignore should not preserve retired progress path:\n%s", content)
+	}
+}
+
 type artifactContractDocEntry struct {
 	Path           string
 	Classification string
