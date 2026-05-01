@@ -12,6 +12,7 @@ This inventory records the checked-in files and directories that the maintainer 
 | `api/components/schemas/factory-config/` | Factory-config OpenAPI fragment family | Public named-factory and factory-topology schemas are authored here and should stay split from `api/openapi-main.yaml`. |
 | `api/components/schemas/factory-world/` | Additive factory-world OpenAPI fragment family | Dashboard-facing read-model schemas belong here one schema per file rather than remaining inline in `api/openapi-main.yaml`. |
 | `cmd/factory/` | CLI entrypoint | Root-level build and smoke commands compile or execute the `factory` binary from this source tree. |
+| `cmd/functionalruntimecheck/` | Default functional runtime budget gate | The canonical fast-lane budget command is launched from `Makefile`, so any nested `go test` invocation in this helper must inherit the `$(GO)` toolchain override rather than hardcoding `go`. |
 | `docs/development/*-closeout.md` | Cleanup verification artifacts | Narrow cleanup lanes record the exact root-level validation bundle here when maintainers need durable proof beyond `progress.txt`. |
 | `docs/development/functional-test-suite-inventory.md` | Functional suite cleanup inventory | Records the mixed `tests/functional_test` coverage themes, support-file ownership seams, and the current baseline commands and runtimes that later suite-splitting work must improve. |
 | `docs/development/openapi-schema-standardization-inventory.md` | OpenAPI cleanup inventory | Records the authored fragment layout, remaining inline schemas, and the canonical bundle and generation verification surfaces for schema-standardization work. |
@@ -42,6 +43,7 @@ This inventory records the checked-in files and directories that the maintainer 
 
 - When maintainer docs describe command execution, anchor the instructions to the repository root that contains `go.mod` and `Makefile`.
 - If a workflow temporarily changes directories, state that it starts from the repository root and why the subdirectory hop is required.
+- When a repository-owned Go helper shells out to another Go command, thread the `Makefile` `$(GO)` override through to the nested process instead of hardcoding `go`, so custom toolchains and wrappers stay in effect for the full command path.
 - When GitHub Actions or other automation is added, prefer repository-owned root commands or package scripts that the maintainer guide already documents instead of inventing CI-only command sequences.
 - When contributor docs mention the repository CI workflow, mirror the exact root-level command sequence and its stated scope from `.github/workflows/ci.yml` so local reproduction and review expectations do not drift.
 - When UI assets are committed for Go embedding, keep the build pipeline responsible for normalizing output filenames and refreshing any cache-busting stamp files instead of hand-editing `ui/dist/`.

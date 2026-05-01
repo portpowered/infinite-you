@@ -22,3 +22,20 @@ func TestBudgetComparisonUsesMeasuredElapsedTime(t *testing.T) {
 		t.Fatalf("elapsed %s should remain within budget %s", elapsed, budget)
 	}
 }
+
+func TestResolveGoBinaryDefaultsToGo(t *testing.T) {
+	t.Parallel()
+
+	if got := resolveGoBinary(""); got != "go" {
+		t.Fatalf("resolveGoBinary(\"\") = %q, want %q", got, "go")
+	}
+}
+
+func TestResolveGoBinaryPreservesConfiguredToolchain(t *testing.T) {
+	t.Parallel()
+
+	const configured = "/tmp/custom-go"
+	if got := resolveGoBinary(configured); got != configured {
+		t.Fatalf("resolveGoBinary(%q) = %q, want %q", configured, got, configured)
+	}
+}

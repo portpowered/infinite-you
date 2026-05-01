@@ -93,7 +93,7 @@ test-functional-default:
 	$(GO) test ./tests/functional/default/... -count=1 -timeout $(GO_TEST_TIMEOUT)
 
 test-functional-default-budget:
-	$(GO) run ./cmd/functionalruntimecheck -budget $(FUNCTIONAL_DEFAULT_BUDGET) -timeout $(GO_TEST_TIMEOUT)
+	$(GO) run ./cmd/functionalruntimecheck -go-binary "$(GO)" -budget $(FUNCTIONAL_DEFAULT_BUDGET) -timeout $(GO_TEST_TIMEOUT)
 
 test-functional-extended:
 	$(GO) test ./tests/functional_test -count=1 -timeout $(GO_TEST_TIMEOUT)

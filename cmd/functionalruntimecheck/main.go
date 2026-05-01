@@ -12,10 +12,11 @@ const defaultPackage = "./tests/functional/default/..."
 
 func main() {
 	budget := flag.Duration("budget", 10*time.Second, "maximum allowed runtime for the default functional lane")
+	goBinary := flag.String("go-binary", os.Getenv("GO"), "go toolchain binary/path used to run the default functional lane")
 	timeout := flag.String("timeout", "300s", "go test timeout passed to the default functional lane")
 	flag.Parse()
 
-	elapsed, err := runDefaultFunctionalLane(*timeout)
+	elapsed, err := runDefaultFunctionalLane(resolveGoBinary(*goBinary), *timeout)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -28,8 +29,15 @@ func main() {
 	fmt.Printf("[agent-factory:functional-runtime] default lane completed in %s (budget %s)\n", elapsed.Round(time.Millisecond), budget.Round(time.Millisecond))
 }
 
-func runDefaultFunctionalLane(timeout string) (time.Duration, error) {
-	cmd := exec.Command("go", "test", defaultPackage, "-count=1", "-timeout", timeout)
+func resolveGoBinary(configured string) string {
+	if configured == "" {
+		return "go"
+	}
+	return configured
+}
+
+func runDefaultFunctionalLane(goBinary string, timeout string) (time.Duration, error) {
+	cmd := exec.Command(goBinary, "test", defaultPackage, "-count=1", "-timeout", timeout)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
