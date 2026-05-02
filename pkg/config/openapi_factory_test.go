@@ -798,6 +798,31 @@ func TestGeneratedFactoryFromOpenAPIJSON_RejectsRetiredRenamedFieldAliasesAtBoun
 	}
 }
 
+func TestGeneratedFactoryFromOpenAPIJSON_AllowsDeeperNestedDefinitionAliasesOutsideBoundaryScope(t *testing.T) {
+	payload := []byte(`{
+		"name":"deep-definition-alias-factory",
+		"workTypes": [{"name":"story","states":[{"name":"init","type":"INITIAL"},{"name":"complete","type":"TERMINAL"}]}],
+		"workers": [{
+			"name":"executor",
+			"definition":{
+				"type":"MODEL_WORKER",
+				"definition":{"provider":"script_wrap"}
+			}
+		}],
+		"workstations": [{
+			"name":"execute-story",
+			"worker":"executor",
+			"inputs":[{"workType":"story","state":"init"}],
+			"outputs":[{"workType":"story","state":"complete"}]
+		}]
+	}`)
+
+	_, err := GeneratedFactoryFromOpenAPIJSON(payload)
+	if err != nil && strings.Contains(err.Error(), "workers[0].definition.definition.provider") {
+		t.Fatalf("expected deeper nested definition alias to stay outside generated boundary rejection scope, got %v", err)
+	}
+}
+
 func assertGeneratedFactoryRejectsRetiredRenamedFieldAlias(t *testing.T, tc generatedFactoryRetiredAliasCase) {
 	t.Helper()
 

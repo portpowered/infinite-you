@@ -139,22 +139,25 @@ func rejectRetiredWorkerBoundaryAliases(root map[string]any) error {
 		if !ok {
 			continue
 		}
-		if err := rejectRetiredWorkerBoundaryObject(worker, fmt.Sprintf("workers[%d]", index)); err != nil {
+		if err := rejectRetiredWorkerBoundaryObject(worker, fmt.Sprintf("workers[%d]", index), true); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func rejectRetiredWorkerBoundaryObject(worker map[string]any, path string) error {
+func rejectRetiredWorkerBoundaryObject(worker map[string]any, path string, includeDefinition bool) error {
 	if err := rejectRetiredBoundaryFields(worker, path, retiredWorkerBoundaryFields); err != nil {
 		return err
+	}
+	if !includeDefinition {
+		return nil
 	}
 	definition, ok := worker["definition"].(map[string]any)
 	if !ok {
 		return nil
 	}
-	return rejectRetiredWorkerBoundaryObject(definition, path+".definition")
+	return rejectRetiredWorkerBoundaryObject(definition, path+".definition", false)
 }
 
 func rejectRetiredWorkstationBoundaryAliases(root map[string]any) error {
@@ -167,25 +170,28 @@ func rejectRetiredWorkstationBoundaryAliases(root map[string]any) error {
 		if !ok {
 			continue
 		}
-		if err := rejectRetiredWorkstationBoundaryObject(workstation, fmt.Sprintf("workstations[%d]", index)); err != nil {
+		if err := rejectRetiredWorkstationBoundaryObject(workstation, fmt.Sprintf("workstations[%d]", index), true); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func rejectRetiredWorkstationBoundaryObject(workstation map[string]any, path string) error {
+func rejectRetiredWorkstationBoundaryObject(workstation map[string]any, path string, includeDefinition bool) error {
 	if err := rejectRetiredBoundaryFields(workstation, path, retiredWorkstationBoundaryFields); err != nil {
 		return err
 	}
 	if err := rejectRetiredCronBoundaryAliases(workstation["cron"], path+".cron"); err != nil {
 		return err
 	}
+	if !includeDefinition {
+		return nil
+	}
 	definition, ok := workstation["definition"].(map[string]any)
 	if !ok {
 		return nil
 	}
-	return rejectRetiredWorkstationBoundaryObject(definition, path+".definition")
+	return rejectRetiredWorkstationBoundaryObject(definition, path+".definition", false)
 }
 
 func rejectRetiredCronBoundaryAliases(raw any, path string) error {
