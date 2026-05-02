@@ -139,19 +139,22 @@ func rejectRetiredWorkerBoundaryAliases(root map[string]any) error {
 		if !ok {
 			continue
 		}
-		basePath := fmt.Sprintf("workers[%d]", index)
-		if err := rejectRetiredBoundaryFields(worker, basePath, retiredWorkerBoundaryFields); err != nil {
-			return err
-		}
-		definition, ok := worker["definition"].(map[string]any)
-		if !ok {
-			continue
-		}
-		if err := rejectRetiredBoundaryFields(definition, basePath+".definition", retiredWorkerBoundaryFields); err != nil {
+		if err := rejectRetiredWorkerBoundaryObject(worker, fmt.Sprintf("workers[%d]", index)); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func rejectRetiredWorkerBoundaryObject(worker map[string]any, path string) error {
+	if err := rejectRetiredBoundaryFields(worker, path, retiredWorkerBoundaryFields); err != nil {
+		return err
+	}
+	definition, ok := worker["definition"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	return rejectRetiredWorkerBoundaryObject(definition, path+".definition")
 }
 
 func rejectRetiredWorkstationBoundaryAliases(root map[string]any) error {
