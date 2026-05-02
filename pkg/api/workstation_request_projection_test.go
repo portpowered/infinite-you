@@ -336,6 +336,28 @@ func TestWorkstationDispatchViewFromCompletion_PreservesProviderSessionAndDiagno
 	if partialAttemptView.Response.ResponseMetadata == nil || (*partialAttemptView.Response.ResponseMetadata)["provider_session_id"] != "session-attempt" {
 		t.Fatalf("partial-attempt response metadata = %#v, want attempt diagnostics metadata", partialAttemptView.Response.ResponseMetadata)
 	}
+
+	providerSessionOnlyAttempt := &interfaces.FactoryWorldInferenceAttempt{
+		ProviderSession: &interfaces.ProviderSessionMetadata{
+			Provider: "anthropic",
+			Kind:     "session_id",
+			ID:       "session-attempt-only",
+		},
+	}
+
+	providerSessionOnlyView := workstationDispatchViewFromCompletion(completion, interfaces.FactoryWorldState{}, providerSessionOnlyAttempt, nil, nil)
+	if providerSessionOnlyView.Request.Provider == nil || *providerSessionOnlyView.Request.Provider != "openai" {
+		t.Fatalf("provider-session-only request provider = %#v, want completion diagnostics fallback", providerSessionOnlyView.Request.Provider)
+	}
+	if providerSessionOnlyView.Request.WorkingDirectory == nil || *providerSessionOnlyView.Request.WorkingDirectory != "/fallback/workdir" {
+		t.Fatalf("provider-session-only working directory = %#v, want completion diagnostics fallback", providerSessionOnlyView.Request.WorkingDirectory)
+	}
+	if providerSessionOnlyView.Response == nil || providerSessionOnlyView.Response.ProviderSession == nil || providerSessionOnlyView.Response.ProviderSession.Id == nil || *providerSessionOnlyView.Response.ProviderSession.Id != "session-attempt-only" {
+		t.Fatalf("provider-session-only provider session = %#v, want attempt provider session override", providerSessionOnlyView.Response)
+	}
+	if providerSessionOnlyView.Response.ResponseMetadata == nil || (*providerSessionOnlyView.Response.ResponseMetadata)["provider_session_id"] != "session-fallback" {
+		t.Fatalf("provider-session-only response metadata = %#v, want completion diagnostics fallback metadata", providerSessionOnlyView.Response.ResponseMetadata)
+	}
 }
 
 func completedInputSlice(item interfaces.FactoryWorkItem) []interfaces.FactoryWorkItem {
