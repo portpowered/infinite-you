@@ -138,7 +138,6 @@ describe("CurrentSelectionWidget", () => {
         })}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={executionDetails}
-        terminalWorkExecutionDetails={executionDetails}
       />,
     );
 
@@ -191,7 +190,6 @@ describe("CurrentSelectionWidget", () => {
         })}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={executionDetails}
-        terminalWorkExecutionDetails={null}
       />,
     );
 
@@ -255,7 +253,6 @@ describe("CurrentSelectionWidget", () => {
         })}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={null}
-        terminalWorkExecutionDetails={null}
       />,
     );
 
@@ -302,7 +299,6 @@ describe("CurrentSelectionWidget", () => {
         })}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={null}
-        terminalWorkExecutionDetails={null}
       />,
     );
 
@@ -336,7 +332,6 @@ describe("CurrentSelectionWidget", () => {
         })}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={null}
-        terminalWorkExecutionDetails={null}
       />,
     );
 
@@ -385,7 +380,6 @@ describe("CurrentSelectionWidget", () => {
         })}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={null}
-        terminalWorkExecutionDetails={null}
       />,
     );
 
@@ -416,7 +410,6 @@ describe("CurrentSelectionWidget", () => {
         currentSelection={buildCurrentSelection()}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={null}
-        terminalWorkExecutionDetails={null}
       />,
     );
 
@@ -433,7 +426,6 @@ describe("CurrentSelectionWidget", () => {
         currentSelection={buildCurrentSelection()}
         now={DETAIL_CARD_NOW}
         selectedWorkExecutionDetails={null}
-        terminalWorkExecutionDetails={null}
       />,
     );
 

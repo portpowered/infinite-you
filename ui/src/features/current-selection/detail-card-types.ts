@@ -80,7 +80,6 @@ export interface WorkItemDetailCardProps {
   activeTraceID?: string | null;
   dispatchAttempts: DashboardProviderSessionAttempt[];
   executionDetails: SelectedWorkItemExecutionDetails;
-  now: number;
   onSelectTraceID?: (traceID: string) => void;
   onSelectWorkID?: (workID: string) => void;
   selectedNode?: DashboardWorkstationNode | null;

@@ -20,7 +20,6 @@ export interface CurrentSelectionWidgetProps {
   onSelectTraceID?: (traceID: string) => void;
   selectedTrace?: DashboardTrace;
   selectedWorkExecutionDetails: SelectedWorkItemExecutionDetails | null;
-  terminalWorkExecutionDetails: SelectedWorkItemExecutionDetails | null;
   widgetId?: string;
 }
 
@@ -57,7 +56,6 @@ export function CurrentSelectionWidget({
       <WorkItemDetailCard
         activeTraceID={activeTraceID}
         executionDetails={selectedWorkExecutionDetails}
-        now={now}
         onSelectTraceID={onSelectTraceID}
         onSelectWorkID={selectWorkByID}
         dispatchAttempts={selectedWorkDispatchAttempts}
