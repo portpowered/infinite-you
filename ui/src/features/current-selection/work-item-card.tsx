@@ -20,8 +20,6 @@ export function WorkItemDetailCard({
   activeTraceID,
   dispatchAttempts,
   executionDetails,
-  failureMessage,
-  failureReason,
   onSelectTraceID,
   onSelectWorkID,
   selectedNode,
@@ -73,28 +71,6 @@ export function WorkItemDetailCard({
           <dd>{dispatchAttempts.length}</dd>
         </div>
       </dl>
-      {failureReason || failureMessage ? (
-        <section
-          aria-label="Failure details"
-          className="mt-4 grid gap-[0.65rem] [&_h4]:m-0"
-        >
-          <h4 className={DASHBOARD_SECTION_HEADING_CLASS}>Failure details</h4>
-          <dl>
-            {failureReason ? (
-              <div>
-                <dt>Failure reason</dt>
-                <dd>{failureReason}</dd>
-              </div>
-            ) : null}
-            {failureMessage ? (
-              <div>
-                <dt>Failure message</dt>
-                <dd>{failureMessage}</dd>
-              </div>
-            ) : null}
-          </dl>
-        </section>
-      ) : null}
       <WorkRelationshipsSection
         onSelectWorkID={onSelectWorkID}
         relationships={workRelationships}

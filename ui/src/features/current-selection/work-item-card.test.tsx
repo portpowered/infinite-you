@@ -689,11 +689,19 @@ describe("WorkItemDetailCard", () => {
       ),
     ).toBeTruthy();
     expect(
+      screen.getAllByRole("region", { name: "Failure details" }),
+    ).toHaveLength(1);
+    expect(
       within(
         screen.getByRole("region", { name: "Response details" }),
       ).getByText(
         "Response text is unavailable because this dispatch ended with an error.",
       ),
+    ).toBeTruthy();
+    expect(
+      within(
+        screen.getByRole("article", { name: "Current selection" }),
+      ).queryByText("Provider rate limit exceeded while reviewing the story."),
     ).toBeTruthy();
     expect(
       dispatchHistory.getAllByRole("button", {
@@ -883,6 +891,9 @@ describe("WorkItemDetailCard", () => {
         "Response text is unavailable because this dispatch ended with an error.",
       ),
     ).toBeNull();
+    expect(
+      screen.getAllByRole("region", { name: "Failure details" }),
+    ).toHaveLength(1);
   });
 
   it("keeps rejected dispatch request and response details paired on the same history row", () => {
