@@ -1040,7 +1040,7 @@ const exportTimelineEvents: FactoryEvent[] = [
           id: "review",
           inputs: [{ state: "new", workType: "story" }],
           name: "Review",
-          onFailure: { state: "done", workType: "story" },
+          onFailure: [{ state: "done", workType: "story" }],
           outputs: [{ state: "done", workType: "story" }],
           worker: "reviewer",
         },
@@ -1075,7 +1075,7 @@ const currentNamedFactoryExportResponse = {
       id: "review",
       inputs: [{ state: "new", workType: "story" }],
       name: "Review",
-      onFailure: { state: "done", workType: "story" },
+      onFailure: [{ state: "done", workType: "story" }],
       outputs: [{ state: "done", workType: "story" }],
       type: "MODEL_WORKSTATION",
       worker: "reviewer",
@@ -4111,5 +4111,4 @@ describe("App", () => {
     });
   });
 });
-
 

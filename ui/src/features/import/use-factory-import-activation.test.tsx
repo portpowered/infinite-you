@@ -35,7 +35,18 @@ const canonicalFactory: FactoryValue = {
     {
       inputs: [{ state: "new", workType: "story" }],
       name: "draft",
-      onFailure: { state: "done", workType: "story" },
+      onContinue: [
+        { state: "new", workType: "story" },
+        { state: "queued", workType: "story" },
+      ],
+      onFailure: [
+        { state: "done", workType: "story" },
+        { state: "blocked", workType: "story" },
+      ],
+      onRejection: [
+        { state: "retry", workType: "story" },
+        { state: "backlog", workType: "story" },
+      ],
       outputs: [{ state: "done", workType: "story" }],
       worker: "writer",
     },
@@ -122,4 +133,3 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   copy.set(bytes);
   return copy.buffer;
 }
-

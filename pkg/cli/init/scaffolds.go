@@ -85,7 +85,7 @@ func defaultScaffoldDefinition() scaffoldDefinition {
       "worker": "processor",
       "inputs": [{ "workType": "tasks", "state": "init" }],
       "outputs": [{ "workType": "tasks", "state": "complete" }],
-      "onFailure": { "workType": "tasks", "state": "failed" }
+      "onFailure": [{ "workType": "tasks", "state": "failed" }]
     }
   ]
 }
@@ -214,7 +214,7 @@ The executor keeps those artifacts aligned and returns ` + "`<COMPLETE>`" + ` on
         { "workType": "request", "state": "planned" },
         { "workType": "story", "state": "init" }
       ],
-      "onFailure": { "workType": "request", "state": "failed" }
+      "onFailure": [{ "workType": "request", "state": "failed" }]
     },
     {
       "name": "execute-story",
@@ -223,8 +223,8 @@ The executor keeps those artifacts aligned and returns ` + "`<COMPLETE>`" + ` on
       "workingDirectory": ".",
       "inputs": [{ "workType": "story", "state": "init" }],
       "outputs": [{ "workType": "story", "state": "complete" }],
-      "onContinue": { "workType": "story", "state": "init" },
-      "onFailure": { "workType": "story", "state": "failed" }
+      "onContinue": [{ "workType": "story", "state": "init" }],
+      "onFailure": [{ "workType": "story", "state": "failed" }]
     },
     {
       "name": "execute-story-loop-breaker",
@@ -385,4 +385,3 @@ Story payload:
 		},
 	}
 }
-
