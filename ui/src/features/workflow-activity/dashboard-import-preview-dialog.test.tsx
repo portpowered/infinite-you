@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 import { NamedFactoryAPIError } from "../../api/named-factory";
@@ -103,6 +104,60 @@ describe("DashboardImportPreviewDialog", () => {
           factory: expect.objectContaining({ name: "Dropped Factory" }),
         }),
       );
+    });
+  });
+
+  it("dismisses the dashboard-owned preview after a successful activation", async () => {
+    const activateImport = vi.fn().mockResolvedValue(undefined);
+
+    function ImportPreviewSuccessHarness() {
+      const [importPreviewState, setImportPreviewState] =
+        useState<CurrentActivityImportController["importPreviewState"]>({
+          file: new File(["png"], "factory-import.png", { type: "image/png" }),
+          status: "ready",
+          value: {
+            factory: {
+              name: "Dropped Factory",
+              workTypes: [],
+              workers: [],
+              workstations: [],
+            },
+            previewImageSrc: "blob:factory-preview",
+            revokePreviewImageSrc: vi.fn(),
+            schemaVersion: "portos.agent-factory.png.v1",
+          },
+        });
+
+      return (
+        <DashboardImportPreviewDialog
+          importController={createImportController({
+            activateImport: async (value) => {
+              await activateImport(value);
+              setImportPreviewState({ status: "idle" });
+            },
+            closeImportPreview: () => {
+              setImportPreviewState({ status: "idle" });
+            },
+            importPreviewState,
+          })}
+        />
+      );
+    }
+
+    render(<ImportPreviewSuccessHarness />);
+
+    const previewDialog = await screen.findByRole("dialog", { name: "Review factory import" });
+    fireEvent.click(within(previewDialog).getByRole("button", { name: "Activate factory" }));
+
+    await waitFor(() => {
+      expect(activateImport).toHaveBeenCalledWith(
+        expect.objectContaining({
+          factory: expect.objectContaining({ name: "Dropped Factory" }),
+        }),
+      );
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog", { name: "Review factory import" })).toBeNull();
     });
   });
 
