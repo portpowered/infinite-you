@@ -22,7 +22,7 @@ function getDetailRow(container: HTMLElement, label: string): HTMLElement {
   return row;
 }
 
-describe("WorkItemDetailCard", () => {
+describe("WorkItemDetailCard summary", () => {
   it("renders selected work item detail with safe execution details", () => {
     const { dispatchID, execution, selectedNode, workItem, snapshot } =
       getSelectedWorkItemFixture();
@@ -686,6 +686,9 @@ describe("WorkItemDetailCard", () => {
     expect(within(dispatchCard).queryByText("## Review checklist")).toBeNull();
   });
 
+});
+
+describe("WorkItemDetailCard dispatch diagnostics", () => {
   it("renders completed failed dispatch-history details from the same row", () => {
     const { dispatchID, execution, selectedNode, workItem } =
       getSelectedWorkItemFixture();
