@@ -87,13 +87,13 @@ func serviceNamedFactoryPayloadWithWorkType(t *testing.T, project, workType stri
 			"body": "You are worker " + project + ".",
 		}},
 		"workstations": []map[string]any{{
-			"name":           "process",
-			"worker":         "worker-a",
-			"inputs":         []map[string]string{{"workType": workType, "state": "init"}},
-			"outputs":        []map[string]string{{"workType": workType, "state": "complete"}},
-			"onFailure":      map[string]string{"workType": workType, "state": "failed"},
-			"type":           "MODEL_WORKSTATION",
-			"body": "Do the " + project + " work.",
+			"name":      "process",
+			"worker":    "worker-a",
+			"inputs":    []map[string]string{{"workType": workType, "state": "init"}},
+			"outputs":   []map[string]string{{"workType": workType, "state": "complete"}},
+			"onFailure": map[string]string{"workType": workType, "state": "failed"},
+			"type":      "MODEL_WORKSTATION",
+			"body":      "Do the " + project + " work.",
 		}},
 	})
 	if err != nil {
@@ -4560,10 +4560,10 @@ func dashboardInitialStructureEventForTest(t *testing.T) factoryapi.FactoryEvent
 				Worker:  "worker-a",
 				Inputs:  []factoryapi.WorkstationIO{{WorkType: "task", State: "init"}},
 				Outputs: []factoryapi.WorkstationIO{{WorkType: "task", State: "complete"}},
-				OnFailure: &factoryapi.WorkstationIO{
+				OnFailure: &[]factoryapi.WorkstationIO{{
 					WorkType: "task",
 					State:    "failed",
-				},
+				}},
 			}},
 		},
 	}
