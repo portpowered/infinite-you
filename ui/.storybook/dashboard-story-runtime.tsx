@@ -7,11 +7,11 @@ import type {
   DashboardWorkstationRequest,
 } from "../src/api/dashboard";
 import type { FactoryEvent } from "../src/api/events";
-import { resetSelectionHistoryStore } from "../src/state/selectionHistoryStore";
+import { resetSelectionHistoryStore } from "../src/features/current-selection/state/selectionHistoryStore";
 import {
   useFactoryTimelineStore,
-  type FactoryTimelineSnapshot,
-} from "../src/state/factoryTimelineStore";
+  type WorldState,
+} from "../src/features/timeline/state/factoryTimelineStore";
 
 const DASHBOARD_STORYBOOK_BASE_PATH = "/dashboard/ui/";
 type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
@@ -140,13 +140,11 @@ function seedDashboardStorySnapshot(
     receivedEventIDs: [],
     selectedTick: snapshot.tick_count,
     worldViewCache: {
-      [snapshot.tick_count]: {
-        dashboard: snapshot,
-        relationsByWorkID: {},
+      [snapshot.tick_count]: timelineSnapshot(
+        snapshot,
         tracesByWorkID,
         workstationRequestsByDispatchID,
-        workRequestsByID: {},
-      } satisfies FactoryTimelineSnapshot,
+      ),
     },
   });
 }
@@ -174,18 +172,29 @@ function seedDashboardStorySnapshots(
         (snapshot) =>
           [
             snapshot.tick_count,
-            {
-              dashboard: snapshot,
-              relationsByWorkID: {},
-              tracesByWorkID: snapshot.tick_count === latestTick ? tracesByWorkID : {},
-              workstationRequestsByDispatchID:
-                snapshot.tick_count === latestTick ? workstationRequestsByDispatchID : {},
-              workRequestsByID: {},
-            } satisfies FactoryTimelineSnapshot,
+            timelineSnapshot(
+              snapshot,
+              snapshot.tick_count === latestTick ? tracesByWorkID : {},
+              snapshot.tick_count === latestTick ? workstationRequestsByDispatchID : {},
+            ),
           ] as const,
       ),
     ),
   });
+}
+
+function timelineSnapshot(
+  snapshot: DashboardSnapshot,
+  tracesByWorkID: Record<string, DashboardTrace>,
+  workstationRequestsByDispatchID: Record<string, DashboardWorkstationRequest>,
+): WorldState {
+  return {
+    ...snapshot,
+    relationsByWorkID: {},
+    tracesByWorkID,
+    workstationRequestsByDispatchID,
+    workRequestsByID: {},
+  };
 }
 
 function resetDashboardStoryStores(): void {
