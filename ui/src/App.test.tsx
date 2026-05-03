@@ -3611,6 +3611,59 @@ describe("App", () => {
     ).toBeTruthy();
   });
 
+  it("renders the selected-work empty dispatch-history state without reviving top-level execution details", async () => {
+    const snapshotWithoutSelectedWorkDispatchHistory = {
+      ...activeSnapshot,
+      runtime: {
+        ...activeSnapshot.runtime,
+        session: {
+          ...activeSnapshot.runtime.session,
+          provider_sessions: [],
+        },
+        workstation_requests_by_dispatch_id: {},
+      },
+    } satisfies DashboardSnapshot;
+
+    renderApp({
+      snapshot: snapshotWithoutSelectedWorkDispatchHistory,
+      traceFixtures: {
+        [activeWorkID]: traceSnapshot,
+      },
+    });
+
+    fireEvent.click(
+      (await screen.findAllByRole("button", { name: /Active Story/ }))[0],
+    );
+
+    const currentSelection = await screen.findByRole("article", {
+      name: "Current selection",
+    });
+    expect(
+      within(currentSelection).queryByRole("heading", {
+        name: "Execution details",
+      }),
+    ).toBeNull();
+    expect(
+      within(currentSelection).queryByRole("heading", {
+        name: "Inference attempts",
+      }),
+    ).toBeNull();
+    expectDefinitionValue(currentSelection, "Workstation dispatches", "0");
+    expect(
+      within(currentSelection).getByText(
+        "No workstation dispatch has been recorded yet for this work item.",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(currentSelection).getByRole("heading", {
+        name: "Workstation dispatches",
+      }),
+    ).toBeTruthy();
+    expect(
+      await screen.findByRole("article", { name: "Trace drill-down" }),
+    ).toBeTruthy();
+  });
+
   it("renders selected work item trace unavailable copy when no trace ID exists", async () => {
     renderApp({
       snapshot: activeSnapshotWithoutTraceID,
@@ -4789,19 +4842,25 @@ describe("App", () => {
     });
     expect(within(failedDetail).getByText("Failed Story")).toBeTruthy();
     expect(
+      within(failedDetail).queryByRole("heading", {
+        name: "Execution details",
+      }),
+    ).toBeNull();
+    expect(
+      within(failedDetail).getByRole("heading", {
+        name: "Workstation dispatches",
+      }),
+    ).toBeTruthy();
+    expect(
       within(failedDetail).getAllByText(/FAILED|Failed/).length,
     ).toBeGreaterThanOrEqual(1);
+    expect(within(failedDetail).queryByText("Failure reason")).toBeNull();
+    expect(within(failedDetail).getByText("Current dispatch")).toBeTruthy();
     expect(
-      within(failedDetail).getAllByText("Failure reason").length,
-    ).toBeGreaterThan(0);
+      within(failedDetail).getByText("Session log unavailable"),
+    ).toBeTruthy();
     expect(
-      within(failedDetail).getAllByText("provider_rate_limit").length,
-    ).toBeGreaterThan(0);
-    expect(within(failedDetail).getByText("Failure message")).toBeTruthy();
-    expect(
-      within(failedDetail).getByText(
-        "Provider rate limit exceeded while generating the repair.",
-      ),
+      within(failedDetail).getByText("codex / session_id / sess-failed-story"),
     ).toBeTruthy();
     expect(
       within(failedDetail).queryByText(
@@ -4809,7 +4868,7 @@ describe("App", () => {
       ),
     ).toBeNull();
     expect(
-      await within(dashboardGrid).findByText("dispatch-failed-story"),
+      await within(dashboardGrid).findByText("dispatch-repair-failed"),
     ).toBeTruthy();
   });
 

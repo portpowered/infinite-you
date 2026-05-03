@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { dashboardWorkstationRequestFixtures } from "../../components/dashboard/fixtures";
 import {
@@ -551,6 +551,62 @@ describe("WorkItemDetailCard", () => {
     expect(
       responseDetails.getByRole("link", { name: "trace-active-story" }),
     ).toBeTruthy();
+  });
+
+  it("routes trace-link clicks through the selected dispatch response details", () => {
+    const { dispatchID, execution, selectedNode, workItem } =
+      getSelectedWorkItemFixture();
+    const onSelectTraceID = vi.fn();
+
+    render(
+      <WorkItemDetailCard
+        executionDetails={selectWorkItemExecutionDetails({
+          activeExecution: execution,
+          dispatchID,
+          selectedNode,
+          workItem,
+        })}
+        now={DETAIL_CARD_NOW}
+        dispatchAttempts={[]}
+        onSelectTraceID={onSelectTraceID}
+        selectedNode={selectedNode}
+        selection={{
+          dispatchId: dispatchID,
+          execution,
+          kind: "work-item",
+          nodeId: selectedNode.node_id,
+          workItem,
+        }}
+        workstationRequests={[
+          workstationRequest(dispatchID, {
+            prompt: "Review the active story and trace the result.",
+            request_metadata: {
+              prompt_source: "factory-renderer",
+            },
+            trace_ids: ["trace-active-story"],
+            work_items: [workItem],
+          }),
+        ]}
+      />,
+    );
+
+    const traceLink = within(
+      screen.getByRole("region", { name: "Response details" }),
+    ).getByRole("link", { name: "trace-active-story" });
+
+    expect(traceLink.getAttribute("href")).toBe("#trace");
+
+    traceLink.addEventListener(
+      "click",
+      (event) => {
+        event.preventDefault();
+      },
+      { once: true },
+    );
+
+    fireEvent.click(traceLink);
+
+    expect(onSelectTraceID).toHaveBeenCalledWith("trace-active-story");
   });
 
   it("renders markdown-authored dispatch-history prompts through the shared request renderer", () => {
