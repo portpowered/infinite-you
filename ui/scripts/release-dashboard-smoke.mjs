@@ -27,7 +27,9 @@ async function waitForRenderedDashboard(page) {
   await page
     .getByRole("button", { name: "Select step-two workstation" })
     .waitFor();
-  await page.getByText("Factory event stream connected.").waitFor();
+  await page
+    .getByRole("status", { name: "Infinite You event stream live" })
+    .waitFor();
   await page.waitForFunction(() => {
     const workTotals = document.querySelector('[aria-label="work totals"]');
     if (!(workTotals instanceof HTMLElement)) {
@@ -107,19 +109,27 @@ async function main() {
       throw new Error("dashboard did not establish a live /events request");
     }
 
+    const streamStatusName = await page
+      .getByRole("status", { name: "Infinite You event stream live" })
+      .getAttribute("aria-label");
+    if (streamStatusName !== "Infinite You event stream live") {
+      throw new Error(
+        `dashboard stream status name = ${JSON.stringify(streamStatusName)}, want "Infinite You event stream live"`,
+      );
+    }
+
     const visibleTexts = unique([
       "Infinite You",
       "Work totals",
       "step-one",
       "step-two",
-      "Factory event stream connected.",
     ]);
     process.stdout.write(
       `${JSON.stringify(
         {
           assetRequestPaths: observedAssetPaths,
           liveRequestPaths: observedLivePaths,
-          streamMessage: "Factory event stream connected.",
+          streamStatusName,
           visibleTexts,
         },
         null,
