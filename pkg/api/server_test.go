@@ -1644,6 +1644,15 @@ func TestGetDashboardUI_ReturnsEmbeddedShell(t *testing.T) {
 			t.Fatalf("expected embedded dashboard shell to contain %q, got body: %s", want, rec.Body.String())
 		}
 	}
+	for _, retired := range []string{
+		"Agent Factory Dashboard",
+		"Standalone live dashboard shell for Agent Factory.",
+		"Port OS Agent Factory",
+	} {
+		if strings.Contains(rec.Body.String(), retired) {
+			t.Fatalf("expected embedded dashboard shell to retire %q, got body: %s", retired, rec.Body.String())
+		}
+	}
 }
 
 func TestGetDashboardUI_ServesEmbeddedAsset(t *testing.T) {
