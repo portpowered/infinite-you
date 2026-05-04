@@ -13,14 +13,20 @@ function assetPath(pathname) {
 }
 
 function livePath(pathname) {
-  return pathname === "/events" || pathname === "/status" || pathname === "/work";
+  return (
+    pathname === "/events" || pathname === "/status" || pathname === "/work"
+  );
 }
 
 async function waitForRenderedDashboard(page) {
-  await page.getByRole("heading", { level: 1, name: "Agent Factory" }).waitFor();
+  await page.getByRole("heading", { level: 1, name: "Infinite You" }).waitFor();
   await page.getByText("Work totals").waitFor();
-  await page.getByRole("button", { name: "Select step-one workstation" }).waitFor();
-  await page.getByRole("button", { name: "Select step-two workstation" }).waitFor();
+  await page
+    .getByRole("button", { name: "Select step-one workstation" })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Select step-two workstation" })
+    .waitFor();
   await page.getByText("Factory event stream connected.").waitFor();
   await page.waitForFunction(() => {
     const workTotals = document.querySelector('[aria-label="work totals"]');
@@ -72,9 +78,13 @@ async function main() {
       }
     });
 
-    const response = await page.goto(dashboardURL, { waitUntil: "domcontentloaded" });
+    const response = await page.goto(dashboardURL, {
+      waitUntil: "domcontentloaded",
+    });
     if (!response?.ok()) {
-      throw new Error(`dashboard navigation failed with status ${response?.status() ?? "unknown"}`);
+      throw new Error(
+        `dashboard navigation failed with status ${response?.status() ?? "unknown"}`,
+      );
     }
 
     await waitForRenderedDashboard(page);
@@ -89,14 +99,16 @@ async function main() {
     const observedAssetPaths = unique(assetRequests);
     const observedLivePaths = unique(liveRequests);
     if (observedAssetPaths.length === 0) {
-      throw new Error("dashboard did not request any embedded /dashboard/ui/assets resources");
+      throw new Error(
+        "dashboard did not request any embedded /dashboard/ui/assets resources",
+      );
     }
     if (!observedLivePaths.includes("/events")) {
       throw new Error("dashboard did not establish a live /events request");
     }
 
     const visibleTexts = unique([
-      "Agent Factory",
+      "Infinite You",
       "Work totals",
       "step-one",
       "step-two",

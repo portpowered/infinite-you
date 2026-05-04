@@ -698,7 +698,9 @@ describe("App current selection", () => {
       within(scriptSuccessCard).getAllByText("script-tool").length,
     ).toBeGreaterThan(0);
     expect(
-      within(scriptSuccessCard).getByRole("region", { name: "Script attempts" }),
+      within(scriptSuccessCard).getByRole("region", {
+        name: "Script attempts",
+      }),
     ).toBeTruthy();
     expect(
       within(scriptSuccessCard).getAllByText("script success stdout").length,
@@ -1253,7 +1255,7 @@ describe("App current selection layout", () => {
   it("renders queued, in-flight, completed, and failed work in one ranged outcome chart", async () => {
     renderApp({ snapshot: baselineSnapshot });
 
-    await screen.findByRole("heading", { name: "Agent Factory" });
+    await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
       name: "Agent Factory bento board",
     });
@@ -1423,7 +1425,7 @@ describe("App current selection layout", () => {
       },
     });
 
-    await screen.findByRole("heading", { name: "Agent Factory" });
+    await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
       name: "Agent Factory bento board",
     });
@@ -1530,7 +1532,7 @@ describe("App current selection layout", () => {
       },
     });
 
-    await screen.findByRole("heading", { name: "Agent Factory" });
+    await screen.findByRole("heading", { name: "Infinite You" });
     expect(
       screen.getAllByRole("region", { name: "Agent Factory bento board" }),
     ).toHaveLength(1);
@@ -1695,7 +1697,7 @@ describe("App current selection terminal states", () => {
       },
     });
 
-    await screen.findByRole("heading", { name: "Agent Factory" });
+    await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
       name: "Agent Factory bento board",
     });
@@ -1761,7 +1763,7 @@ describe("App current selection terminal states", () => {
       timelineSnapshots: [historicalTimelineSnapshot, terminalSnapshot],
     });
 
-    await screen.findByRole("heading", { name: "Agent Factory" });
+    await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
       name: "Agent Factory bento board",
     });
