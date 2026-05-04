@@ -1786,7 +1786,27 @@ func TestListWork(t *testing.T) {
 	}
 }
 
-func TestListWork_InvalidMaxResultsDefaultsToCurrentBehavior(t *testing.T) {
+func TestListWork_InvalidMaxResultsUsesGeneratedBadRequest(t *testing.T) {
+	srv := newTestServer(&testutil.MockFactory{})
+
+	for _, tc := range []struct {
+		name string
+		path string
+	}{
+		{name: "empty", path: "/work?maxResults="},
+		{name: "invalid", path: "/work?maxResults=abc"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tc.path, nil)
+			rec := httptest.NewRecorder()
+			srv.Handler().ServeHTTP(rec, req)
+
+			assertJSONError(t, rec, http.StatusBadRequest, "BAD_REQUEST", "invalid request parameter")
+		})
+	}
+}
+
+func TestListWork_NonPositiveMaxResultsDefaultsToCurrentBehavior(t *testing.T) {
 	now := time.Now()
 	tokens := makeListWorkTokens("legacy", 3, now)
 
@@ -1799,12 +1819,10 @@ func TestListWork_InvalidMaxResultsDefaultsToCurrentBehavior(t *testing.T) {
 		path string
 	}{
 		{name: "absent", path: "/work"},
-		{name: "empty", path: "/work?maxResults="},
-		{name: "invalid", path: "/work?maxResults=abc"},
 		{name: "non_positive", path: "/work?maxResults=0"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			req := httptest.NewRequest("GET", tc.path, nil)
+			req := httptest.NewRequest(http.MethodGet, tc.path, nil)
 			rec := httptest.NewRecorder()
 			srv.Handler().ServeHTTP(rec, req)
 
