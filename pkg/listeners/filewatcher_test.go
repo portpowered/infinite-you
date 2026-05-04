@@ -134,6 +134,14 @@ func waitForSubmission(t *testing.T, mf *mockFactory, count int) []interfaces.Su
 	}
 }
 
+func assertNoSubmissionWithin(t *testing.T, mf *mockFactory, duration time.Duration) {
+	t.Helper()
+	time.Sleep(duration)
+	if got := len(mf.getSubmitted()); got != 0 {
+		t.Fatalf("expected no submissions, got %d", got)
+	}
+}
+
 func TestFileWatcher_MDFile(t *testing.T) {
 	dir := setupWatchDir(t)
 	mf := &mockFactory{}
@@ -931,12 +939,11 @@ func TestFileWatcher_MultiChannel_MultipleWorkTypes(t *testing.T) {
 	}
 }
 
-// --- Default channel fallback tests (US-003) ---
+// --- Canonical watched-input contract tests ---
 
-func TestFileWatcher_DefaultChannelFallback(t *testing.T) {
+func TestFileWatcher_RejectsDirectWorkTypeDrop(t *testing.T) {
 	dir := t.TempDir()
-	// Create <work-type>/ directory WITHOUT a channel subdirectory.
-	if err := os.MkdirAll(filepath.Join(dir, "task"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(dir, "task", "default"), 0o755); err != nil {
 		t.Fatal(err)
 	}
 
@@ -955,18 +962,21 @@ func TestFileWatcher_DefaultChannelFallback(t *testing.T) {
 
 	time.Sleep(200 * time.Millisecond)
 
-	// Drop a file directly into inputs/task/ (no channel subdirectory).
-	content := []byte("# Direct task")
-	if err := os.WriteFile(filepath.Join(dir, "task", "work.md"), content, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "task", "work.md"), []byte("# Direct task"), 0o644); err != nil {
 		t.Fatal(err)
 	}
+	assertNoSubmissionWithin(t, mf, 300*time.Millisecond)
 
+	content := []byte("# Canonical task")
+	if err := os.WriteFile(filepath.Join(dir, "task", "default", "work.md"), content, 0o644); err != nil {
+		t.Fatal(err)
+	}
 	submitted := waitForSubmission(t, mf, 1)
 	if submitted[0].WorkTypeID != "task" {
 		t.Errorf("expected WorkTypeID 'task', got %q", submitted[0].WorkTypeID)
 	}
 	if submitted[0].ExecutionID != "" {
-		t.Errorf("expected empty ExecutionID for default channel fallback, got %q", submitted[0].ExecutionID)
+		t.Errorf("expected empty ExecutionID for default channel, got %q", submitted[0].ExecutionID)
 	}
 	if string(submitted[0].Payload) != string(content) {
 		t.Errorf("payload mismatch: got %q", string(submitted[0].Payload))
@@ -1030,14 +1040,16 @@ func TestFileWatcher_JSONNonBatch_NameFromFilename(t *testing.T) {
 	}
 }
 
-func TestFileWatcher_PreseedDefaultChannelFallback(t *testing.T) {
+func TestFileWatcher_PreseedSkipsDirectWorkTypeDrop(t *testing.T) {
 	dir := t.TempDir()
-	// Create <work-type>/ directory without channel subdirectory and place a file.
-	if err := os.MkdirAll(filepath.Join(dir, "task"), 0o755); err != nil {
+	if err := os.MkdirAll(filepath.Join(dir, "task", "default"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	content := []byte("# Preseeded task")
-	if err := os.WriteFile(filepath.Join(dir, "task", "work.md"), content, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "task", "work.md"), []byte("# Invalid preseeded task"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	content := []byte("# Canonical preseeded task")
+	if err := os.WriteFile(filepath.Join(dir, "task", "default", "work.md"), content, 0o644); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1059,7 +1071,7 @@ func TestFileWatcher_PreseedDefaultChannelFallback(t *testing.T) {
 		t.Errorf("expected WorkTypeID 'task', got %q", submitted[0].WorkTypeID)
 	}
 	if submitted[0].ExecutionID != "" {
-		t.Errorf("expected empty ExecutionID for default channel fallback, got %q", submitted[0].ExecutionID)
+		t.Errorf("expected empty ExecutionID for default channel, got %q", submitted[0].ExecutionID)
 	}
 	if string(submitted[0].Payload) != string(content) {
 		t.Errorf("payload mismatch: got %q", string(submitted[0].Payload))
