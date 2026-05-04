@@ -1,3 +1,4 @@
+// biome-ignore lint/nursery/noExcessiveLinesPerFile: dashboard story smoke states are intentionally consolidated in one runtime-backed file.
 import { expect, fireEvent, userEvent, within } from "storybook/test";
 
 import { App } from "./App";
@@ -857,7 +858,7 @@ export const DashboardImprovementsSmokeNarrow = {
     );
 
     const dashboardGrid = await canvas.findByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const dashboardScope = within(dashboardGrid);
 

@@ -1301,7 +1301,7 @@ function renderApp({
 
 function submitWorkCardControls() {
   const dashboardGrid = screen.getByRole("region", {
-    name: "Agent Factory bento board",
+    name: "Infinite You bento board",
   });
   const submitWorkCard = within(dashboardGrid).getByRole("article", {
     name: "Submit work",
@@ -3111,7 +3111,7 @@ describe("App", () => {
       name: "Timeline tick",
     });
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
 
     await waitFor(() => {
@@ -3235,7 +3235,7 @@ describe("App", () => {
     await screen.findByRole("heading", { name: "Infinite You" });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const workTotals = dashboardGrid.querySelector<HTMLElement>(
       '[data-bento-card-id="work-totals"]',
@@ -3284,7 +3284,7 @@ describe("App", () => {
     await screen.findByRole("heading", { name: "Infinite You" });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const currentSelection = dashboardGrid.querySelector<HTMLElement>(
       '[data-bento-card-id="current-selection"]',
@@ -3314,7 +3314,7 @@ describe("App", () => {
     await screen.findByRole("heading", { name: "Infinite You" });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const workOutcome = dashboardGrid.querySelector<HTMLElement>(
       '[data-bento-card-id="work-outcome-chart"]',
@@ -3352,7 +3352,7 @@ describe("App", () => {
     );
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const trace = await within(dashboardGrid).findByRole("article", {
       name: "Trace drill-down",
@@ -3528,7 +3528,7 @@ describe("App dashboard follow-up flows", () => {
     await screen.findByRole("heading", { name: "Infinite You" });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
 
     expect(
@@ -3698,7 +3698,7 @@ describe("App dashboard follow-up flows", () => {
     await screen.findByRole("heading", { name: "Infinite You" });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const submitWorkCard = within(dashboardGrid).getByRole("article", {
       name: "Submit work",
@@ -3771,7 +3771,7 @@ describe("App dashboard follow-up flows", () => {
     await screen.findByRole("heading", { name: "Infinite You" });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const submitWorkCard = within(dashboardGrid).getByRole("article", {
       name: "Submit work",

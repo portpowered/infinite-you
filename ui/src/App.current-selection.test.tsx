@@ -1152,7 +1152,7 @@ describe("App current selection layout", () => {
     );
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const workInfo = await within(dashboardGrid).findByRole("article", {
       name: "Current selection",
@@ -1186,7 +1186,7 @@ describe("App current selection layout", () => {
     );
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const traceWidget = await within(dashboardGrid).findByRole("article", {
       name: "Trace drill-down",
@@ -1257,7 +1257,7 @@ describe("App current selection layout", () => {
 
     await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const trendWidget = await within(dashboardGrid).findByRole("article", {
       name: "Work outcome chart",
@@ -1384,7 +1384,7 @@ describe("App current selection layout", () => {
     });
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     const trendWidget = await within(dashboardGrid).findByRole("article", {
       name: "Work outcome chart",
@@ -1427,7 +1427,7 @@ describe("App current selection layout", () => {
 
     await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     expect(
       within(dashboardGrid).queryByRole("article", { name: "Failure trend" }),
@@ -1438,7 +1438,7 @@ describe("App current selection layout", () => {
     );
 
     const workDetail = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     expect(
       await within(workDetail).findByRole("article", {
@@ -1480,7 +1480,7 @@ describe("App current selection layout", () => {
     );
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
 
     const widgets = within(dashboardGrid).getAllByRole("article");
@@ -1534,7 +1534,7 @@ describe("App current selection layout", () => {
 
     await screen.findByRole("heading", { name: "Infinite You" });
     expect(
-      screen.getAllByRole("region", { name: "Agent Factory bento board" }),
+      screen.getAllByRole("region", { name: "Infinite You bento board" }),
     ).toHaveLength(1);
     expect(screen.getByRole("article", { name: "Factory graph" })).toBeTruthy();
     expect(
@@ -1547,7 +1547,7 @@ describe("App current selection layout", () => {
     fireEvent.click(activeWorkButton);
 
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     expect(
       within(dashboardGrid).getByRole("article", {
@@ -1699,7 +1699,7 @@ describe("App current selection terminal states", () => {
 
     await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
     fireEvent.click(
       within(dashboardGrid).getByRole("button", { name: "Done Story" }),
@@ -1765,7 +1765,7 @@ describe("App current selection terminal states", () => {
 
     await screen.findByRole("heading", { name: "Infinite You" });
     const dashboardGrid = screen.getByRole("region", {
-      name: "Agent Factory bento board",
+      name: "Infinite You bento board",
     });
 
     fireEvent.click(

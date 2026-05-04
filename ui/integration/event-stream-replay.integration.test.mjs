@@ -618,6 +618,9 @@ async function assertReplayScenarioRenders({
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
     await page.getByRole("heading", { name: headingName }).waitFor();
+    await page
+      .getByRole("region", { name: "Infinite You bento board" })
+      .waitFor();
     await page.getByRole("button", { name: workstationName }).waitFor();
     if (!inFlightSelectionTick) {
       await replayCompleted;
@@ -742,6 +745,14 @@ async function assertFactoryExportRoundTrip() {
       state: "visible",
       timeout: uiInteractionTimeoutMs,
     });
+    await exportDialog
+      .getByText(
+        "Confirming export keeps the current dashboard state unchanged and downloads a PNG artifact with embedded Infinite You factory metadata.",
+      )
+      .waitFor({
+        state: "visible",
+        timeout: uiInteractionTimeoutMs,
+      });
 
     const exportName = "Roundtrip Browser Export";
     await exportDialog.getByLabel("Factory name").fill(exportName);
@@ -846,6 +857,9 @@ async function assertFactoryExportRoundTrip() {
       });
     expect(await importDialog.textContent()).toContain(exportName);
     expect(await importDialog.textContent()).toContain(download.filename);
+    expect(await importDialog.textContent()).toContain(
+      "Activating the import switches the current dashboard factory to the embedded authored definition from this PNG.",
+    );
 
     await importDialog
       .getByRole("button", { name: "Activate factory" })
