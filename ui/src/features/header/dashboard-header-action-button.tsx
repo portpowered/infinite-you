@@ -12,6 +12,7 @@ export function DashboardHeaderActionButton({
   return (
     <Button
       className={cn(DASHBOARD_HEADER_ACTION_BUTTON_CLASS, className)}
+      data-dashboard-header-action="neutral"
       size={size}
       tone={tone}
       {...props}

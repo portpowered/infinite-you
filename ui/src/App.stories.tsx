@@ -1384,6 +1384,57 @@ export const WorkChartTimelineVerification = {
   },
 };
 
+export const HeaderActionButtonsVerification = {
+  parameters: {
+    dashboardApi: {
+      timelineSnapshots: [
+        historicalWorkOutcomeSnapshot,
+        liveWorkOutcomeSnapshot,
+      ],
+    },
+  },
+  render: () => <App />,
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const canvas = within(canvasElement);
+    const toolbar = await canvas.findByRole("region", {
+      name: "dashboard summary",
+    });
+    const exportButton = within(toolbar).getByRole("button", {
+      name: "Export PNG",
+    });
+    const currentButton = within(toolbar).getByRole("button", {
+      name: "Return to current tick",
+    });
+
+    await expect(exportButton).toHaveAttribute(
+      "data-dashboard-header-action",
+      "neutral",
+    );
+    await expect(currentButton).toHaveAttribute(
+      "data-dashboard-header-action",
+      "neutral",
+    );
+
+    const slider = await canvas.findByRole<HTMLInputElement>("slider", {
+      name: "Timeline tick",
+    });
+    fireEvent.change(slider, { target: { value: "2" } });
+
+    await expect(await canvas.findByText("Tick 2 of 5")).toBeVisible();
+    await expect(currentButton).toBeEnabled();
+
+    await userEvent.click(currentButton);
+    await expect(await canvas.findByText("Tick 5 of 5")).toBeVisible();
+
+    await userEvent.click(exportButton);
+    await expect(
+      await within(canvasElement.ownerDocument.body).findByRole("dialog", {
+        name: "Export factory",
+      }),
+    ).toBeVisible();
+  },
+};
+
 export const SelectedPositionCurrentWork = {
   parameters: {
     dashboardApi: {

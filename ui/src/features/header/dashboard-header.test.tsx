@@ -95,7 +95,8 @@ describe("DashboardHeader", () => {
       name: "Return to current tick",
     });
 
-    expect(exportButton.className).toBe(currentButton.className);
+    expect(exportButton.dataset.dashboardHeaderAction).toBe("neutral");
+    expect(currentButton.dataset.dashboardHeaderAction).toBe("neutral");
     expect(exportButton.getAttribute("aria-haspopup")).toBe("dialog");
     expect(exportButton.getAttribute("aria-expanded")).toBe("false");
     expect(useExportDialogStore.getState().isExportDialogOpen).toBe(false);
