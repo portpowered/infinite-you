@@ -87,6 +87,8 @@ describe("DashboardHeader", () => {
     });
 
     render(<DashboardHeader />);
+    const heading = screen.getByRole("heading", { name: "Infinite You" });
+    const wordmark = screen.getByText("Infinite You");
 
     const exportButton = screen.getByRole<HTMLButtonElement>("button", {
       name: "Export PNG",
@@ -99,6 +101,9 @@ describe("DashboardHeader", () => {
     expect(currentButton.dataset.dashboardHeaderAction).toBe("neutral");
     expect(exportButton.getAttribute("aria-haspopup")).toBe("dialog");
     expect(exportButton.getAttribute("aria-expanded")).toBe("false");
+    expect(wordmark.className).toContain("sr-only");
+    expect(heading.textContent).toContain("∞");
+    expect(heading.textContent).toContain("U");
     expect(useExportDialogStore.getState().isExportDialogOpen).toBe(false);
 
     fireEvent.click(exportButton);

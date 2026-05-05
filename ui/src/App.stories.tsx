@@ -357,12 +357,16 @@ async function expectTypographyRegressionSurface(
 ): Promise<void> {
   const canvas = within(canvasElement);
   const heading = await canvas.findByRole("heading", { name: "Infinite You" });
+  const hiddenWordmark = within(heading).getByText("Infinite You");
   const toolbar = canvas.getByRole("region", { name: "dashboard summary" });
   const streamStatus = canvas.getByRole("status", {
     name: /Infinite You event stream (connecting|live)/,
   });
 
   expect(heading.className).toContain(DASHBOARD_PAGE_HEADING_CLASS);
+  expect(hiddenWordmark.className).toContain("sr-only");
+  expect(heading.textContent).toContain("∞");
+  expect(heading.textContent).toContain("U");
   expect(streamStatus.className).toContain(DASHBOARD_BODY_TEXT_CLASS);
   expect(streamStatus.className).toContain(DASHBOARD_SUPPORTING_LABELS_CLASS);
   expect(within(toolbar).queryByText("Factory state")).toBeNull();
