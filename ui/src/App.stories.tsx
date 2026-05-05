@@ -408,6 +408,37 @@ async function expectTypographyRegressionSurface(
   );
 }
 
+async function expectTimelineToolbarAlignment(
+  canvasElement: HTMLElement,
+): Promise<void> {
+  const canvas = within(canvasElement);
+  const toolbar = await canvas.findByRole("region", {
+    name: "dashboard summary",
+  });
+  const heading = within(toolbar).getByRole("heading", { name: "Infinite You" });
+  const slider = within(toolbar).getByRole<HTMLInputElement>("slider", {
+    name: "Timeline tick",
+  });
+  const streamStatus = within(toolbar).getByRole("status", {
+    name: /Infinite You event stream (connecting|live)/,
+  });
+  const exportButton = within(toolbar).getByRole("button", { name: "Export PNG" });
+  const sliderShell = requireValue(
+    slider.closest<HTMLElement>("div"),
+    "expected slider shell in dashboard toolbar",
+  );
+  const headingRect = heading.getBoundingClientRect();
+  const sliderRect = sliderShell.getBoundingClientRect();
+  const streamStatusRect = streamStatus.getBoundingClientRect();
+  const exportButtonRect = exportButton.getBoundingClientRect();
+
+  expect(sliderRect.left).toBeGreaterThanOrEqual(headingRect.right - 1);
+  expect(streamStatusRect.left).toBeGreaterThanOrEqual(sliderRect.right - 1);
+  expect(exportButtonRect.left).toBeGreaterThanOrEqual(
+    streamStatusRect.right - 1,
+  );
+}
+
 async function selectWorkstationRequest(
   canvasElement: HTMLElement,
   request: DashboardWorkstationRequest,
@@ -1479,6 +1510,25 @@ export const HeaderActionButtonsVerification = {
     } finally {
       useExportDialogStore.setState({ isExportDialogOpen: false });
     }
+  },
+};
+
+export const HeaderTimelineAlignmentVerification = {
+  parameters: {
+    dashboardApi: {
+      timelineSnapshots: [
+        historicalWorkOutcomeSnapshot,
+        liveWorkOutcomeSnapshot,
+      ],
+    },
+  },
+  render: () => (
+    <div style={{ maxWidth: "100%", width: "1280px" }}>
+      <App />
+    </div>
+  ),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await expectTimelineToolbarAlignment(canvasElement);
   },
 };
 
