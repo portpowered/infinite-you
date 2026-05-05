@@ -1448,6 +1448,7 @@ export const WorkChartTimelineVerification = {
 };
 
 export const HeaderActionButtonsVerification = {
+  tags: ["test"],
   parameters: {
     dashboardApi: {
       timelineSnapshots: [
@@ -1487,10 +1488,12 @@ export const HeaderActionButtonsVerification = {
       await expect(await canvas.findByText("Tick 2 of 5")).toBeVisible();
       await expect(currentButton).toBeEnabled();
 
-      await userEvent.click(currentButton);
+      currentButton.focus();
+      await userEvent.keyboard("{Enter}");
       await expect(await canvas.findByText("Tick 5 of 5")).toBeVisible();
 
-      await userEvent.click(exportButton);
+      exportButton.focus();
+      await userEvent.keyboard("{Enter}");
       const dialog = await within(canvasElement.ownerDocument.body).findByRole(
         "dialog",
         {
@@ -1499,7 +1502,11 @@ export const HeaderActionButtonsVerification = {
       );
       await expect(dialog).toBeVisible();
 
-      await userEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      const cancelButton = within(dialog).getByRole("button", {
+        name: "Cancel",
+      });
+      cancelButton.focus();
+      await userEvent.keyboard("{Enter}");
       await waitFor(() => {
         expect(
           within(canvasElement.ownerDocument.body).queryByRole("dialog", {
@@ -1514,6 +1521,7 @@ export const HeaderActionButtonsVerification = {
 };
 
 export const HeaderTimelineAlignmentVerification = {
+  tags: ["test"],
   parameters: {
     dashboardApi: {
       timelineSnapshots: [
@@ -1751,6 +1759,7 @@ export const ResourceCountEventReplaySmoke = {
 };
 
 export const TypographyRegression = {
+  tags: ["test"],
   parameters: {
     dashboardApi: {
       snapshot: semanticWorkflowDashboardSnapshot,
@@ -1766,6 +1775,7 @@ export const TypographyRegression = {
 };
 
 export const TypographyRegressionNarrow = {
+  tags: ["test"],
   parameters: {
     dashboardApi: {
       snapshot: semanticWorkflowDashboardSnapshot,
