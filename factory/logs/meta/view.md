@@ -2,12 +2,20 @@
 
 ## world state
 
-- as of `2026-05-05T16:33:00-07:00`, local `HEAD` on `main` points to
-  `a73fb01`
-  (`Merge pull request #105 from portpowered/ralph/dedupe-functional-dispatch-history-test-helpers`)
-  and matches `origin/main`
-- the local worktree is clean apart from ignored workflow inputs
+- as of `2026-05-06T02:05:34.3495634-07:00`, local `HEAD` on `main` points to
+  `0a22988`
+  (`Merge branch 'main' of https://github.com/portpowered/infinite-you`) and is
+  ahead of published `origin/main` (`20f0504`) because this checkout merged the
+  local `import-niceties` branch into `main` during the repo refresh
+- authoritative published repo truth therefore comes from `origin/main`
+  together with the current open-PR set, not from local `HEAD` alone
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
+- the local worktree is not clean:
+  - tracked `factory/inputs/**` remains sentinel-only
+  - one ignored idea is now staged locally under
+    `factory/inputs/idea/default/retire-transition-topology-runtime-lookup-adapter.md`
+  - unrelated untracked local residue remains at the repo root and under
+    `factory/`
 
 ## workflow truth
 
@@ -39,181 +47,38 @@
 - `.gitignore` still ignores live workflow submissions under `factory/inputs/**`
   except those sentinel paths
 - the file watcher still enforces the documented three-segment watched-input
-  contract and no longer accepts direct
-  `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
-  channel fallback
-- the visible canonical inboxes now contain the tracked `.gitkeep` sentinels
-  plus one ignored local idea residue:
-  `factory/inputs/idea/default/dedupe-functional-agent-config-and-arg-sequence-test-helpers.md`
+  contract and rejects implicit two-segment default-channel fallback paths
+- the previously queued ignored idea
+  `factory/inputs/idea/default/consolidate-functional-factory-event-tick-helpers.md`
+  is stale because merged PR `#114` already landed that exact cleanup on
+  `origin/main`
+- the current ignored local idea is a fresh replacement operating-state file,
+  not checked-in queue truth
 
 ## customer-ask truth
 
-- the import/export P0 lane is now materially closed on `main`:
-  - merged PRs `#67`, `#68`, `#69`, `#70`, `#71`, `#72`, and `#93` now cover
-    the prompt template, split-layout, non-success-route, dialog, and
-    supported portable bundled-file portions of that ask
-  - canonical export now omits inline bundled-file content for supported
-    portable `factory/scripts/**` and `factory/docs/**` entries while keeping
-    the transport records needed for portability
-  - runtime loading and validation now accept the supported disk-backed
-    portable bundled-file path without rehydrating supported inline ownership
-  - package, integration, service, and functional coverage now protect the
-    supported bundled-file round-trip behavior through export, import, and
-    runtime loading
-- the selected-work current-selection ask is materially satisfied on `main`
-  through merged PRs `#74` and `#77`
-- the submit-work copy ask is satisfied on `main` through merged PR `#75`
-- merged PR `#83` satisfied the header-verbosity copy reduction ask on `main`:
-  visible `Factory state`, `Stream`, `Export PNG`, and `Current` toolbar text
-  labels are gone
-- merged PR `#84` satisfied the work-outcome chart ask on `main`:
-  the chart no longer teaches detached axis labels and now carries increased
-  axis spacing through rendered chart behavior
-- merged PR `#85` satisfied the remaining dashboard branding and header
-  iconography lane on `main`:
-  - `ui/index.html`, `ui/fallback_dist/index.html`, and
-    `ui/fallback_dist/assets/index.js` no longer ship the old
-    `Agent Factory` / triangle shell contract
-  - `ui/src/features/header/dashboard-header.tsx`,
-    `ui/src/features/header/dashboard-status-panel.tsx`,
-    `ui/src/features/bento/agent-bento.tsx`,
-    `ui/src/features/workflow-activity/react-flow-current-activity-card-import.tsx`,
-    `ui/src/features/header/dashboard-export-dialog.tsx`, and
-    `ui/src/features/export/build-factory-export-filename.ts` now align with
-    the Infinite You rename
-  - the header stream/export/current controls now use the requested
-    pulsating-dot, share-style, and play-style semantics
-- merged PR `#86` satisfied the remaining header button-convergence seam on
-  `main`:
-  - `ui/src/features/header/dashboard-header.tsx` and
-    `ui/src/features/header/tick-slider-control.tsx` now route the export and
-    return-to-current actions through
-    `ui/src/features/header/dashboard-header-action-button.tsx`
-  - `ui/src/features/header/dashboard-header.test.tsx` and
-    `ui/src/App.stories.tsx` now protect the converged neutral header-action
-    treatment through rendered behavior
-- merged PR `#87` satisfied the remaining submit-work button-tone seam on
-  `main`:
-  - `ui/src/features/submit-work/submit-work-card.tsx` now renders the
-    `Submit work` CTA through the shared neutral `outline` tone instead of the
-    accent-filled default treatment
-  - `ui/src/features/submit-work/submit-work-widget.test.tsx` and
-    `ui/src/App.stories.tsx` now protect that neutral rendered treatment
-- the tracked local ask diff now explicitly includes the array-valued
-  non-success output-interface request, but that ask is already materially
-  satisfied on `main` through merged PR `#69`
-- there is no remaining unowned customer-visible dashboard ask on `main`; the
-  next narrow cleanup candidate now comes from the broader backend quality
-  lane:
-- merged PR `#88` retired the duplicated legacy dispatch compat payload
-  aliases from `ui/src/features/timeline/state/timeline/replayWorldStateTypes.ts`
-  and merged PR `#89` centralized the remaining replay
-  `completionToTraceDispatch` projection duplication without reopening the
-  broader legacy compat lane
-- merged PR `#90` closed the authored-throttle transition-ID fallback lane on
-  `main`:
-  - `pkg/petri/inference_throttle_guard.go` no longer carries
-    `WatchedTransitionIDs`
-  - `pkg/config/config_mapper.go` no longer lowers authored throttle guards
-    through transition-ID watch sets
-  - throttle tests now assert runtime-observable lane behavior instead of the
-    retired fallback shape
-- merged PR `#91` closed the last hidden non-success route compatibility seam
-  on `main`:
-  - `pkg/config/openapi_factory.go` no longer carries the singular
-    `onContinue` / `onRejection` / `onFailure` coercion helper
-  - `pkg/api/factory_config_smoke_test.go` now rejects singular non-success
-    route objects at the generated boundary
-  - checked-in factory fixtures across `factory/`, `examples/`, and
-    `tests/functional_test/testdata/` now author canonical array-valued
-    non-success routes
-- merged PR `#92` closed the stale OpenAPI cron post-processing compatibility
-  seam on `main`:
-  - `pkg/config/factory_config_mapping.go` no longer calls
-    `applyOpenAPICronCompatibility`
-  - `pkg/config/openapi_factory.go` no longer reparses normalized authored JSON
-    through `buildRawOpenAPIWorkstationCronIndex`
-  - `pkg/config/openapi_factory_test.go` and
-    `tests/functional/runtime_api/api_runtime_config_alignment_smoke_test.go`
-    now cover canonical cron loading through the generated boundary and runtime
-    config path
-- merged PR `#93` closed the supported portable bundled-file portability seam
-  on `main`:
-  - `pkg/config/factory_config_mapping.go` now strips supported portable inline
-    bundled-file content from canonical export while preserving the portable
-    transport entries
-  - `pkg/config/runtime_config.go`, `pkg/config/layout.go`, and
-    `pkg/config/config_validator.go` now treat supported portable bundled files
-    as disk-backed during runtime loading, expansion, and validation
-  - `pkg/config/portable_bundled_files*.go`, `pkg/service/factory_test.go`,
-    and functional portability smoke coverage now protect the supported
-    export/import/runtime round-trip behavior
-- merged PR `#94` closed the remaining replay-wrapper cleanup seam on `main`:
-  - `ui/src/features/timeline/state/timeline/replayCompletion.ts` and
-    `ui/src/features/timeline/state/timeline/replayWorldState.ts` no longer
-    carry the cast-wrapper-only replay payload helpers
-  - replay timeline tests remain the proof path for the live replay behavior
-- merged PR `#95` closed the duplicated submit-request shaping drift on `main`:
-  - `pkg/factory/work_request.go` now owns the canonical
-    `[]interfaces.SubmitRequest -> interfaces.WorkRequest` shaping path
-  - `pkg/internal/submission/work_request.go` is now only a pass-through alias
-    onto `factory.WorkRequestFromSubmitRequests`
-  - functional runtime smoke coverage now protects trace and request-shaping
-    parity through the runtime-visible submission path
-- merged PR `#96` closed the dead submission-forwarder lane on `main`:
-  - `pkg/internal/submission` is gone
-  - live callers now import `pkg/factory.WorkRequestFromSubmitRequests`
-    directly
-  - the old meta note naming that package as the next cleanup candidate is now
-    stale
-- merged PR `#97` closed the last stale iconography branch residue without
-  reopening the broader dashboard ask on `main`
-- merged PR `#98` closed the remaining work-outcome chart padding follow-up on
-  `main`
-- merged PR `#100` closed the replay event-stream file-wrapper seam on `main`:
-  - `pkg/replay/event_stream_artifact.go` is gone from production ownership
-  - replay conversion behavior now lives in the replay contract smoke lane
-- merged PR `#101` closed the backend `80%` coverage lane on `main`:
-  - `Makefile` and `cmd/gocoveragecheck/main.go` now enforce the backend gate
-  - backend runtime, replay, worker, and projection tests now cover the raised
-    floor through observable behavior
-- merged PR `#104` closed the replay-only shared-helper lane on `main`:
-  - replay-only helper ownership no longer inflates the shared exported surface
-    of `pkg/testutil` and `internal/testpath`
-  - replay artifact smoke and replay regression coverage still protect copied
-    factory replay success plus expected divergence behavior through observable
-    runtime outcomes
-- merged PR `#105` closed the duplicate functional dispatch-history helper
-  lane on `main`:
-  - `tests/functional/runtime_api/api_cron_workstations_smoke_test.go` now
-    routes dispatch-input reconstruction through
-    `tests/functional/internal/support/events.go`
-  - `tests/functional/internal/support/events.go` no longer carries the extra
-    local helper breadth that only existed to support the cron smoke's private
-    copy
-  - guards-batch and cron runtime assertions still prove the same observable
-    history behavior through live factory events
-- there is still no remaining narrow unowned customer-visible ask gap on
-  `main`; the next non-overlapping cleanup candidate now comes from the
-  broader backend quality lane:
-  - `tests/functional/internal/support/fixtures.go` already owns
-    `WriteAgentConfig`
-  - `tests/functional/internal/support/fixtures.go` already owns
-    `AssertArgsContainSequence`
-  - `tests/functional/guards_batch/helpers_test.go`,
-    `tests/functional/runtime_api/runtime_support_test.go`, and
-    `tests/functional/smoke/service_config_override_alignment_test.go` still
-    carry suite-local copies of those same helper behaviors
-  - the next cleanup should consolidate those tests onto the shared helper
-    ownership without changing observable provider-command, runtime-config, or
-    guards-batch behavior
-- the remaining ask surface beyond that is broader program work:
-  - the general standards-migration checklist ask is still open in
-    `factory/logs/meta/asks.md`
-  - the website `90%` coverage target is still open in
-    `factory/logs/meta/asks.md`
-  - the manual QA and systems-quality documentation asks are still open in
-    `factory/logs/meta/asks.md`
+- the import/export P0 lane is materially advanced on published `main` through
+  merged PRs `#67`, `#68`, `#69`, `#70`, `#71`, `#72`, `#93`, `#109`, and
+  `#112`
+- the remaining active import follow-up is now owned by open PR `#115`
+  (`import-niceties`), which touches `pkg/config`, `pkg/service`,
+  `pkg/workers/script.go`, and import/export regression tests
+- the bad-interface-for-outputs ask is materially satisfied on published
+  `main` through the non-success route-array work already merged earlier
+- the selected-work current-selection ask is materially satisfied on published
+  `main` through merged PRs `#74`, `#77`, and `#110`
+- the submit-work copy ask is satisfied on published `main` through merged PR
+  `#75`
+- the header verbosity, chart layout, branding/iconography, and button-tone
+  asks are materially satisfied on published `main` through merged PRs `#83`,
+  `#84`, `#85`, `#86`, `#87`, and `#98`
+- the remaining open asks in `factory/logs/meta/asks.md` are broader program
+  work rather than one narrow unowned customer-visible regression:
+  - standards-migration checklist tracking
+  - website `90%` coverage target
+  - docs audit
+  - manual QA
+  - systems-quality documentation
 
 ## replay truth
 
@@ -226,127 +91,59 @@
 - replay outcome counts remain unchanged in the sample:
   - `process`: `9 ACCEPTED <COMPLETE>`, `27 CONTINUE <CONTINUE>`
   - `review`: `5 ACCEPTED <COMPLETE>`, `4 REJECTED <REJECTED>`
+- one replay rejection payload is still oddly quoted as `"\"<REJECTED>\"\n"`;
+  treat that as a fixture quirk rather than current workflow truth
 
 ## recent repo movement
 
-- recent merged PRs on `main` now include:
-  - `#105` `dedupe-functional-dispatch-history-test-helpers`, merged on
-    `2026-05-05T23:16:03Z`
-  - `#104` `trim-replay-only-testutil-helper-surface`, merged on
-    `2026-05-05T22:23:43Z`
-  - `#102` `work-chaininig-trace-ids`, merged on `2026-05-05T21:39:26Z`
-  - `#99` `workstation-current-selection-cleanup`, merged on
-    `2026-05-05T21:20:11Z`
-  - `#101` `code-coverage-backend`, merged on `2026-05-05T21:29:09Z`
-  - `#100` `retire-replay-event-stream-file-wrapper-cluster`, merged on
-    `2026-05-05T21:22:34Z`
-  - `#98` `work-outcome-chart-padding`, merged on `2026-05-05T21:02:23Z`
-  - `#97` `website-icon-removal`, merged on `2026-05-05T20:59:43Z`
-  - `#96` `remove-dead-submission-work-request-forwarder-package`, merged on
-    `2026-05-04T18:22:54Z`
-  - `#95` `dedupe-submit-request-shaping-between-production-and-functional-runtime-tests`,
-    merged on `2026-05-04T17:34:28Z`
-  - `#94` `retire-replay-dispatch-payload-cast-wrappers`, merged on
-    `2026-05-04T17:21:31Z`
-  - `#93` `canonicalize-portable-bundled-files-without-inline-content`,
-    merged on `2026-05-04T15:53:47Z`
-  - `#92` `retire-openapi-cron-compatibility-patch`, merged on
-    `2026-05-04T14:33:28Z`
-  - `#91` `retire-singular-workstation-route-compatibility`, merged on
-    `2026-05-04T13:28:02Z`
-  - `#90` `retire-authored-throttle-transition-id-fallback`, merged on
-    `2026-05-04T12:32:50Z`
-  - `#89` `centralize-replay-trace-dispatch-projection`, merged on
-    `2026-05-04T11:25:59Z`
-  - `#88` `retire-replay-timeline-legacy-compat-duplication`, merged on
-    `2026-05-04T10:20:32Z`
-  - `#87` `normalize-submit-work-button-treatment`, merged on
-    `2026-05-04T09:17:47Z`
-  - `#86` `normalize-dashboard-header-button-treatment`, merged on
-    `2026-05-04T08:36:11Z`
-  - `#85` `align-dashboard-branding-and-header-iconography`, merged on
-    `2026-05-04T08:00:00Z`
-  - `#69` `workstation-non-success-route-arrays`, merged into `main` before the
-    current refresh and now represented by `HEAD`
-  - `#84` `align-work-outcome-chart-axis-labels-and-margins`, merged on
-    `2026-05-04T06:31:54Z`
-  - `#83` `simplify-dashboard-header-toolbar-verbosity`, merged on
-    `2026-05-04T05:53:10Z`
-  - `#82` `trim-ralph-starter-input-readme-contract`, merged on
-    `2026-05-04T04:20:52Z`
-  - `#81` `trim-starter-input-readme-contract`, merged on
-    `2026-05-04T03:18:53Z`
-  - `#80` `align-default-starter-task-input-contract`, merged on
-    `2026-05-04T02:36:26Z`
-  - `#79` `retire-filewatcher-default-channel-fallback`, merged on
-    `2026-05-04T01:27:11Z`
-  - `#78` `remove-list-work-legacy-pagination-shim`, merged on
-    `2026-05-04T00:28:40Z`
-- `gh pr list --state open` currently reports one open PR:
-  - `#103` `code-coverage-frontend`, opened on `2026-05-05T21:45:42Z`
+- recent merged PRs on published `main` now include:
+  - `#114` `consolidate-functional-factory-event-tick-helpers`, merged on
+    `2026-05-06T08:18:50Z`
+  - `#112` `updated website export to support exporting bundled files`, merged
+    on `2026-05-06T07:45:59Z`
+  - `#111` `remove-init-default-models`, merged on `2026-05-06T07:09:23Z`
+  - `#110` `workstation-request-current-selection-cleanup`, merged on
+    `2026-05-06T03:28:00Z`
+  - `#109` `inline-supporting-file-content-on-export-and-thin-factory-import`,
+    merged on `2026-05-06T03:23:17Z`
+- `gh pr list --state open` currently reports two open PRs:
+  - `#115` `Import niceties`, opened on `2026-05-06T08:53:55Z`
+  - `#113` `docs: refresh meta world state`, opened on `2026-05-06T08:08:40Z`
+- PR `#115` owns the current import/export follow-up lane, so new cleanup
+  dispatches should avoid `pkg/config`, `pkg/service`, `pkg/workers/script.go`,
+  and the affected bootstrap/runtime import tests until that lane merges or
+  closes
+
+## next cleanup candidate
+
+- there is no remaining narrow unowned customer-visible ask gap on published
+  `main`
+- the next non-overlapping cleanup seam is authored-config-only runtime lookup
+  bridging in transition-topology normalization:
+  - `pkg/config/config_mapper.go` still builds a private
+    `factoryConfigWorkstationLookupAdapter`
+  - that adapter only exists so `state.NormalizeTransitionTopology(...)` can
+    ask whether a workstation is a repeater while mapping authored config
+  - `pkg/factory/state/transition_topology.go` is the consumer of that question
+  - `pkg/factory/workstationconfig/runtime_lookup.go` should remain the owner
+    for true runtime lookup behavior outside this mapping seam
+- the next dispatch should retire the private authored-config lookup adapter
+  and preserve the existing topology behavior through package tests around
+  repeater rejection arcs and default failure arcs
 
 ## theory of mind
 
-- the authoritative world model still comes from live git state plus the
-  checked-in workflow contract, not from replay fixtures alone
+- when local `main` diverges from published `origin/main`, treat local merge
+  state as operating residue and rebuild the worldview from remote truth plus
+  open PR ownership before dispatching work
 - `factory/inputs/**` must always be reasoned about in two layers:
   checked-in contract versus ignored operating residue
-- ignored queue residue can become stale within a single merge cycle, so the
-  meta loop has to reconcile local inbox files against the newest merged PRs
-  before dispatching anything new
-- merged PR state can flip between the start of a refresh and the end of it;
-  open-PR assumptions need to be revalidated after `git pull` and before queue
-  writes
-- once a customer-visible ask lands, the right follow-up is usually not another
-  broad lane but the smallest remaining seam that preserves the ask's public
-  intent without reopening merged work
-- once a portability lane looks closed, re-check export mapping, runtime load,
-  validation, and service/functional tests together before retiring the idea;
-  PR `#93` only became safe to close after all four layers moved to the same
-  supported disk-backed ownership model
-- once a narrow cleanup merges, the next best seam can still hide in boundary
-  normalizers and fixtures rather than in the obvious runtime path; after
-  PR `#90`, the stale throttle note was gone on `main` but the array-route ask
-  still had a hidden compatibility layer in the OpenAPI factory boundary
-- when a public JSON shape moves from singular objects to arrays, re-check
-  import/load normalization helpers and checked-in factory fixtures; type and
-  schema updates alone do not prove the old authored shape is actually rejected
-- after a boundary migration lands, re-check for follow-on post-processing
-  patches that still reparse the authored JSON out-of-band; once the generated
-  model and mapper both carry the canonical field directly, those patches are
-  often the next dead compatibility seam
-- for import/export asks, verify both canonical `factory.json` flattening and
-  expanded authored layout writes before declaring the lane closed; stripping a
-  field during `WriteExpandedFactoryLayout` does not mean `FlattenFactoryConfig`
-  and runtime loading have stopped rehydrating it back into the exported JSON
-- after broad replay legacy-compat cleanups merge, scan for any remaining
-  one-line cast wrappers or alias-only helpers on the live replay path before
-  inventing a larger follow-up; those seams are often the next lowest-risk
-  simplifications
-- when production request-shaping and functional-test request-shaping both
-  exist, compare chaining-trace propagation and batch metadata field-by-field
-  before assuming the duplicate helper is harmless; this repo already allowed a
-  test-only copy to drift away from the live submit path
-- once a dedupe PR lands, re-scan the old owner package for alias-only
-  wrappers; this repo now shows that a merged centralization can leave a whole
-  package behind as dead forwarding surface even after the behavioral drift is
-  fixed
-- once a cleanup seam is recorded in the checked-in worldview, re-validate it
-  against live `main` before dispatching; merged PR `#96` proved the meta view
-  can go stale within a single refresh cycle
-- when an open PR touches a surface already marked closed in the worldview,
-  compare the PR diff against the canonical ask text before dispatching any
-  sibling work; PR `#97` is a good example of overlap hiding behind a new
-  branch name
-- deadcode-baseline entries that are only reachable from one long functional
-  smoke are strong candidates for the next narrow cleanup idea, especially when
-  the live runtime, API, and CLI paths have no direct callers
-- when a deadcode-baseline entry still has live callers, compare it against
-  suite-local helper copies before queueing deletion; duplicated functional
-  helper ownership can be the real simplification seam
-- when a helper file is split by build tags, validate usage in both the short
-  and `functionallong` lanes before treating it as dead; replay-contract helper
-  files can look unused in one lane while still serving the other
-- graph and explorer results can lag behind a fast-forwarded `main`; verify any
-  suggested cleanup seam against live `git log`, `rg`, and direct file reads
-  before writing a new queue item
+- re-check queued ignored idea files after every merged PR; this loop often
+  leaves stale local backlog residue behind even when the live code is already
+  clean
+- the codebase graph can lag live `main` after branch movement; if graph reads
+  still reference deleted packages or handlers after a refresh, verify with
+  direct file reads before dispatching a cleanup
+- prefer shrinking authored-config-only adapters before deduping test plumbing
+  when both are available; production-path simplification reduces more future
+  reasoning surface than another test-only helper layer

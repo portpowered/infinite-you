@@ -78,6 +78,9 @@
   exist, compare chaining-trace propagation and batch metadata field-by-field
   before assuming the duplicate helper is harmless; this repo already allowed a
   test-only copy to drift away from the live submit path.
+- After pulling or merging `main`, treat code-graph results as provisional
+  until they stop referencing deleted packages or handlers; this index can lag
+  the live checkout and needs direct file reads to confirm reality.
 - After a dedupe change merges, re-check the old owner package for alias-only
   wrappers; this repo can leave a one-function forwarding package behind even
   after the real behavioral duplication is gone.
@@ -1299,3 +1302,76 @@
 - Added a standards-alignment checklist here so the meta loop now carries a
   checked-in running summary of the highest-signal open website and backend
   standards gaps instead of only recording them in prose refresh notes.
+
+## 2026-05-06T01:04:51.9722496-07:00 - meta state refresh
+
+- Switched back to `main`, then ran `git pull --ff-only origin main`; `main`
+  was already current at `6b95577`
+  (`Merge pull request #111 from portpowered/remove-init-default-models`).
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, and `factory/README.md`.
+- Re-validated tracked versus live workflow inputs with `git ls-files` and
+  `Get-ChildItem -Recurse factory/inputs`, confirming the canonical checked-in
+  input surface is still sentinel-only and had no pre-existing ignored idea
+  residue at the start of this refresh.
+- Re-checked repo movement with `git log --oneline --decorate -12`,
+  `gh pr list --state merged --limit 12`, and `gh pr list --state open --limit 20`,
+  confirming merged PRs `#106` through `#111` are now on `main` and the only
+  open PR is `#112` (`website-export`).
+- Used delegated explorer reads, the code graph, and direct file reads to
+  reject a false deadcode lead in `tests/functional/providers/helpers_test.go`:
+  the baseline entry is not enough by itself because those helpers still serve
+  `functionallong` tests.
+- Confirmed one new non-overlapping cleanup seam in live code instead:
+  `tests/functional/internal/support/events.go` already owns
+  `LastFactoryEventTick`, while
+  `tests/functional/replay_contracts/short_helpers_test.go`,
+  `tests/functional/replay_contracts/replay_record_end_to_end_long_test.go`,
+  and `tests/functional/runtime_api/api_inference_events_test.go` still carry
+  local `lastFactoryEventTick` copies.
+- Queued one fresh ignored idea under
+  `factory/inputs/idea/default/consolidate-functional-factory-event-tick-helpers.md`
+  so the next worker can collapse those suites onto the shared helper without
+  reopening the export lane owned by PR `#112`.
+- Updated the checked-in worldview and summary so they no longer claim stale
+  PR state, stale inbox residue, or a clean worktree.
+
+## 2026-05-06T02:05:34.3495634-07:00 - meta state refresh
+
+- Ran `git pull origin main` on local `main` after `git pull --ff-only` failed
+  on the untracked `import-niceties` branch because no upstream was set and the
+  branch had diverged. That updated the checkout, but it also merged the local
+  `import-niceties` commit into local `main`, so published truth still has to
+  be read from `origin/main` plus open PR ownership rather than local `HEAD`
+  alone.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, and `factory/README.md`.
+- Re-validated tracked versus live workflow inputs with `git ls-files` and
+  `Get-ChildItem -Recurse factory/inputs`, confirming the checked-in inboxes
+  are still sentinel-only while the visible idea file under
+  `factory/inputs/idea/default/` is ignored local operating state.
+- Re-checked repo movement with `git log --oneline --decorate -12`,
+  `gh pr list --state merged --limit 12`, and `gh pr list --state open --limit 20`,
+  confirming PR `#112` and PR `#114` are now merged on published `main`, and
+  that the open PR set is now `#113` (meta docs) plus `#115`
+  (`import-niceties`).
+- Used direct code reads and one delegated explorer pass to invalidate the
+  previously queued ignored idea
+  `factory/inputs/idea/default/consolidate-functional-factory-event-tick-helpers.md`:
+  merged PR `#114` already landed that exact cleanup on published `main`, so
+  the file was stale and had to be replaced.
+- Rejected stale graph-only leads that still referenced deleted
+  `pkg/internal/submission` and removed API/filewatcher fallback seams; direct
+  file reads showed the graph index is lagging the live checkout in those
+  areas.
+- Verified the next narrow non-overlapping cleanup seam in live code instead:
+  `pkg/config/config_mapper.go` still builds a private
+  `factoryConfigWorkstationLookupAdapter` only so
+  `state.NormalizeTransitionTopology(...)` can distinguish repeater behavior,
+  even though authored config is already in hand during mapping.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/retire-transition-topology-runtime-lookup-adapter.md`
+  so the next worker can retire that adapter seam without reopening the active
+  import lane owned by PR `#115`.
