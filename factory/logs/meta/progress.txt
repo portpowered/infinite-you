@@ -23,6 +23,9 @@
 - Before dispatching a fresh idea for a customer ask, inspect open PR bodies
   and changed-file ownership; an ignored local idea may already have advanced
   into an in-flight branch even if `main` has not merged it yet.
+- Visible `factory/inputs/task/default/*.md` files can be stale ignored residue
+  even after the owning PR has merged; re-check live PR state before treating a
+  local task file as active work.
 - Prune ignored local idea files once their owning PR has merged; otherwise the
   canonical inbox can retain stale residue that no longer represents an
   actionable backlog item.
@@ -78,6 +81,14 @@
   exist, compare chaining-trace propagation and batch metadata field-by-field
   before assuming the duplicate helper is harmless; this repo already allowed a
   test-only copy to drift away from the live submit path.
+- When a helper cluster only serves one long functional spec or one narrow test
+  lane, prefer co-locating it with that spec over keeping a broad shared
+  `helpers_test.go` owner; that reduces deadcode noise without weakening
+  behavioral coverage.
+- When a config-layer helper is only a pass-through to canonical
+  `pkg/interfaces` enum conversion, delete the extra owner and keep mapping and
+  layout callers on the shared helper instead of preserving duplicate wrapper
+  surfaces.
 - After a dedupe change merges, re-check the old owner package for alias-only
   wrappers; this repo can leave a one-function forwarding package behind even
   after the real behavioral duplication is gone.
@@ -1299,3 +1310,53 @@
 - Added a standards-alignment checklist here so the meta loop now carries a
   checked-in running summary of the highest-signal open website and backend
   standards gaps instead of only recording them in prose refresh notes.
+
+## 2026-05-05T20:45:00-07:00 - meta state refresh
+
+- Tried `git pull --ff-only` from the current checkout, then verified the
+  branch has no upstream because the local checkout is on `branch-check`
+  instead of `main`.
+- Fetched `origin/main` and confirmed `branch-check` already contains
+  `origin/main` at `5338586`; the checkout is ahead by one local branch commit
+  and is already published as open PR `#107` (`Branch check`).
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, and the backend
+  and website standards.
+- Re-validated tracked versus ignored queue truth with `git ls-files
+  factory/inputs`, `Get-ChildItem -Recurse factory/inputs`, and
+  `git check-ignore`, confirming the checked-in inboxes remain sentinel-only
+  while the visible local queue includes ignored residue such as
+  `factory/inputs/task/default/code-coverage-frontend.md`.
+- Re-checked recent PR state with `gh pr list --state open --limit 20`,
+  `gh pr list --state merged --limit 10`, `gh pr view 107`, and
+  `gh pr diff 106 --name-only`, confirming:
+  - PR `#103` is already merged even though a local ignored task file still
+    exists for it
+  - PR `#106` is merged, so the previously recorded
+    `dedupe-functional-agent-config-and-arg-sequence-test-helpers` seam is
+    closed on live `main`
+  - PR `#107` is the only open PR and it does not overlap the new queued
+    backend and test cleanup files
+- Used code-graph reads, direct file reads, and delegated explorer passes to
+  reject stale or overlapping candidates and identify three still-live,
+  non-overlapping cleanup seams:
+  - duplicate functional API server harness ownership across
+    `tests/functional/bootstrap_portability/helpers_test.go`,
+    `tests/functional/runtime_api/helpers_test.go`, and
+    `tests/functional/replay_contracts/replay_live_helpers_test.go`
+  - duplicated static command-runner test helpers across
+    `tests/functional/providers/helpers_test.go`,
+    `tests/functional/bootstrap_portability/portability_helpers_test.go`,
+    `tests/functional/workflow/helpers_test.go`,
+    `tests/functional/replay_contracts/replay_script_boundary_events_test.go`,
+    and `tests/functional/runtime_api/api_inference_events_test.go`
+  - pass-through public enum conversion wrappers in
+    `pkg/config/public_factory_enums.go` whose canonical ownership already
+    lives under `pkg/interfaces`
+- Queued three new ignored standalone idea files under
+  `factory/inputs/idea/default/` so the repo has at least three fresh
+  non-overlapping cleanup follow-ups ready for the maintainer workflow:
+  - `dedupe-functional-api-server-harnesses.md`
+  - `consolidate-static-command-runner-test-helpers.md`
+  - `retire-config-public-enum-forwarder-wrappers.md`

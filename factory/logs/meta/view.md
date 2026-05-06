@@ -2,11 +2,16 @@
 
 ## world state
 
-- as of `2026-05-05T16:33:00-07:00`, local `HEAD` on `main` points to
-  `a73fb01`
-  (`Merge pull request #105 from portpowered/ralph/dedupe-functional-dispatch-history-test-helpers`)
-  and matches `origin/main`
-- the local worktree is clean apart from ignored workflow inputs
+- as of `2026-05-05T20:45:00-07:00`, the local checkout is on `branch-check`
+  at `e08bb90` (`update the code`)
+- local `branch-check` contains `origin/main` at `5338586`
+  (`Merge pull request #103 from portpowered/ralph/code-coverage-frontend`)
+  plus a local branch-only commit already published as open PR `#107`
+- the local worktree is not clean:
+  - ignored workflow residue is visible under `factory/inputs/**`
+  - untracked local residue includes
+    `factory/logs/dedupe-functional-agent-config-and-arg-sequence-test-helpers.md`
+    and `test-export.png`
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 
 ## workflow truth
@@ -42,9 +47,14 @@
   contract and no longer accepts direct
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
-- the visible canonical inboxes now contain the tracked `.gitkeep` sentinels
-  plus one ignored local idea residue:
-  `factory/inputs/idea/default/dedupe-functional-agent-config-and-arg-sequence-test-helpers.md`
+- the visible canonical inboxes now contain the tracked `.gitkeep` sentinels,
+  one stale ignored task residue, and three newly queued ignored idea files:
+  - `factory/inputs/task/default/code-coverage-frontend.md`
+    is still present locally even though merged PR `#103` already closed that
+    lane on `main`
+  - `factory/inputs/idea/default/dedupe-functional-api-server-harnesses.md`
+  - `factory/inputs/idea/default/consolidate-static-command-runner-test-helpers.md`
+  - `factory/inputs/idea/default/retire-config-public-enum-forwarder-wrappers.md`
 
 ## customer-ask truth
 
@@ -194,19 +204,30 @@
   - guards-batch and cron runtime assertions still prove the same observable
     history behavior through live factory events
 - there is still no remaining narrow unowned customer-visible ask gap on
-  `main`; the next non-overlapping cleanup candidate now comes from the
-  broader backend quality lane:
-  - `tests/functional/internal/support/fixtures.go` already owns
-    `WriteAgentConfig`
-  - `tests/functional/internal/support/fixtures.go` already owns
-    `AssertArgsContainSequence`
+  `main`; merged PR `#106` closed the previously recorded shared functional
+  helper seam:
   - `tests/functional/guards_batch/helpers_test.go`,
     `tests/functional/runtime_api/runtime_support_test.go`, and
-    `tests/functional/smoke/service_config_override_alignment_test.go` still
-    carry suite-local copies of those same helper behaviors
-  - the next cleanup should consolidate those tests onto the shared helper
-    ownership without changing observable provider-command, runtime-config, or
-    guards-batch behavior
+    `tests/functional/smoke/service_config_override_alignment_test.go` no
+    longer own duplicate `writeAgentConfig` / `assertArgsContainSequence`
+    helpers already centralized under
+    `tests/functional/internal/support/fixtures.go`
+  - the older worldview note that still named that seam as next-up was stale
+- the next non-overlapping cleanup candidates now come from the broader
+  backend quality lane and are already queued as ignored local idea files:
+  - dedupe the near-copy functional API server harness ownership across
+    `tests/functional/bootstrap_portability/helpers_test.go`,
+    `tests/functional/runtime_api/helpers_test.go`, and
+    `tests/functional/replay_contracts/replay_live_helpers_test.go`
+  - consolidate duplicated static command-runner test helpers now split across
+    `tests/functional/providers/helpers_test.go`,
+    `tests/functional/bootstrap_portability/portability_helpers_test.go`,
+    `tests/functional/workflow/helpers_test.go`,
+    `tests/functional/replay_contracts/replay_script_boundary_events_test.go`,
+    and `tests/functional/runtime_api/api_inference_events_test.go`
+  - retire the pass-through public enum forwarder wrappers in
+    `pkg/config/public_factory_enums.go` now that canonical ownership already
+    lives under `pkg/interfaces`
 - the remaining ask surface beyond that is broader program work:
   - the general standards-migration checklist ask is still open in
     `factory/logs/meta/asks.md`
@@ -283,7 +304,7 @@
   - `#78` `remove-list-work-legacy-pagination-shim`, merged on
     `2026-05-04T00:28:40Z`
 - `gh pr list --state open` currently reports one open PR:
-  - `#103` `code-coverage-frontend`, opened on `2026-05-05T21:45:42Z`
+  - `#107` `Branch check`, opened on `2026-05-06T02:56:30Z`
 
 ## theory of mind
 
