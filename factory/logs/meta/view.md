@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-06T15:03:24.7591584-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260506-050415` points to `3e82419`
+- as of `2026-05-06T16:03:38.4962364-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260506-050415` points to `a25885a`
   (`docs: refresh meta world state`) and has been rebased onto live
-  `origin/main` through `24fa5f8`
-  (`cover-releasetagcheck-git-tag-wrapper-branches (#133)`)
+  `origin/main` through `4f21b7b`
+  (`cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches (#134)`)
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the local worktree is not clean:
   - canonical `factory/inputs/**` remains tracked-sentinel-only
@@ -15,7 +15,7 @@
   - `factory/logs/meta/asks.md` carries a local tracked edit and should be
     treated as user-owned state for this refresh
   - tracked meta-log updates are required because the last checked-in summary
-    predates merged PR `#133`
+    predates merged PR `#134`
   - ignored local workflow residue under `factory/inputs/**` must still be
     treated as operating state rather than checked-in queue truth
 
@@ -53,12 +53,12 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible ignored local idea residue after rebasing onto live `main` was:
-  - `factory/inputs/idea/default/cover-releasetagcheck-git-tag-wrapper-branches.md`
+  - `factory/inputs/idea/default/cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches.md`
 - that ignored idea is now stale queue residue rather than checked-in queue
-  truth because merged PR `#133` already landed that exact cleanup on `main`
+  truth because merged PR `#134` already landed that exact cleanup on `main`
 - it has been replaced during this refresh with one narrower customer-ask
   follow-up idea:
-  - `factory/inputs/idea/default/cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches.md`
+  - `factory/inputs/idea/default/cover-functionallane-command-owner-error-and-entrypoint-branches.md`
 
 ## customer-ask truth
 
@@ -88,6 +88,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#134` `cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches`, merged on
+    `2026-05-06T22:26:56Z`
   - `#133` `cover-releasetagcheck-git-tag-wrapper-branches`, merged on
     `2026-05-06T21:11:35Z`
   - `#132` `cover-deadcodecheck-command-owner-branches`, merged on
@@ -135,26 +137,25 @@
 
 ## next cleanup candidate
 
-- merged PR `#133` closes the previously recorded `cmd/releasetagcheck`
-  git-wrapper seam on live `main`
+- merged PR `#134` closes the previously recorded `cmd/gocoveragecheck`
+  command-owner threshold and entrypoint seam on live `main`
 - the next non-overlapping dispatch should keep advancing the broad quality ask
   by tightening another existing repo-owned maintainer gate instead of
   broadening into a package-by-package test campaign:
-  - `Makefile` still routes the backend coverage lane through
-    `go run ./cmd/gocoveragecheck -min $(GO_COVERAGE_MIN)`
+  - `Makefile` still routes the default functional lane through
+    `go run ./cmd/functionallane -jobs $(FUNCTIONAL_DEFAULT_JOBS) -count=1 -timeout $(GO_TEST_TIMEOUT)`
   - `docs/processes/development-guide-relevant-files.md` still names
-    `cmd/gocoveragecheck/` as the repo-owned backend coverage policy owner
-  - merged PRs `#124`, `#130`, and `#131` already covered zero-coverage
-    backend-package enforcement and real `go test` package-summary parsing
-  - `cmd/gocoveragecheck/main_test.go` still does not cover the command-owner
-    success-path emission, aggregate-threshold failure branch, or direct
-    `main` and `failf` exit behavior
-  - `go test -cover ./cmd/gocoveragecheck` still reports `77.4%` statement
+    `cmd/functionallane/` as the repo-owned default functional-lane owner
+  - merged PR `#126` already covered the thin command-entrypoint routing seam
+    for this package, but the same package still lacks direct coverage for the
+    `main` error path, `failf` exit behavior, `run()` success path, and the
+    discovery and test-execution failure wrappers
+  - `go test -cover ./cmd/functionallane` now reports `82.0%` statement
     coverage, materially below the sibling maintainer-gate command packages
 - the next idea should add focused package-local tests for
-  `cmd/gocoveragecheck`'s command-owner threshold and entrypoint branches
-  without changing coverage policy, widening the coverage lane scope, or
-  pushing these assertions down into unrelated backend packages
+  `cmd/functionallane`'s remaining command-owner error and entrypoint branches
+  without changing functional-lane package discovery policy, widening the lane
+  scope, or pushing these assertions down into unrelated functional suites
 
 ## theory of mind
 
@@ -207,3 +208,7 @@
   regression tests but still trails sibling maintainer commands on package
   coverage, prefer adding command-owner success and threshold-branch coverage
   there before widening scope into low-coverage application packages
+- when a repo-owned functional-lane command already has its thin entrypoint
+  seam covered, inspect the same package next for untested `main` error paths,
+  `failf` exit behavior, and wrapped discovery or execution failures before
+  widening scope into functional test rewrites or broader coverage programs

@@ -118,6 +118,10 @@
 - When `go test -coverpkg` appends `in <package list>` after
   `coverage: ... of statements`, verify the parser against the full live line
   shape; simplified test fixtures can falsely suggest the gate is complete.
+- When a repo-owned functional-lane command already has the thin entrypoint
+  seam covered, inspect the same package next for untested `main` error paths,
+  `failf` exit behavior, and wrapped discovery or execution failures before
+  widening scope into functional test rewrites or a broader coverage program.
 - When a repo-owned `Makefile` target shells through a thin command under
   `cmd/`, prefer adding a local callable seam plus package-local entrypoint
   tests in that command owner before pushing coverage assertions down into
@@ -140,9 +144,9 @@
 
 ## Current Summary
 
-- As of `2026-05-06T15:03:24.7591584-07:00`, `HEAD` points to `3e82419` on
+- As of `2026-05-06T16:03:38.4962364-07:00`, `HEAD` points to `a25885a` on
   branch `meta-refresh-world-state-20260506-050415`; live `origin/main` points
-  to `24fa5f8` through merged PR `#133`.
+  to `4f21b7b` through merged PR `#134`.
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -155,7 +159,7 @@
   remain operating state rather than canonical queue truth.
 - Recent merged PRs now include `#112`, `#113`, `#114`, `#115`, `#117`,
   `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, `#128`,
-  `#129`, `#130`, `#132`, and `#133`; open PRs `#120` and `#123` are only
+  `#129`, `#130`, `#132`, `#133`, and `#134`; open PRs `#120` and `#123` are only
   meta refresh branches and do not own the next code cleanup lane.
 - The canonical ask surface is now the user-owned quality-only rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
@@ -164,11 +168,54 @@
 - The replay fixtures remain historical samples rather than current workflow
   truth, and one rejection payload is still quoted anomalously in the replay
   sample.
-- The next non-overlapping dispatch is the `cmd/gocoveragecheck`
-  command-owner threshold and entrypoint lane: the parser and zero-coverage
-  seams are now closed on `main`, but the repo-owned coverage gate still lacks
-  direct success-path, aggregate-threshold, and exit-behavior coverage while
-  package coverage sits at `77.4%`.
+- The next non-overlapping dispatch is the `cmd/functionallane`
+  command-owner error and entrypoint lane: PR `#126` already covered the thin
+  command-entrypoint routing seam on `main`, but the repo-owned functional
+  lane still lacks direct coverage for `main` failure routing, `failf` exit
+  behavior, `run()` success, and wrapped discovery or execution failures while
+  package coverage sits at `82.0%`.
+
+## 2026-05-06T16:03:38.4962364-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, saw remote movement on `origin/main`, then ran
+  `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#134`
+  (`cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches`)
+  while preserving the user-owned tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  repo-owned `cmd/` maintainer-gate packages.
+- Re-validated tracked queue truth with `git ls-files factory/inputs`,
+  `Get-ChildItem -Recurse -Force factory/inputs`, and `.gitignore`,
+  confirming the checked-in inboxes remain sentinel-only while the visible
+  idea file is ignored local operating residue.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches.md`
+  is stale because merged PR `#134` already landed that exact cleanup on
+  `main`, so it should be replaced rather than re-queued.
+- Verified with `gh pr list`, `gh pr view 134`, direct reads of
+  `cmd/gocoveragecheck/main_test.go`, delegated explorer inspection, and fresh
+  `go test -cover ./cmd/...` runs that the gocoveragecheck seam is now closed
+  on live `main`; `go test -cover ./cmd/gocoveragecheck` reports `78.5%`
+  statement coverage and PR `#134` owns the remaining rise from the stale
+  pre-merge `77.4%` local result.
+- Used graph-backed discovery, direct reads of `cmd/functionallane/main.go`
+  and `cmd/functionallane/main_test.go`, workflow search over `Makefile` plus
+  `docs/processes/development-guide-relevant-files.md`, and a delegated
+  explorer pass to identify the next narrower command-owner seam: merged PR
+  `#126` already covered the thin entrypoint routing behavior, but the same
+  package still owns untested `main` failure routing, `failf` exit behavior,
+  `run()` success behavior, and wrapped discovery or test-execution failures,
+  and `go test -cover ./cmd/functionallane` still reports `82.0%` statement
+  coverage.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/cover-functionallane-command-owner-error-and-entrypoint-branches.md`
+  so the next worker can raise package-local command coverage for the
+  maintainer-owned default functional lane without changing package discovery
+  policy, widening the functional lane scope, or broadening into package-by-
+  package functional test authoring.
 
 ## 2026-05-06T12:04:09.0951770-07:00 - meta state refresh
 
