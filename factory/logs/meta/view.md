@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-06T08:03:56.8600066-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260506-050415` points to `527c286`
+- as of `2026-05-06T09:04:02.6782977-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260506-050415` points to `337fdb2`
   (`docs: refresh meta world state`) and has been rebased onto live
-  `origin/main` through `b0ae97a`
-  (`Merge pull request #126 from portpowered/ralph/cover-functionallane-command-entrypoint`)
+  `origin/main` through `7ee70eb`
+  (`Merge pull request #127 from portpowered/ralph/cover-releasetagcheck-command-entrypoint`)
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the local worktree is not clean:
   - canonical `factory/inputs/**` remains tracked-sentinel-only
@@ -15,7 +15,7 @@
   - `factory/logs/meta/asks.md` carries a local tracked edit and should be
     treated as user-owned state for this refresh
   - tracked meta-log updates are required because the last checked-in summary
-    predates merged PR `#126`
+    predates merged PR `#127`
   - ignored local workflow residue under `factory/inputs/**` must still be
     treated as operating state rather than checked-in queue truth
 
@@ -53,13 +53,13 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible ignored local idea residue at the start of this refresh was:
-  - `factory/inputs/idea/default/cover-functionallane-command-entrypoint.md`
+  - `factory/inputs/idea/default/cover-releasetagcheck-command-entrypoint.md`
 - that ignored idea was stale queue residue rather than checked-in queue truth
-  because merged PR `#126` already landed that functionallane command-entrypoint
+  because merged PR `#127` already landed that releasetagcheck command-entrypoint
   cleanup on `main`
 - it has been replaced during this refresh with one narrower customer-ask
   follow-up idea:
-  - `factory/inputs/idea/default/cover-releasetagcheck-command-entrypoint.md`
+  - `factory/inputs/idea/default/cover-releasesmoke-command-entrypoint.md`
 
 ## customer-ask truth
 
@@ -96,6 +96,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#127` `cover-releasetagcheck-command-entrypoint`, merged on
+    `2026-05-06T15:17:38Z`
   - `#126` `cover-functionallane-command-entrypoint`, merged on
     `2026-05-06T14:18:07Z`
   - `#125` `close-backend-coverage-profile-gap`, merged on
@@ -129,31 +131,34 @@
 ## next cleanup candidate
 
 - there is no remaining narrow unowned customer-visible ask gap on `main`
-- merged PR `#126` materially closes the previously recorded functionallane
+- merged PR `#127` materially closes the previously recorded releasetagcheck
   command-entrypoint gap on `main`:
-  - `cmd/functionallane/main.go` now exposes a thin callable seam so the
-    repo-owned command boundary is directly testable
-  - `cmd/functionallane/main_test.go` now covers `main` execution, functional
-    package discovery, `internal/support` filtering, empty-lane failure, and
-    final `go test` invocation wiring
-  - `Makefile` still keeps `test-functional` routed through the same
-    repo-owned command surface rather than moving coverage assertions into
-    unrelated packages
+  - `cmd/releasetagcheck/main.go` now exposes a thin callable seam so the
+    workflow-facing command boundary is directly testable
+  - `cmd/releasetagcheck/main_test.go` now covers `main` execution, explicit
+    `-tag` validation, `-points-at` lookup behavior, mutual exclusivity
+    failures, surfaced git failures, and exact `release_tag=...` output
+  - `.github/workflows/release-candidate.yml` and `.github/workflows/release.yml`
+    still keep release-tag resolution routed through the same repo-owned
+    command surface rather than moving those assertions into workflow-only
+    coverage
 - the next non-overlapping dispatch should keep advancing the broad P0 testing
   ask through adjacent repo-owned command surfaces and workflow boundaries
   instead of broadening into a package-by-package coverage campaign:
-  - `.github/workflows/release-candidate.yml` calls
-    `go run ./cmd/releasetagcheck -tag "$RELEASE_TAG"`
-  - `.github/workflows/release.yml` calls
-    `go run ./cmd/releasetagcheck -points-at HEAD`
-  - `cmd/releasetagcheck/main.go` owns the workflow-visible behavior for flag
-    exclusivity, semver validation, git tag resolution, and emitted
-    `release_tag=...` output
-  - `internal/releasetag/releasetag_test.go` covers semver parsing helpers, but
-    there is still no checked-in `cmd/releasetagcheck/main_test.go`
-- the next idea should make `cmd/releasetagcheck` directly testable with
-  focused command-owner coverage, without changing release workflow behavior,
-  adding a new release surface, or broadening into artifact-publish logic
+  - `scripts/release/smoke-artifact.sh` calls
+    `go run ./cmd/releasesmoke -binary "$1" -fixture "$2" -timeout "$TIMEOUT"`
+  - `scripts/release/smoke-artifact.ps1` calls
+    `go run ./cmd/releasesmoke -binary $BinaryPath -fixture $FixturePath -timeout $Timeout`
+  - `cmd/releasesmoke/main.go` owns the script-visible behavior for flag
+    parsing, harness invocation wiring, structured JSON success output, and
+    structured JSON failure output
+  - `tests/release/release_smoke_test.go` and `internal/releasesmoke` already
+    cover the harness behavior beneath that boundary, but there is still no
+    checked-in `cmd/releasesmoke/main_test.go`
+- the next idea should make `cmd/releasesmoke` directly testable with focused
+  command-owner coverage, without changing release smoke behavior, moving
+  verification logic into shell wrappers, or broadening into workflow or
+  artifact-packaging changes
 
 ## theory of mind
 
