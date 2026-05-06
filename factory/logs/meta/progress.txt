@@ -115,6 +115,9 @@
   bare `pkg/path  coverage: ...` lines and `ok pkg/path ... coverage: ...`
   lines as canonical input shapes; backend-owned packages can still report
   `0.0%` through either format.
+- When `go test -coverpkg` appends `in <package list>` after
+  `coverage: ... of statements`, verify the parser against the full live line
+  shape; simplified test fixtures can falsely suggest the gate is complete.
 - When a repo-owned `Makefile` target shells through a thin command under
   `cmd/`, prefer adding a local callable seam plus package-local entrypoint
   tests in that command owner before pushing coverage assertions down into
@@ -130,9 +133,9 @@
 
 ## Current Summary
 
-- As of `2026-05-06T11:02:38.5905896-07:00`, `HEAD` points to `1813e37` on
-  branch `meta-refresh-world-state-20260506-050415`; local `main` also points
-  to `0e82c26` and contains `origin/main` through merged PR `#129`.
+- As of `2026-05-06T12:04:09.0951770-07:00`, `HEAD` points to `3c36fe7` on
+  branch `meta-refresh-world-state-20260506-050415`; live `origin/main` points
+  to `52aa4e1` through merged PR `#130`.
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -144,8 +147,8 @@
   user-owned tracked edit; ignored workflow files under `factory/inputs/**`
   remain operating state rather than canonical queue truth.
 - Recent merged PRs now include `#112`, `#113`, `#114`, `#115`, `#117`,
-  `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, `#128`, and
-  `#129`; open PRs `#120` and `#123` are only
+  `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, `#128`,
+  `#129`, and `#130`; open PRs `#120` and `#123` are only
   meta refresh branches and do not own the next code cleanup lane.
 - The canonical ask surface is now the user-owned quality-only rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
@@ -154,10 +157,45 @@
 - The replay fixtures remain historical samples rather than current workflow
   truth, and one rejection payload is still quoted anomalously in the replay
   sample.
-- The next non-overlapping dispatch is the backend coverage summary-parser
-  lane: `cmd/gocoveragecheck` still lets `ok ... coverage: 0.0%` backend
-  package summaries evade failure even though the command is the repo-owned
-  backend coverage gate.
+- The next non-overlapping dispatch is the backend coverage coverpkg-summary
+  lane: `cmd/gocoveragecheck` still lets live
+  `ok ... coverage: 0.0% of statements in ...` backend package summaries evade
+  failure even though the command is the repo-owned backend coverage gate.
+
+## 2026-05-06T12:04:09.0951770-07:00 - meta state refresh
+
+- Ran `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#130`
+  (`close-backend-coverage-ok-summary-gap`) while preserving the user-owned
+  tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  backend and website coverage lanes.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `rg --files -uu factory/inputs`, confirming the checked-in inboxes remain
+  sentinel-only while the visible idea file is ignored local operating state.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/close-backend-coverage-ok-summary-gap.md` is
+  stale because merged PR `#130` already landed that exact cleanup on `main`,
+  so it should be replaced rather than re-queued.
+- Verified with `gh pr list`, `gh pr view 130`, direct reads, and live
+  `make ui-test-coverage` / `make test-coverage-go` runs that both quality
+  lanes still pass on `main`, with UI coverage holding at `93.42%` statements
+  and backend aggregate coverage holding at `86.5%`.
+- Used direct inspection of `Makefile`, `.github/workflows/ci.yml`,
+  `cmd/gocoveragecheck/main.go`, and `cmd/gocoveragecheck/main_test.go`, plus
+  the live `make test-coverage-go` output, to identify the narrower remaining
+  backend gate seam: the parser now covers bare and simplified `ok ...`
+  package summaries, but it still misses the real `go test -coverpkg` success
+  summary tail when the line ends with
+  `coverage: 0.0% of statements in github.com/portpowered/infinite-you/...`.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/close-backend-coverage-coverpkg-summary-tail-gap.md`
+  so the next worker can close that live parser gap without broadening into a
+  higher aggregate threshold, package-by-package test authoring, or another
+  command-entrypoint lane.
 
 ## 2026-05-06T11:02:38.5905896-07:00 - meta state refresh
 
