@@ -1360,3 +1360,39 @@
   - `dedupe-functional-api-server-harnesses.md`
   - `consolidate-static-command-runner-test-helpers.md`
   - `retire-config-public-enum-forwarder-wrappers.md`
+
+## 2026-05-05T21:01:37.2364747-07:00 - meta state refresh
+
+- Tried `git pull --ff-only` from `branch-check`; Git reported no upstream, and
+  an explicit fast-forward from `origin/main` was impossible because the branch
+  had diverged.
+- Merged `origin/main` into `branch-check`, moving local `HEAD` to `1c553b5`
+  and pulling in merged PR `#109`
+  (`inline-supporting-file-content-on-export-and-thin-factory-import`).
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, the tracked
+  versus ignored `factory/inputs/**` surface, recent PR state, and the three
+  currently queued cleanup idea files.
+- Re-checked repo movement with `gh pr list --state open --limit 20`,
+  `gh pr list --state merged --limit 12`, `gh pr view 108`, `gh pr view 109`,
+  `gh pr view 110`, and `git log --oneline --decorate -12`, confirming:
+  - PR `#107` is merged on `main`
+  - PR `#109` materially changes the import/export truth on `main`
+  - PR `#108` and PR `#110` are the two currently open non-overlapping lanes
+- Corrected the worldview for the import/export ask: supported portable
+  script-backed files now travel inline on export, get materialized back to
+  disk on import, overwrite differing existing files with an observable signal,
+  and leave behind a thin persisted `factory.json`.
+- Pruned stale or overlapping ignored workflow residue:
+  - removed `factory/inputs/task/default/code-coverage-frontend.md` because
+    merged PR `#103` already closed that lane
+  - removed
+    `factory/inputs/idea/default/retire-config-public-enum-forwarder-wrappers.md`
+    because open PR `#108` already owns that exact enum-wrapper cleanup
+- Left the two still-live ignored cleanup ideas in place:
+  - `dedupe-functional-api-server-harnesses.md`
+  - `consolidate-static-command-runner-test-helpers.md`
+- The repo still satisfies the “at least three tasks running” constraint across
+  the two open PRs (`#108`, `#110`) plus the two queued ignored cleanup ideas,
+  without dispatching overlapping new work.

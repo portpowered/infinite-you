@@ -2,11 +2,13 @@
 
 ## world state
 
-- as of `2026-05-05T20:45:00-07:00`, the local checkout is on `branch-check`
-  at `e08bb90` (`update the code`)
-- local `branch-check` contains `origin/main` at `5338586`
-  (`Merge pull request #103 from portpowered/ralph/code-coverage-frontend`)
-  plus a local branch-only commit already published as open PR `#107`
+- as of `2026-05-05T21:01:37.2364747-07:00`, the local checkout is on
+  `branch-check` at `1c553b5` (`Merge remote-tracking branch 'origin/main'
+  into branch-check`)
+- local `branch-check` now contains `origin/main` at `2d88003`
+  (`Merge pull request #109 from portpowered/ralph/inline-supporting-file-content-on-export-and-thin-factory-import`)
+- local branch-only commit `4d731a3` (`docs: refresh meta world state`) was
+  already merged by PR `#107` (`Branch check`)
 - the local worktree is not clean:
   - ignored workflow residue is visible under `factory/inputs/**`
   - untracked local residue includes
@@ -47,31 +49,38 @@
   contract and no longer accepts direct
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
-- the visible canonical inboxes now contain the tracked `.gitkeep` sentinels,
-  one stale ignored task residue, and three newly queued ignored idea files:
-  - `factory/inputs/task/default/code-coverage-frontend.md`
-    is still present locally even though merged PR `#103` already closed that
-    lane on `main`
+- the visible canonical inboxes now contain the tracked `.gitkeep` sentinels
+  plus two still-live ignored idea files:
   - `factory/inputs/idea/default/dedupe-functional-api-server-harnesses.md`
   - `factory/inputs/idea/default/consolidate-static-command-runner-test-helpers.md`
-  - `factory/inputs/idea/default/retire-config-public-enum-forwarder-wrappers.md`
+- the stale ignored task residue
+  `factory/inputs/task/default/code-coverage-frontend.md` has been pruned
+  locally because merged PR `#103` already closed that lane on `main`
+- the ignored cleanup idea
+  `factory/inputs/idea/default/retire-config-public-enum-forwarder-wrappers.md`
+  has also been pruned locally because open PR `#108`
+  (`remove-deadcode-2026-may`) already owns that exact enum-wrapper seam
 
 ## customer-ask truth
 
 - the import/export P0 lane is now materially closed on `main`:
-  - merged PRs `#67`, `#68`, `#69`, `#70`, `#71`, `#72`, and `#93` now cover
-    the prompt template, split-layout, non-success-route, dialog, and
-    supported portable bundled-file portions of that ask
-  - canonical export now omits inline bundled-file content for supported
-    portable `factory/scripts/**` and `factory/docs/**` entries while keeping
-    the transport records needed for portability
-  - runtime loading and validation now accept the supported disk-backed
-    portable bundled-file path without rehydrating supported inline ownership
-  - package, integration, service, and functional coverage now protect the
-    supported bundled-file round-trip behavior through export, import, and
-    runtime loading
-- the selected-work current-selection ask is materially satisfied on `main`
-  through merged PRs `#74` and `#77`
+  - merged PRs `#67`, `#68`, `#69`, `#70`, `#71`, `#72`, `#93`, and `#109`
+    now cover the prompt template, split-layout, non-success-route, dialog,
+    and portable bundled-file portions of that ask
+  - canonical export now includes inline content for the supported portable
+    script-backed supporting-file set so exported payloads are self-contained
+  - import now materializes those supported files back to disk at their
+    declared target paths, overwrites differing existing files with an
+    observable reportable signal, and persists a thin imported `factory.json`
+    without the inline file bodies
+  - package, integration, service, CLI, and functional coverage now protect
+    the supported export/import round-trip behavior through payloads, written
+    files, persisted authored layout, and runtime loading
+- the broader selected-work current-selection ask is materially satisfied on
+  `main` through merged PRs `#74`, `#77`, and `#99`
+- one narrower current-selection cleanup lane is still in flight as open
+  PR `#110` (`workstation-request-current-selection-cleanup`), which removes
+  duplicate inference detail from workstation-request dispatch summaries
 - the submit-work copy ask is satisfied on `main` through merged PR `#75`
 - merged PR `#83` satisfied the header-verbosity copy reduction ask on `main`:
   visible `Factory state`, `Stream`, `Export PNG`, and `Current` toolbar text
@@ -251,6 +260,9 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#109` `inline-supporting-file-content-on-export-and-thin-factory-import`,
+    merged on `2026-05-06T03:48:26Z`
+  - `#107` `Branch check`, merged on `2026-05-06T02:56:30Z`
   - `#105` `dedupe-functional-dispatch-history-test-helpers`, merged on
     `2026-05-05T23:16:03Z`
   - `#104` `trim-replay-only-testutil-helper-surface`, merged on
@@ -303,8 +315,10 @@
     `2026-05-04T01:27:11Z`
   - `#78` `remove-list-work-legacy-pagination-shim`, merged on
     `2026-05-04T00:28:40Z`
-- `gh pr list --state open` currently reports one open PR:
-  - `#107` `Branch check`, opened on `2026-05-06T02:56:30Z`
+- `gh pr list --state open` currently reports two open PRs:
+  - `#110` `workstation-request-current-selection-cleanup`, opened on
+    `2026-05-06T03:28:00Z`
+  - `#108` `remove-deadcode-2026-may`, opened on `2026-05-06T03:05:09Z`
 
 ## theory of mind
 
@@ -340,6 +354,9 @@
   expanded authored layout writes before declaring the lane closed; stripping a
   field during `WriteExpandedFactoryLayout` does not mean `FlattenFactoryConfig`
   and runtime loading have stopped rehydrating it back into the exported JSON
+- for portable supporting files, export and import can intentionally be
+  asymmetric: self-contained export may need inline bytes even when the correct
+  imported steady state is a thin disk-backed `factory.json`
 - after broad replay legacy-compat cleanups merge, scan for any remaining
   one-line cast wrappers or alias-only helpers on the live replay path before
   inventing a larger follow-up; those seams are often the next lowest-risk
@@ -355,6 +372,10 @@
 - once a cleanup seam is recorded in the checked-in worldview, re-validate it
   against live `main` before dispatching; merged PR `#96` proved the meta view
   can go stale within a single refresh cycle
+- when a broad cleanup batch PR is open, compare queued narrow ideas against
+  the actual changed-file ownership before treating them as separate work; PR
+  `#108` already absorbed the public-enum forwarder cleanup even though that
+  seam was still queued locally
 - when an open PR touches a surface already marked closed in the worldview,
   compare the PR diff against the canonical ask text before dispatching any
   sibling work; PR `#97` is a good example of overlap hiding behind a new
