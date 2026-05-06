@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-06T12:04:09.0951770-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260506-050415` points to `3c36fe7`
+- as of `2026-05-06T13:04:11.9967894-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260506-050415` points to `2d1f89b`
   (`docs: refresh meta world state`) and has been rebased onto live
-  `origin/main` through `52aa4e1`
-  (`Merge pull request #130 from portpowered/ralph/close-backend-coverage-ok-summary-gap`)
+  `origin/main` through `a2f82d7`
+  (`Merge pull request #131 from portpowered/ralph/close-backend-coverage-coverpkg-summary-tail-gap`)
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the local worktree is not clean:
   - canonical `factory/inputs/**` remains tracked-sentinel-only
@@ -15,7 +15,7 @@
   - `factory/logs/meta/asks.md` carries a local tracked edit and should be
     treated as user-owned state for this refresh
   - tracked meta-log updates are required because the last checked-in summary
-    predates merged PR `#130`
+    predates merged PR `#131`
   - ignored local workflow residue under `factory/inputs/**` must still be
     treated as operating state rather than checked-in queue truth
 
@@ -53,12 +53,12 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible ignored local idea residue at the start of this refresh was:
-  - `factory/inputs/idea/default/close-backend-coverage-ok-summary-gap.md`
+  - `factory/inputs/idea/default/close-backend-coverage-coverpkg-summary-tail-gap.md`
 - that ignored idea is now stale queue residue rather than checked-in queue
-  truth because merged PR `#130` already landed that exact cleanup on `main`
+  truth because merged PR `#131` already landed that exact cleanup on `main`
 - it has been replaced during this refresh with one narrower customer-ask
   follow-up idea:
-  - `factory/inputs/idea/default/close-backend-coverage-coverpkg-summary-tail-gap.md`
+  - `factory/inputs/idea/default/cover-deadcodecheck-command-owner-branches.md`
 
 ## customer-ask truth
 
@@ -88,8 +88,10 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#131` `close-backend-coverage-coverpkg-summary-tail-gap`, merged on
+    `2026-05-06T19:11:57Z`
   - `#130` `close-backend-coverage-ok-summary-gap`, merged on
-    `2026-05-06T18:20:24Z`
+    `2026-05-06T18:10:41Z`
   - `#129` `cover-releaseprep-command-entrypoint`, merged on
     `2026-05-06T17:26:30Z`
   - `#128` `cover-releasesmoke-command-entrypoint`, merged on
@@ -129,33 +131,23 @@
 
 ## next cleanup candidate
 
-- there is no remaining narrow unowned repo-owned `cmd/` entrypoint coverage
-  gap on live `main`; merged PR `#129` closes the previously recorded
-  releaseprep command-owner seam
+- merged PR `#131` closes the previously recorded `gocoveragecheck`
+  trailing-summary parser seam on live `main`
 - the next non-overlapping dispatch should keep advancing the broad quality ask
-  by tightening an existing enforcement seam instead of broadening into a
-  package-by-package coverage campaign:
-  - `Makefile` still routes backend coverage through
-    `go run ./cmd/gocoveragecheck -min $(GO_COVERAGE_MIN)`
-  - `cmd/gocoveragecheck/main.go` now catches backend packages that are absent
-    from the parsed coverage-profile map when their package-summary lines are
-    either bare `pkg/path  coverage: 0.0% of statements` entries or simplified
-    `ok pkg/path ... coverage: 0.0% of statements` entries
-  - but the live command still misses the real `go test -coverpkg` success
-    summary shape when it appends `in <coverpkg list>` after
-    `coverage: 0.0% of statements`
-- the gap is currently observable on live `main`:
-  - `make test-coverage-go` exits successfully and reports
-    `Go coverage 86.5% meets minimum 80.0%.`
-  - the same run prints bare `0.0%` backend summaries such as
-    `github.com/portpowered/infinite-you/pkg/apisurface`
-  - the same run also prints
-    `ok   github.com/portpowered/infinite-you/pkg/cli/docs ... coverage: 0.0% of statements in github.com/portpowered/infinite-you/...`
-  - `cmd/gocoveragecheck/main_test.go` covers simplified `ok ... coverage:`
-    summaries, but not the live trailing `in ...` coverpkg summary tail
-- the next idea should close that trailing-summary parser gap without changing
-  the aggregate threshold, broadening into package-by-package test authoring,
-  or reopening the already-closed command-entrypoint lane
+  by tightening another existing repo-owned maintainer gate instead of
+  broadening into a package-by-package test campaign:
+  - `Makefile` still routes the deadcode gate through
+    `go run ./cmd/deadcodecheck`
+  - `cmd/deadcodecheck/main.go` owns the command-local baseline-drift contract,
+    `bin/deadcode-current.txt` write path, deadcode tool invocation, stderr
+    forwarding, and exit behavior
+  - `cmd/deadcodecheck/main_test.go` currently covers only
+    `ensureGoTypesAliasEnabled`
+  - `go test -cover ./cmd/deadcodecheck` currently reports `23.4%` statement
+    coverage
+- the next idea should add command-owner tests for `cmd/deadcodecheck`
+  failure and drift branches without changing deadcode policy, editing the
+  baseline as scope creep, or reopening the just-closed coverage parser lane
 
 ## theory of mind
 
@@ -197,3 +189,7 @@
   `cmd/` entrypoint and the internal policy package already has behavioral
   tests, prefer adding command-local seam coverage there before widening the
   scope into release-process refactors
+- when a root maintainer gate such as `make deadcode` still shells through a
+  repo-owned `cmd/` entrypoint and the command test file only covers helper
+  functions, treat the missing baseline-drift and failure-path coverage as the
+  next narrow quality seam before inventing new repo-wide deadcode work

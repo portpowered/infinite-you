@@ -197,6 +197,39 @@
   higher aggregate threshold, package-by-package test authoring, or another
   command-entrypoint lane.
 
+## 2026-05-06T13:04:11.9967894-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, saw remote movement on `origin/main`, then ran
+  `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#131`
+  (`close-backend-coverage-coverpkg-summary-tail-gap`) while preserving the
+  user-owned tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`,
+  `factory/factory.json`, `.gitignore`, current `factory/inputs/**` state, and
+  recent PR state.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem factory/inputs/idea/default -Force`, confirming the
+  checked-in inboxes remain sentinel-only while the visible idea file is
+  ignored local operating residue.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/close-backend-coverage-coverpkg-summary-tail-gap.md`
+  is stale because merged PR `#131` already landed that exact cleanup on
+  `main`, so it should be replaced rather than re-queued.
+- Verified with direct reads, delegated explorer inspection, and live
+  `go test -cover` runs that the next narrow command-owner quality seam is now
+  `cmd/deadcodecheck`: `Makefile` still routes the maintainer deadcode gate
+  through it, `main.go` still owns the baseline-drift and failure behavior,
+  `main_test.go` still covers only `ensureGoTypesAliasEnabled`, and
+  `go test -cover ./cmd/deadcodecheck` currently reports `23.4%` statement
+  coverage.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/cover-deadcodecheck-command-owner-branches.md`
+  so the next worker can tighten that repo-owned deadcode command boundary
+  without broadening into baseline churn, repo-wide deadcode deletion, or a
+  new package-by-package test campaign.
+
 ## 2026-05-06T11:02:38.5905896-07:00 - meta state refresh
 
 - Ran `git pull --rebase --autostash origin main`; Git rebased the meta branch
