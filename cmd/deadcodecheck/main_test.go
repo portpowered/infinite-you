@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -76,4 +78,114 @@ func TestEnsureGoTypesAliasEnabled(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRunBaselineMatchWritesCurrentReport(t *testing.T) {
+	restore := stubDeadcodecheckCommand(t, "pkg\\foo.go: Example\n", nil)
+	defer restore()
+
+	tempDir := t.TempDir()
+	writeDeadcodeBaseline(t, tempDir, "pkg/foo.go: Example\r\n")
+	chdirForTest(t, tempDir)
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+
+	exitCode := run(nil, stdout, stderr)
+
+	if exitCode != 0 {
+		t.Fatalf("run() exit code = %d, want 0 with stderr %q", exitCode, stderr.String())
+	}
+	if got := stdout.String(); got != "[agent-factory:deadcode] baseline matches\n" {
+		t.Fatalf("run() stdout = %q, want baseline match message", got)
+	}
+	if got := stderr.String(); got != "" {
+		t.Fatalf("run() stderr = %q, want empty", got)
+	}
+
+	currentReport, err := os.ReadFile(filepath.Join(tempDir, currentPath))
+	if err != nil {
+		t.Fatalf("read current deadcode report: %v", err)
+	}
+	if got := string(currentReport); got != "pkg/foo.go: Example\n" {
+		t.Fatalf("current deadcode report = %q, want normalized report", got)
+	}
+}
+
+func TestRunBaselineDriftReportsCurrentAndBaselinePaths(t *testing.T) {
+	restore := stubDeadcodecheckCommand(t, "pkg/foo.go: Current\n", nil)
+	defer restore()
+
+	tempDir := t.TempDir()
+	writeDeadcodeBaseline(t, tempDir, "pkg/foo.go: Baseline\n")
+	chdirForTest(t, tempDir)
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+
+	exitCode := run(nil, stdout, stderr)
+
+	if exitCode != 1 {
+		t.Fatalf("run() exit code = %d, want 1", exitCode)
+	}
+	if got := stdout.String(); got != "" {
+		t.Fatalf("run() stdout = %q, want empty", got)
+	}
+
+	errOutput := stderr.String()
+	if !strings.Contains(errOutput, "deadcode baseline drift detected; review "+currentPath+" and update "+baselinePath+" when intentional") {
+		t.Fatalf("run() stderr = %q, want drift guidance", errOutput)
+	}
+	if !strings.Contains(errOutput, "baseline findings: 1, current findings: 1") {
+		t.Fatalf("run() stderr = %q, want finding counts", errOutput)
+	}
+
+	currentReport, err := os.ReadFile(filepath.Join(tempDir, currentPath))
+	if err != nil {
+		t.Fatalf("read current deadcode report: %v", err)
+	}
+	if got := string(currentReport); got != "pkg/foo.go: Current\n" {
+		t.Fatalf("current deadcode report = %q, want current findings", got)
+	}
+}
+
+func stubDeadcodecheckCommand(t *testing.T, output string, err error) func() {
+	t.Helper()
+
+	original := runDeadcodeCommand
+	runDeadcodeCommand = func() (string, error) {
+		return output, err
+	}
+	return func() {
+		runDeadcodeCommand = original
+	}
+}
+
+func writeDeadcodeBaseline(t *testing.T, root string, contents string) {
+	t.Helper()
+
+	baselineFile := filepath.Join(root, baselinePath)
+	if err := os.MkdirAll(filepath.Dir(baselineFile), 0o755); err != nil {
+		t.Fatalf("create baseline directory: %v", err)
+	}
+	if err := os.WriteFile(baselineFile, []byte(contents), 0o644); err != nil {
+		t.Fatalf("write baseline file: %v", err)
+	}
+}
+
+func chdirForTest(t *testing.T, dir string) {
+	t.Helper()
+
+	originalWD, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	if err := os.Chdir(dir); err != nil {
+		t.Fatalf("change working directory: %v", err)
+	}
+	t.Cleanup(func() {
+		if err := os.Chdir(originalWD); err != nil {
+			t.Fatalf("restore working directory: %v", err)
+		}
+	})
 }

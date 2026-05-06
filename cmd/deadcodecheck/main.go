@@ -16,10 +16,11 @@ const (
 )
 
 var (
-	commandMain           = run
-	exitFunc              = os.Exit
-	stdout      io.Writer = os.Stdout
-	stderr      io.Writer = os.Stderr
+	commandMain                  = run
+	runDeadcodeCommand           = runDeadcode
+	exitFunc                     = os.Exit
+	stdout             io.Writer = os.Stdout
+	stderr             io.Writer = os.Stderr
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 }
 
 func run(_ []string, stdout io.Writer, stderr io.Writer) int {
-	actual, err := runDeadcode()
+	actual, err := runDeadcodeCommand()
 	if err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
