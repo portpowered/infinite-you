@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-06T07:04:44.5861978-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260506-050415` points to `87324ab`
+- as of `2026-05-06T08:03:56.8600066-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260506-050415` points to `527c286`
   (`docs: refresh meta world state`) and has been rebased onto live
-  `origin/main` through `d3785b4`
-  (`Merge pull request #125 from portpowered/ralph/close-backend-coverage-profile-gap`)
+  `origin/main` through `b0ae97a`
+  (`Merge pull request #126 from portpowered/ralph/cover-functionallane-command-entrypoint`)
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the local worktree is not clean:
   - canonical `factory/inputs/**` remains tracked-sentinel-only
@@ -15,7 +15,7 @@
   - `factory/logs/meta/asks.md` carries a local tracked edit and should be
     treated as user-owned state for this refresh
   - tracked meta-log updates are required because the last checked-in summary
-    predates merged PR `#125`
+    predates merged PR `#126`
   - ignored local workflow residue under `factory/inputs/**` must still be
     treated as operating state rather than checked-in queue truth
 
@@ -53,13 +53,13 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible ignored local idea residue at the start of this refresh was:
-  - `factory/inputs/idea/default/close-backend-coverage-profile-gap.md`
+  - `factory/inputs/idea/default/cover-functionallane-command-entrypoint.md`
 - that ignored idea was stale queue residue rather than checked-in queue truth
-  because merged PR `#125` already landed that backend coverage profile-gap
+  because merged PR `#126` already landed that functionallane command-entrypoint
   cleanup on `main`
 - it has been replaced during this refresh with one narrower customer-ask
   follow-up idea:
-  - `factory/inputs/idea/default/cover-functionallane-command-entrypoint.md`
+  - `factory/inputs/idea/default/cover-releasetagcheck-command-entrypoint.md`
 
 ## customer-ask truth
 
@@ -96,6 +96,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#126` `cover-functionallane-command-entrypoint`, merged on
+    `2026-05-06T14:18:07Z`
   - `#125` `close-backend-coverage-profile-gap`, merged on
     `2026-05-06T13:46:50Z`
   - `#124` `add-backend-zero-coverage-package-gate`, merged on
@@ -127,31 +129,31 @@
 ## next cleanup candidate
 
 - there is no remaining narrow unowned customer-visible ask gap on `main`
-- merged PR `#125` materially closes the previously recorded backend
-  coverage-profile loophole on `main`:
-  - `cmd/gocoveragecheck/main.go` now reads package-level `0.0%` coverage from
-    real `go test` summary output in addition to the parsed coverage profile
-  - `cmd/gocoveragecheck/main_test.go` now covers both present-in-profile and
-    missing-from-profile backend zero-coverage cases plus excluded packages
-  - `cmd/factory/main.go` and `cmd/factory/main_test.go` now keep the thin CLI
-    entrypoint directly testable so that repo-owned backend coverage can count
-    the command owner instead of pushing entrypoint assertions into unrelated
-    package tests
+- merged PR `#126` materially closes the previously recorded functionallane
+  command-entrypoint gap on `main`:
+  - `cmd/functionallane/main.go` now exposes a thin callable seam so the
+    repo-owned command boundary is directly testable
+  - `cmd/functionallane/main_test.go` now covers `main` execution, functional
+    package discovery, `internal/support` filtering, empty-lane failure, and
+    final `go test` invocation wiring
+  - `Makefile` still keeps `test-functional` routed through the same
+    repo-owned command surface rather than moving coverage assertions into
+    unrelated packages
 - the next non-overlapping dispatch should keep advancing the broad P0 testing
-  ask through adjacent repo-owned command surfaces instead of broadening into a
-  package-by-package coverage campaign:
-  - `Makefile` still routes `test-functional` through
-    `go run ./cmd/functionallane`
-  - `cmd/functionallane/main.go` owns functional package discovery,
-    `internal/support` filtering, config parsing, and the final `go test`
-    command invocation for that repo-owned lane
-  - there is still no checked-in `cmd/functionallane/main_test.go`
-  - the repo just established the narrower command-entrypoint pattern in
-    `cmd/factory`, so `cmd/functionallane` is the nearest sibling seam in the
-    same quality lane
-- the next idea should make `cmd/functionallane` directly testable with focused
-  command-owner coverage, without replacing `make test-functional`, changing
-  package selection semantics, or broadening into new functional scenarios
+  ask through adjacent repo-owned command surfaces and workflow boundaries
+  instead of broadening into a package-by-package coverage campaign:
+  - `.github/workflows/release-candidate.yml` calls
+    `go run ./cmd/releasetagcheck -tag "$RELEASE_TAG"`
+  - `.github/workflows/release.yml` calls
+    `go run ./cmd/releasetagcheck -points-at HEAD`
+  - `cmd/releasetagcheck/main.go` owns the workflow-visible behavior for flag
+    exclusivity, semver validation, git tag resolution, and emitted
+    `release_tag=...` output
+  - `internal/releasetag/releasetag_test.go` covers semver parsing helpers, but
+    there is still no checked-in `cmd/releasetagcheck/main_test.go`
+- the next idea should make `cmd/releasetagcheck` directly testable with
+  focused command-owner coverage, without changing release workflow behavior,
+  adding a new release surface, or broadening into artifact-publish logic
 
 ## theory of mind
 
@@ -180,3 +182,6 @@
 - when one repo-owned command entrypoint gains a thin test seam to satisfy a
   coverage ask, inspect sibling repo-owned lane commands next before pushing
   equivalent coverage assertions down into unrelated downstream packages
+- when a GitHub workflow shells through a repo-owned `cmd/` entrypoint, treat
+  its output format and flag-routing behavior as command-owner seams even if
+  helper packages beneath it already have unit tests
