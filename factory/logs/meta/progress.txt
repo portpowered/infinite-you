@@ -1396,3 +1396,42 @@
 - The repo still satisfies the “at least three tasks running” constraint across
   the two open PRs (`#108`, `#110`) plus the two queued ignored cleanup ideas,
   without dispatching overlapping new work.
+
+## 2026-05-05T22:05:18.8628642-07:00 - meta state refresh
+
+- Tried `git pull` from `branch-check`; Git again reported no upstream, so I
+  fetched remotes and merged `origin/main` into the branch, moving local `HEAD`
+  to `2e7a3b5` on top of `origin/main` `41ef8d9`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, and the backend
+  and website standards.
+- Re-validated tracked versus ignored queue truth with `git ls-files
+  factory/inputs`, `Get-ChildItem -Recurse factory/inputs`, and
+  `git check-ignore`, confirming the checked-in inboxes remain sentinel-only
+  while the visible canonical queue still consists of two ignored idea files.
+- Re-checked repo movement with `gh pr list --state open --limit 20`,
+  `gh pr list --state merged --limit 15`, `gh pr view 108`, `gh pr view 109`,
+  `gh pr view 110`, `gh pr diff 110 --name-only`, and
+  `git log --oneline --decorate -15`, confirming:
+  - PR `#108` is now merged on `main`
+  - PR `#109` remains merged on `main`
+  - PR `#110` is the only currently open PR
+- Used code-graph reads, direct file reads, and delegated explorer passes to
+  re-validate both queued cleanup ideas instead of dispatching anything new:
+  - the functional API server harness cleanup is still valid, but the queued
+    note undercounted the current owners by missing
+    `tests/functional/runtime_api/functional_server_test.go`
+  - the static command-runner helper cleanup is still valid, but the queued
+    note overstated what `tests/functional/internal/support/command_runner.go`
+    already covers and needed an explicit coordination note for the
+    `tests/functional/runtime_api/api_inference_events_test.go` overlap with
+    open PR `#110`
+- Rewrote both ignored queue notes in place so the running backlog stays
+  implementation-ready without adding overlapping new work:
+  - `factory/inputs/idea/default/dedupe-functional-api-server-harnesses.md`
+  - `factory/inputs/idea/default/consolidate-static-command-runner-test-helpers.md`
+- The repo still satisfies the “at least three tasks running” constraint across
+  the one open PR (`#110`) plus the two queued ignored cleanup ideas, so the
+  right action this cycle was to refresh the world model and tighten queue
+  accuracy rather than dispatch a fourth overlapping lane.

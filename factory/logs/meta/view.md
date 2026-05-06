@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-05T21:01:37.2364747-07:00`, the local checkout is on
-  `branch-check` at `1c553b5` (`Merge remote-tracking branch 'origin/main'
+- as of `2026-05-05T22:05:18.8628642-07:00`, the local checkout is on
+  `branch-check` at `2e7a3b5` (`Merge remote-tracking branch 'origin/main'
   into branch-check`)
-- local `branch-check` now contains `origin/main` at `2d88003`
-  (`Merge pull request #109 from portpowered/ralph/inline-supporting-file-content-on-export-and-thin-factory-import`)
+- local `branch-check` now contains `origin/main` at `41ef8d9`
+  (`Merge pull request #108 from portpowered/ralph/remove-deadcode-2026-may`)
 - local branch-only commit `4d731a3` (`docs: refresh meta world state`) was
   already merged by PR `#107` (`Branch check`)
 - the local worktree is not clean:
@@ -80,7 +80,8 @@
   `main` through merged PRs `#74`, `#77`, and `#99`
 - one narrower current-selection cleanup lane is still in flight as open
   PR `#110` (`workstation-request-current-selection-cleanup`), which removes
-  duplicate inference detail from workstation-request dispatch summaries
+  duplicate inference detail from workstation-request dispatch summaries while
+  preserving the export dialog filename follow-up on the same branch
 - the submit-work copy ask is satisfied on `main` through merged PR `#75`
 - merged PR `#83` satisfied the header-verbosity copy reduction ask on `main`:
   visible `Factory state`, `Stream`, `Export PNG`, and `Current` toolbar text
@@ -222,21 +223,33 @@
     helpers already centralized under
     `tests/functional/internal/support/fixtures.go`
   - the older worldview note that still named that seam as next-up was stale
+- merged PR `#108` closed the deadcode batch on `main`, including the
+  pass-through public enum wrapper seam that the prior worldview still treated
+  as open:
+  - `pkg/config/public_factory_enums.go` is now reduced to the surviving live
+    runtime helper path instead of the older wider forwarding surface
+  - dead dashboard, logger, and test-only residue named in the May batch are
+    now recorded as closed in the new deadcode closeout docs under
+    `docs/development/`
 - the next non-overlapping cleanup candidates now come from the broader
-  backend quality lane and are already queued as ignored local idea files:
+  backend quality lane and remain queued as ignored local idea files:
   - dedupe the near-copy functional API server harness ownership across
     `tests/functional/bootstrap_portability/helpers_test.go`,
-    `tests/functional/runtime_api/helpers_test.go`, and
-    `tests/functional/replay_contracts/replay_live_helpers_test.go`
+    `tests/functional/runtime_api/helpers_test.go`,
+    `tests/functional/replay_contracts/replay_live_helpers_test.go`, and the
+    exported runtime helper in
+    `tests/functional/runtime_api/functional_server_test.go`
   - consolidate duplicated static command-runner test helpers now split across
     `tests/functional/providers/helpers_test.go`,
     `tests/functional/bootstrap_portability/portability_helpers_test.go`,
     `tests/functional/workflow/helpers_test.go`,
     `tests/functional/replay_contracts/replay_script_boundary_events_test.go`,
     and `tests/functional/runtime_api/api_inference_events_test.go`
-  - retire the pass-through public enum forwarder wrappers in
-    `pkg/config/public_factory_enums.go` now that canonical ownership already
-    lives under `pkg/interfaces`
+  - that command-runner lane remains behaviorally valid, but its queue note now
+    explicitly records that `tests/functional/internal/support/command_runner.go`
+    only covers the success/stdout case today and that
+    `tests/functional/runtime_api/api_inference_events_test.go` is also touched
+    by open PR `#110`
 - the remaining ask surface beyond that is broader program work:
   - the general standards-migration checklist ask is still open in
     `factory/logs/meta/asks.md`
@@ -260,6 +273,7 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#108` `remove-deadcode-2026-may`, merged on `2026-05-06T04:08:33Z`
   - `#109` `inline-supporting-file-content-on-export-and-thin-factory-import`,
     merged on `2026-05-06T03:48:26Z`
   - `#107` `Branch check`, merged on `2026-05-06T02:56:30Z`
@@ -315,10 +329,9 @@
     `2026-05-04T01:27:11Z`
   - `#78` `remove-list-work-legacy-pagination-shim`, merged on
     `2026-05-04T00:28:40Z`
-- `gh pr list --state open` currently reports two open PRs:
+- `gh pr list --state open` currently reports one open PR:
   - `#110` `workstation-request-current-selection-cleanup`, opened on
     `2026-05-06T03:28:00Z`
-  - `#108` `remove-deadcode-2026-may`, opened on `2026-05-06T03:05:09Z`
 
 ## theory of mind
 
@@ -376,6 +389,10 @@
   the actual changed-file ownership before treating them as separate work; PR
   `#108` already absorbed the public-enum forwarder cleanup even though that
   seam was still queued locally
+- after a broad cleanup batch merges, re-validate the exact remaining helper
+  owners before keeping a queued idea unchanged; this pass showed both
+  surviving queued ideas were still real, but each needed more precise
+  ownership notes after `#108` landed
 - when an open PR touches a surface already marked closed in the worldview,
   compare the PR diff against the canonical ask text before dispatching any
   sibling work; PR `#97` is a good example of overlap hiding behind a new
@@ -392,3 +409,7 @@
 - graph and explorer results can lag behind a fast-forwarded `main`; verify any
   suggested cleanup seam against live `git log`, `rg`, and direct file reads
   before writing a new queue item
+- when reusing a shared test helper as the proposed replacement for duplicated
+  suite-local helpers, verify the shared helper actually covers the same
+  stderr, exit-code, capture, and retry semantics before narrowing the queue
+  note around it
