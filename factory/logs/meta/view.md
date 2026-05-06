@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-06T10:02:07.1841958-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260506-050415` points to `93f0b6d`
+- as of `2026-05-06T11:02:38.5905896-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260506-050415` points to `1813e37`
   (`docs: refresh meta world state`) and has been rebased onto live
-  `origin/main` through `2c21b00`
-  (`Merge pull request #128 from portpowered/ralph/cover-releasesmoke-command-entrypoint`)
+  `origin/main` through `0e82c26`
+  (`Merge pull request #129 from portpowered/ralph/cover-releaseprep-command-entrypoint`)
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the local worktree is not clean:
   - canonical `factory/inputs/**` remains tracked-sentinel-only
@@ -15,7 +15,7 @@
   - `factory/logs/meta/asks.md` carries a local tracked edit and should be
     treated as user-owned state for this refresh
   - tracked meta-log updates are required because the last checked-in summary
-    predates merged PR `#128`
+    predates merged PR `#129`
   - ignored local workflow residue under `factory/inputs/**` must still be
     treated as operating state rather than checked-in queue truth
 
@@ -53,31 +53,24 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible ignored local idea residue at the start of this refresh was:
-  - `factory/inputs/idea/default/cover-releasesmoke-command-entrypoint.md`
+  - `factory/inputs/idea/default/cover-releaseprep-command-entrypoint.md`
 - that ignored idea was stale queue residue rather than checked-in queue truth
-  because merged PR `#128` already landed that releasesmoke command-entrypoint
+  because merged PR `#129` already landed that releaseprep command-entrypoint
   cleanup on `main`
 - it has been replaced during this refresh with one narrower customer-ask
   follow-up idea:
-  - `factory/inputs/idea/default/cover-releaseprep-command-entrypoint.md`
+  - `factory/inputs/idea/default/close-backend-coverage-ok-summary-gap.md`
 
 ## customer-ask truth
 
-- the import/export P0 lane remains materially closed on `main` through merged
-  PRs `#67`, `#68`, `#69`, `#70`, `#71`, `#72`, `#93`, and `#109`
-- the selected-work current-selection ask is materially satisfied on `main`
-  through merged PRs `#74`, `#77`, and `#110`
-- the submit-work copy ask is satisfied on `main` through merged PR `#75`
-- the header verbosity, chart layout, branding/iconography, and button-tone
-  asks are materially satisfied on `main` through merged PRs `#83`, `#84`,
-  `#85`, `#86`, `#87`, and `#98`
-- the remaining open asks in `factory/logs/meta/asks.md` are broader program
-  work rather than narrow customer-visible regressions:
-  - standards-migration checklist tracking
-  - backend and website `100%` coverage target plus stronger test enforcement
-  - docs audit
-  - manual QA
-  - systems-quality documentation
+- the canonical ask surface is now narrower than the last checked-in summary
+  because the user-owned tracked edit in `factory/logs/meta/asks.md` has
+  collapsed it to one active quality lane plus an autonomy notice
+- the remaining active asks are broader program work rather than narrow
+  customer-visible regressions:
+  - follow the external website/backend checklist set and create alignment
+    tasks
+  - raise backend and website testing toward a declared `100%` minimum
 
 ## replay truth
 
@@ -96,6 +89,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#129` `cover-releaseprep-command-entrypoint`, merged on
+    `2026-05-06T17:26:30Z`
   - `#128` `cover-releasesmoke-command-entrypoint`, merged on
     `2026-05-06T16:25:12Z`
   - `#127` `cover-releasetagcheck-command-entrypoint`, merged on
@@ -132,32 +127,29 @@
 
 ## next cleanup candidate
 
-- there is no remaining narrow unowned customer-visible ask gap on `main`
-- merged PR `#128` materially closes the previously recorded releasesmoke
-  command-entrypoint gap on `main`:
-  - `cmd/releasesmoke/main.go` now exposes a thin callable seam so the
-    script-facing command boundary is directly testable
-  - `cmd/releasesmoke/main_test.go` now covers `main` execution, flag routing,
-    structured JSON stdout, structured JSON stderr, and non-zero exit behavior
-  - `scripts/release/smoke-artifact.sh` and
-    `scripts/release/smoke-artifact.ps1` still keep release smoke verification
-    routed through the same repo-owned command surface rather than moving those
-    assertions into wrapper-only coverage
-- the next non-overlapping dispatch should keep advancing the broad P0 testing
-  ask through adjacent repo-owned command surfaces and workflow boundaries
-  instead of broadening into a package-by-package coverage campaign:
-  - `Makefile` still exposes the maintainer release surface as
-    `go run ./cmd/releaseprep -version $(VERSION)`
-  - `cmd/releaseprep/main.go` still owns command-visible `-version` flag
-    parsing, stdout or stderr wiring, and exit behavior for the release-prep
-    lane
-  - `internal/releaseprep/releaseprep_test.go` already covers the policy
-    behavior beneath that boundary, but there is still no checked-in
-    `cmd/releaseprep/main_test.go`
-- the next idea should make `cmd/releaseprep` directly testable with focused
-  command-owner coverage, without changing release policy sequencing,
-  broadening into GitHub release workflow changes, or moving those assertions
-  down into `internal/releaseprep`
+- there is no remaining narrow unowned repo-owned `cmd/` entrypoint coverage
+  gap on live `main`; merged PR `#129` closes the previously recorded
+  releaseprep command-owner seam
+- the next non-overlapping dispatch should keep advancing the broad quality ask
+  by tightening an existing enforcement seam instead of broadening into a
+  package-by-package coverage campaign:
+  - `Makefile` still routes backend coverage through
+    `go run ./cmd/gocoveragecheck -min $(GO_COVERAGE_MIN)`
+  - `cmd/gocoveragecheck/main.go` now catches backend packages that are absent
+    from the parsed coverage-profile map when their package-summary lines are
+    bare `pkg/path  coverage: 0.0%` entries
+  - but the live command still misses backend packages reported as
+    `ok pkg/path ... coverage: 0.0% of statements`
+- the gap is currently observable on live `main`:
+  - `go run ./cmd/gocoveragecheck -min 0` exits successfully and reports
+    `Go coverage 86.5% meets minimum 0.0%.`
+  - the same run prints `ok   github.com/portpowered/infinite-you/pkg/cli/docs`
+    with `coverage: 0.0% of statements`
+  - `cmd/gocoveragecheck/main_test.go` covers bare zero-coverage package
+    summaries, but not the `ok ... coverage:` summary shape
+- the next idea should close that parser gap without changing the aggregate
+  threshold, broadening into package-by-package test authoring, or reopening
+  the already-closed command-entrypoint lane
 
 ## theory of mind
 
@@ -183,6 +175,9 @@
 - when a broad quality or coverage ask is open, prefer tightening an existing
   repo-owned enforcement seam before queueing a repo-wide test-authoring
   program
+- when a repo-owned coverage gate parses `go test` package summaries, account
+  for both bare `pkg/path  coverage: ...` lines and `ok pkg/path ... coverage:
+  ...` lines; backend packages can surface `0.0%` through either shape
 - when one repo-owned command entrypoint gains a thin test seam to satisfy a
   coverage ask, inspect sibling repo-owned lane commands next before pushing
   equivalent coverage assertions down into unrelated downstream packages

@@ -111,6 +111,10 @@
 - An aggregate backend coverage floor can still hide `0%` packages; the first
   useful ratchet is to fail the existing coverage lane on zero-coverage
   backend packages and print the offenders explicitly.
+- When `cmd/gocoveragecheck` parses `go test` package summaries, treat both
+  bare `pkg/path  coverage: ...` lines and `ok pkg/path ... coverage: ...`
+  lines as canonical input shapes; backend-owned packages can still report
+  `0.0%` through either format.
 - When a repo-owned `Makefile` target shells through a thin command under
   `cmd/`, prefer adding a local callable seam plus package-local entrypoint
   tests in that command owner before pushing coverage assertions down into
@@ -126,9 +130,9 @@
 
 ## Current Summary
 
-- As of `2026-05-06T10:02:07.1841958-07:00`, `HEAD` points to `93f0b6d` on
+- As of `2026-05-06T11:02:38.5905896-07:00`, `HEAD` points to `1813e37` on
   branch `meta-refresh-world-state-20260506-050415`; local `main` also points
-  to `2c21b00` and contains `origin/main` through merged PR `#128`.
+  to `0e82c26` and contains `origin/main` through merged PR `#129`.
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -140,21 +144,54 @@
   user-owned tracked edit; ignored workflow files under `factory/inputs/**`
   remain operating state rather than canonical queue truth.
 - Recent merged PRs now include `#112`, `#113`, `#114`, `#115`, `#117`,
-  `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, and `#128`;
-  open PRs `#120` and `#123` are only
+  `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, `#128`, and
+  `#129`; open PRs `#120` and `#123` are only
   meta refresh branches and do not own the next code cleanup lane.
-- The import/export P0, current-selection, submit-work copy, and dashboard UI
-  asks remain materially closed on `main`; the remaining ask surface is broader
-  program work in standards migration, website coverage, docs audit, manual
-  QA, and systems-quality documentation.
+- The canonical ask surface is now the user-owned quality-only rewrite in
+  `factory/logs/meta/asks.md`; the active asks are external checklist
+  alignment plus stronger backend and website testing toward a declared
+  `100%` minimum.
 - The replay fixtures remain historical samples rather than current workflow
   truth, and one rejection payload is still quoted anomalously in the replay
   sample.
-- The next non-overlapping dispatch is the release-prep command-entrypoint
-  lane: `make release` shells through `cmd/releaseprep`, internal
-  `releaseprep` tests already cover the policy beneath it, and the
-  maintainer-facing command surface still lacks package-local coverage for flag
-  routing, stdout or stderr wiring, and exit behavior.
+- The next non-overlapping dispatch is the backend coverage summary-parser
+  lane: `cmd/gocoveragecheck` still lets `ok ... coverage: 0.0%` backend
+  package summaries evade failure even though the command is the repo-owned
+  backend coverage gate.
+
+## 2026-05-06T11:02:38.5905896-07:00 - meta state refresh
+
+- Ran `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#129`
+  (`cover-releaseprep-command-entrypoint`) while preserving the user-owned
+  tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, recent PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  backend coverage gate.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `rg --files -uu factory/inputs`, confirming the checked-in inboxes remain
+  sentinel-only while the visible idea file is ignored local operating state.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/cover-releaseprep-command-entrypoint.md` is
+  stale because merged PR `#129` already landed that exact cleanup on `main`,
+  so it should be replaced rather than re-queued.
+- Verified with `git log`, `gh pr list`, `gh pr view 129`, direct reads, and a
+  live `cmd/releaseprep/main_test.go` read that `main` now closes the recorded
+  releaseprep command-entrypoint gap and that open PRs `#120` and `#123`
+  remain meta-only.
+- Used direct inspection of `Makefile`, `cmd/gocoveragecheck/main.go`, and
+  `cmd/gocoveragecheck/main_test.go`, plus a live
+  `go run ./cmd/gocoveragecheck -min 0` run, to identify the next narrower
+  quality seam: the repo-owned backend coverage gate still exits successfully
+  even when backend packages such as `pkg/cli/docs` report
+  `0.0% of statements` through an `ok ... coverage:` package-summary line.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/close-backend-coverage-ok-summary-gap.md` so
+  the next worker can close that parser gap without broadening into a higher
+  aggregate threshold, a package-by-package coverage campaign, or another
+  command-entrypoint lane.
 
 ## 2026-05-06T10:02:07.1841958-07:00 - meta state refresh
 
