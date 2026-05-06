@@ -130,6 +130,9 @@
   repo-owned `cmd/` entrypoint and the underlying internal package already has
   behavioral tests, treat the missing command-local seam as the next narrow
   coverage cleanup before changing release orchestration itself.
+- After a command-entrypoint coverage PR merges, inspect the same package for
+  any remaining `0.0%` repo-owned subprocess wrapper before widening scope
+  into a different command or a repo-wide coverage campaign.
 
 ## Current Summary
 
@@ -1727,3 +1730,44 @@
   command-runner lanes.
 - Updated the checked-in worldview and summary so they no longer claim stale
   PR ownership, stale queue residue, or the old tick-helper next seam.
+
+## 2026-05-06T14:03:39.1137712-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, saw remote movement on `origin/main` without
+  advancing the branch-local tracking ref, then ran
+  `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#132`
+  (`cover-deadcodecheck-command-owner-branches`) while preserving the
+  user-owned tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  `cmd/` maintainer-gate packages.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea file is ignored local
+  operating residue.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/cover-deadcodecheck-command-owner-branches.md`
+  is stale because merged PR `#132` already landed that exact cleanup on
+  `main`, so it should be replaced rather than re-queued.
+- Verified with `gh pr list`, `gh pr view 132`, direct reads,
+  delegated explorer inspection, and fresh `go test -cover ./cmd/...` runs
+  that `cmd/deadcodecheck` is no longer the next gap on live `main`;
+  `go test -cover ./cmd/deadcodecheck` now reports `83.3%` statement coverage.
+- Used graph-backed discovery, direct reads of `cmd/releasetagcheck/main.go`
+  and `cmd/releasetagcheck/main_test.go`, and workflow search over
+  `.github/workflows/release.yml` plus
+  `.github/workflows/release-candidate.yml` to identify the next narrower
+  command-owner seam: merged PR `#127` already covered the entrypoint and
+  argument-routing behavior, but the same package still owns an untested
+  `git tag --points-at` subprocess wrapper in `gitTagsPointingAt`, and
+  `go test -cover ./cmd/releasetagcheck` still reports `71.4%` statement
+  coverage with that function at `0.0%`.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/cover-releasetagcheck-git-tag-wrapper-branches.md`
+  so the next worker can add focused success and failure coverage for the
+  repo-owned git-tag wrapper without changing release-tag policy, moving git
+  lookup ownership out of the command, or reopening the broader entrypoint
+  lane from PR `#127`.
