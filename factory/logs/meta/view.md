@@ -2,9 +2,8 @@
 
 ## world state
 
-- as of `2026-05-05T22:05:18.8628642-07:00`, the local checkout is on
-  `branch-check` at `2e7a3b5` (`Merge remote-tracking branch 'origin/main'
-  into branch-check`)
+- as of `2026-05-05T23:04:44.1090452-07:00`, the local checkout is on
+  `branch-check` at `7451077` (`docs: refresh meta world state`)
 - local `branch-check` now contains `origin/main` at `41ef8d9`
   (`Merge pull request #108 from portpowered/ralph/remove-deadcode-2026-may`)
 - local branch-only commit `4d731a3` (`docs: refresh meta world state`) was
@@ -50,16 +49,17 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible canonical inboxes now contain the tracked `.gitkeep` sentinels
-  plus two still-live ignored idea files:
+  plus three still-live ignored idea files:
   - `factory/inputs/idea/default/dedupe-functional-api-server-harnesses.md`
   - `factory/inputs/idea/default/consolidate-static-command-runner-test-helpers.md`
+  - `factory/inputs/idea/default/retire-transition-topology-runtime-lookup-adapter.md`
 - the stale ignored task residue
   `factory/inputs/task/default/code-coverage-frontend.md` has been pruned
   locally because merged PR `#103` already closed that lane on `main`
 - the ignored cleanup idea
   `factory/inputs/idea/default/retire-config-public-enum-forwarder-wrappers.md`
-  has also been pruned locally because open PR `#108`
-  (`remove-deadcode-2026-may`) already owns that exact enum-wrapper seam
+  has also been pruned locally because merged PR `#108`
+  (`remove-deadcode-2026-may`) already closed that exact enum-wrapper seam
 
 ## customer-ask truth
 
@@ -76,12 +76,8 @@
   - package, integration, service, CLI, and functional coverage now protect
     the supported export/import round-trip behavior through payloads, written
     files, persisted authored layout, and runtime loading
-- the broader selected-work current-selection ask is materially satisfied on
-  `main` through merged PRs `#74`, `#77`, and `#99`
-- one narrower current-selection cleanup lane is still in flight as open
-  PR `#110` (`workstation-request-current-selection-cleanup`), which removes
-  duplicate inference detail from workstation-request dispatch summaries while
-  preserving the export dialog filename follow-up on the same branch
+- the broader selected-work current-selection ask is now fully satisfied on
+  `main` through merged PRs `#74`, `#77`, `#99`, and `#110`
 - the submit-work copy ask is satisfied on `main` through merged PR `#75`
 - merged PR `#83` satisfied the header-verbosity copy reduction ask on `main`:
   visible `Factory state`, `Stream`, `Export PNG`, and `Current` toolbar text
@@ -245,11 +241,11 @@
     `tests/functional/workflow/helpers_test.go`,
     `tests/functional/replay_contracts/replay_script_boundary_events_test.go`,
     and `tests/functional/runtime_api/api_inference_events_test.go`
-  - that command-runner lane remains behaviorally valid, but its queue note now
-    explicitly records that `tests/functional/internal/support/command_runner.go`
-    only covers the success/stdout case today and that
-    `tests/functional/runtime_api/api_inference_events_test.go` is also touched
-    by open PR `#110`
+  - retire the private authored-config topology shim now split across
+    `pkg/config/config_mapper.go`,
+    `pkg/factory/state/transition_topology.go`,
+    `pkg/factory/workstationconfig/runtime_lookup.go`, and the focused
+    topology assertions in `pkg/config/config_mapper_test.go`
 - the remaining ask surface beyond that is broader program work:
   - the general standards-migration checklist ask is still open in
     `factory/logs/meta/asks.md`
@@ -273,6 +269,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#110` `workstation-request-current-selection-cleanup`, merged on
+    `2026-05-06T05:25:51Z`
   - `#108` `remove-deadcode-2026-may`, merged on `2026-05-06T04:08:33Z`
   - `#109` `inline-supporting-file-content-on-export-and-thin-factory-import`,
     merged on `2026-05-06T03:48:26Z`
@@ -329,9 +327,7 @@
     `2026-05-04T01:27:11Z`
   - `#78` `remove-list-work-legacy-pagination-shim`, merged on
     `2026-05-04T00:28:40Z`
-- `gh pr list --state open` currently reports one open PR:
-  - `#110` `workstation-request-current-selection-cleanup`, opened on
-    `2026-05-06T03:28:00Z`
+- `gh pr list --state open` now reports no open PRs
 
 ## theory of mind
 
@@ -413,3 +409,6 @@
   suite-local helpers, verify the shared helper actually covers the same
   stderr, exit-code, capture, and retry semantics before narrowing the queue
   note around it
+- when the last open PR merges, recalculate active work from the ignored
+  canonical inboxes alone; if the count drops below three non-overlapping
+  lanes, replenish the queue before ending the refresh

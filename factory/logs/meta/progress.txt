@@ -1435,3 +1435,44 @@
   the one open PR (`#110`) plus the two queued ignored cleanup ideas, so the
   right action this cycle was to refresh the world model and tighten queue
   accuracy rather than dispatch a fourth overlapping lane.
+
+## 2026-05-05T23:04:44.1090452-07:00 - meta state refresh
+
+- Tried `git pull --ff-only` from `branch-check`; Git again reported no
+  upstream, and an explicit fast-forward from `origin/main` was impossible
+  because the branch has diverged from `main` by local meta commits.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, and the backend
+  and website standards.
+- Re-validated tracked versus ignored queue truth with `git ls-files
+  factory/inputs`, `Get-ChildItem -Recurse factory/inputs`, and
+  `git check-ignore`, confirming the checked-in inboxes remain sentinel-only
+  while the live ignored queue had dropped to only two idea files.
+- Re-checked recent PR state with `gh pr list --state open --limit 20`,
+  `gh pr list --state merged --limit 10`, `gh pr view 110 --json ...`, and
+  `git log --oneline --decorate -12`, confirming:
+  - PR `#110` is already merged on `main` as of `2026-05-06T05:25:51Z`
+  - there are currently no open PRs
+  - the prior worldview note that still treated `#110` as open was stale
+- Used code-graph reads, direct file reads, `rg`, and delegated explorer passes
+  to re-validate the two queued functional-helper ideas and identify one new
+  non-overlapping backend cleanup seam:
+  - the functional API server harness duplication is still real across
+    `tests/functional/runtime_api/helpers_test.go`,
+    `tests/functional/runtime_api/functional_server_test.go`,
+    `tests/functional/bootstrap_portability/helpers_test.go`, and
+    `tests/functional/replay_contracts/replay_live_helpers_test.go`
+  - the static command-runner helper duplication is still real across the five
+    queued suites and still belongs near
+    `tests/functional/internal/support/command_runner.go`
+  - `pkg/config/config_mapper.go` still owns a private
+    `factoryConfigWorkstationLookupAdapter` that only exists to bridge authored
+    config into `state.NormalizeTransitionTopology(...)`
+- Queued one new ignored standalone idea at
+  `factory/inputs/idea/default/retire-transition-topology-runtime-lookup-adapter.md`
+  so the repo is back to three non-overlapping active cleanup lanes even after
+  `#110` merged.
+- Refreshed the checked-in worldview to record that the current-selection ask
+  is now fully closed on `main`, that there are no open PRs, and that the
+  three active lanes are now fully represented by the ignored canonical inbox.
