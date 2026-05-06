@@ -133,12 +133,16 @@
 - After a command-entrypoint coverage PR merges, inspect the same package for
   any remaining `0.0%` repo-owned subprocess wrapper before widening scope
   into a different command or a repo-wide coverage campaign.
+- When a repo-owned coverage gate already has parser and zero-coverage
+  regression tests but still trails sibling maintainer commands on package
+  coverage, prefer adding command-owner success and threshold-branch coverage
+  there before widening scope into low-coverage application packages.
 
 ## Current Summary
 
-- As of `2026-05-06T12:04:09.0951770-07:00`, `HEAD` points to `3c36fe7` on
+- As of `2026-05-06T15:03:24.7591584-07:00`, `HEAD` points to `3e82419` on
   branch `meta-refresh-world-state-20260506-050415`; live `origin/main` points
-  to `52aa4e1` through merged PR `#130`.
+  to `24fa5f8` through merged PR `#133`.
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -151,7 +155,7 @@
   remain operating state rather than canonical queue truth.
 - Recent merged PRs now include `#112`, `#113`, `#114`, `#115`, `#117`,
   `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, `#128`,
-  `#129`, and `#130`; open PRs `#120` and `#123` are only
+  `#129`, `#130`, `#132`, and `#133`; open PRs `#120` and `#123` are only
   meta refresh branches and do not own the next code cleanup lane.
 - The canonical ask surface is now the user-owned quality-only rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
@@ -160,10 +164,11 @@
 - The replay fixtures remain historical samples rather than current workflow
   truth, and one rejection payload is still quoted anomalously in the replay
   sample.
-- The next non-overlapping dispatch is the backend coverage coverpkg-summary
-  lane: `cmd/gocoveragecheck` still lets live
-  `ok ... coverage: 0.0% of statements in ...` backend package summaries evade
-  failure even though the command is the repo-owned backend coverage gate.
+- The next non-overlapping dispatch is the `cmd/gocoveragecheck`
+  command-owner threshold and entrypoint lane: the parser and zero-coverage
+  seams are now closed on `main`, but the repo-owned coverage gate still lacks
+  direct success-path, aggregate-threshold, and exit-behavior coverage while
+  package coverage sits at `77.4%`.
 
 ## 2026-05-06T12:04:09.0951770-07:00 - meta state refresh
 
@@ -1771,3 +1776,42 @@
   repo-owned git-tag wrapper without changing release-tag policy, moving git
   lookup ownership out of the command, or reopening the broader entrypoint
   lane from PR `#127`.
+
+## 2026-05-06T15:03:24.7591584-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, saw remote movement on `origin/main`, then ran
+  `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#133`
+  (`cover-releasetagcheck-git-tag-wrapper-branches`) while preserving the
+  user-owned tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  maintainer-gate command packages.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea file was ignored local
+  operating residue.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/cover-releasetagcheck-git-tag-wrapper-branches.md`
+  is stale because merged PR `#133` already landed that exact cleanup on
+  `main`, so it should be replaced rather than re-queued.
+- Verified with `gh pr list`, `gh pr view 133`, direct reads of
+  `cmd/releasetagcheck/main_test.go`, delegated explorer inspection, and fresh
+  `go test -cover ./cmd/...` runs that the releasetagcheck wrapper seam is now
+  closed on live `main`; `go test -cover ./cmd/releasetagcheck` reports
+  `92.9%` statement coverage.
+- Used graph-backed discovery, direct reads of `cmd/gocoveragecheck/main.go`
+  and `cmd/gocoveragecheck/main_test.go`, plus a live
+  `go run ./cmd/gocoveragecheck -min 80.0` run, to identify the next narrower
+  command-owner seam: the repo-owned backend coverage gate still lacks direct
+  coverage for successful command completion, aggregate-threshold failure
+  messaging, and `main`/`failf` exit behavior even though parsing and
+  zero-coverage backend-package enforcement were already tightened by the
+  earlier `gocoveragecheck` PRs.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/cover-gocoveragecheck-command-owner-threshold-and-entrypoint-branches.md`
+  so the next worker can raise package-local command coverage for the
+  maintainer-owned backend coverage gate without changing coverage policy,
+  widening the lane scope, or broadening into package-by-package test authoring.
