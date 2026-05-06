@@ -119,12 +119,16 @@
   the workflow contract centralized there and add command-local tests for flag
   routing and emitted output instead of relying only on lower-level helper
   package tests.
+- When a root maintainer command such as `make release` still shells through a
+  repo-owned `cmd/` entrypoint and the underlying internal package already has
+  behavioral tests, treat the missing command-local seam as the next narrow
+  coverage cleanup before changing release orchestration itself.
 
 ## Current Summary
 
-- As of `2026-05-06T09:04:02.6782977-07:00`, `HEAD` points to `337fdb2` on
+- As of `2026-05-06T10:02:07.1841958-07:00`, `HEAD` points to `93f0b6d` on
   branch `meta-refresh-world-state-20260506-050415`; local `main` also points
-  to `7ee70eb` and contains `origin/main` through merged PR `#127`.
+  to `2c21b00` and contains `origin/main` through merged PR `#128`.
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -136,8 +140,8 @@
   user-owned tracked edit; ignored workflow files under `factory/inputs/**`
   remain operating state rather than canonical queue truth.
 - Recent merged PRs now include `#112`, `#113`, `#114`, `#115`, `#117`,
-  `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, and `#127`; open
-  PRs `#120` and `#123` are only
+  `#118`, `#119`, `#121`, `#122`, `#124`, `#125`, `#126`, `#127`, and `#128`;
+  open PRs `#120` and `#123` are only
   meta refresh branches and do not own the next code cleanup lane.
 - The import/export P0, current-selection, submit-work copy, and dashboard UI
   asks remain materially closed on `main`; the remaining ask surface is broader
@@ -146,11 +150,47 @@
 - The replay fixtures remain historical samples rather than current workflow
   truth, and one rejection payload is still quoted anomalously in the replay
   sample.
-- The next non-overlapping dispatch is the release-smoke command-entrypoint
-  lane: release smoke wrappers call `cmd/releasesmoke` directly, harness tests
-  already cover the behavior beneath it, and the script-owned command surface
-  still lacks package-local coverage for flag routing, JSON stdout/stderr, and
-  exit behavior.
+- The next non-overlapping dispatch is the release-prep command-entrypoint
+  lane: `make release` shells through `cmd/releaseprep`, internal
+  `releaseprep` tests already cover the policy beneath it, and the
+  maintainer-facing command surface still lacks package-local coverage for flag
+  routing, stdout or stderr wiring, and exit behavior.
+
+## 2026-05-06T10:02:07.1841958-07:00 - meta state refresh
+
+- Ran `git pull --rebase --autostash origin main`; Git rebased the meta branch
+  onto live `origin/main`, pulling in merged PR `#128`
+  (`cover-releasesmoke-command-entrypoint`) while preserving the user-owned
+  tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, recent PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  release command boundaries.
+- Re-validated tracked queue truth with `git ls-files factory/inputs`,
+  `rg --files -uu factory/inputs`, delegated explorer inspection, and direct
+  reads, confirming the checked-in inboxes remain sentinel-only while the
+  visible idea file is ignored local operating state.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/cover-releasesmoke-command-entrypoint.md` is
+  stale because merged PR `#128` already landed that exact cleanup on `main`,
+  so it should be replaced rather than re-queued.
+- Verified with `git log`, `gh pr list`, `gh pr view 128`, direct reads, and
+  delegated explorer output that `main` now closes the recorded releasesmoke
+  gap and that open PRs `#120` and `#123` remain meta-only.
+- Used direct inspection of `Makefile`, `cmd/releaseprep/main.go`,
+  `internal/releaseprep/releaseprep.go`,
+  `internal/releaseprep/releaseprep_test.go`, and
+  `docs/processes/development-guide-relevant-files.md` to identify the next
+  narrower sibling seam in the same quality lane: `make release` still shells
+  through the repo-owned `cmd/releaseprep` boundary, internal release policy is
+  already covered beneath it, but there is still no checked-in
+  `cmd/releaseprep/main_test.go`.
+- Queued one replacement ignored idea under
+  `factory/inputs/idea/default/cover-releaseprep-command-entrypoint.md` so the
+  next worker can make that maintainer-facing command directly testable without
+  changing release policy sequencing, broadening into workflow or packaging
+  work, or moving those assertions down into `internal/releaseprep`.
 
 ## 2026-05-06T09:04:02.6782977-07:00 - meta state refresh
 

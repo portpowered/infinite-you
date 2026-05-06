@@ -2,11 +2,11 @@
 
 ## world state
 
-- as of `2026-05-06T09:04:02.6782977-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260506-050415` points to `337fdb2`
+- as of `2026-05-06T10:02:07.1841958-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260506-050415` points to `93f0b6d`
   (`docs: refresh meta world state`) and has been rebased onto live
-  `origin/main` through `7ee70eb`
-  (`Merge pull request #127 from portpowered/ralph/cover-releasetagcheck-command-entrypoint`)
+  `origin/main` through `2c21b00`
+  (`Merge pull request #128 from portpowered/ralph/cover-releasesmoke-command-entrypoint`)
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the local worktree is not clean:
   - canonical `factory/inputs/**` remains tracked-sentinel-only
@@ -15,7 +15,7 @@
   - `factory/logs/meta/asks.md` carries a local tracked edit and should be
     treated as user-owned state for this refresh
   - tracked meta-log updates are required because the last checked-in summary
-    predates merged PR `#127`
+    predates merged PR `#128`
   - ignored local workflow residue under `factory/inputs/**` must still be
     treated as operating state rather than checked-in queue truth
 
@@ -53,13 +53,13 @@
   `factory/inputs/<work-type>/<file>` submissions as an implicit `default`
   channel fallback
 - the visible ignored local idea residue at the start of this refresh was:
-  - `factory/inputs/idea/default/cover-releasetagcheck-command-entrypoint.md`
+  - `factory/inputs/idea/default/cover-releasesmoke-command-entrypoint.md`
 - that ignored idea was stale queue residue rather than checked-in queue truth
-  because merged PR `#127` already landed that releasetagcheck command-entrypoint
+  because merged PR `#128` already landed that releasesmoke command-entrypoint
   cleanup on `main`
 - it has been replaced during this refresh with one narrower customer-ask
   follow-up idea:
-  - `factory/inputs/idea/default/cover-releasesmoke-command-entrypoint.md`
+  - `factory/inputs/idea/default/cover-releaseprep-command-entrypoint.md`
 
 ## customer-ask truth
 
@@ -96,6 +96,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#128` `cover-releasesmoke-command-entrypoint`, merged on
+    `2026-05-06T16:25:12Z`
   - `#127` `cover-releasetagcheck-command-entrypoint`, merged on
     `2026-05-06T15:17:38Z`
   - `#126` `cover-functionallane-command-entrypoint`, merged on
@@ -131,34 +133,31 @@
 ## next cleanup candidate
 
 - there is no remaining narrow unowned customer-visible ask gap on `main`
-- merged PR `#127` materially closes the previously recorded releasetagcheck
+- merged PR `#128` materially closes the previously recorded releasesmoke
   command-entrypoint gap on `main`:
-  - `cmd/releasetagcheck/main.go` now exposes a thin callable seam so the
-    workflow-facing command boundary is directly testable
-  - `cmd/releasetagcheck/main_test.go` now covers `main` execution, explicit
-    `-tag` validation, `-points-at` lookup behavior, mutual exclusivity
-    failures, surfaced git failures, and exact `release_tag=...` output
-  - `.github/workflows/release-candidate.yml` and `.github/workflows/release.yml`
-    still keep release-tag resolution routed through the same repo-owned
-    command surface rather than moving those assertions into workflow-only
-    coverage
+  - `cmd/releasesmoke/main.go` now exposes a thin callable seam so the
+    script-facing command boundary is directly testable
+  - `cmd/releasesmoke/main_test.go` now covers `main` execution, flag routing,
+    structured JSON stdout, structured JSON stderr, and non-zero exit behavior
+  - `scripts/release/smoke-artifact.sh` and
+    `scripts/release/smoke-artifact.ps1` still keep release smoke verification
+    routed through the same repo-owned command surface rather than moving those
+    assertions into wrapper-only coverage
 - the next non-overlapping dispatch should keep advancing the broad P0 testing
   ask through adjacent repo-owned command surfaces and workflow boundaries
   instead of broadening into a package-by-package coverage campaign:
-  - `scripts/release/smoke-artifact.sh` calls
-    `go run ./cmd/releasesmoke -binary "$1" -fixture "$2" -timeout "$TIMEOUT"`
-  - `scripts/release/smoke-artifact.ps1` calls
-    `go run ./cmd/releasesmoke -binary $BinaryPath -fixture $FixturePath -timeout $Timeout`
-  - `cmd/releasesmoke/main.go` owns the script-visible behavior for flag
-    parsing, harness invocation wiring, structured JSON success output, and
-    structured JSON failure output
-  - `tests/release/release_smoke_test.go` and `internal/releasesmoke` already
-    cover the harness behavior beneath that boundary, but there is still no
-    checked-in `cmd/releasesmoke/main_test.go`
-- the next idea should make `cmd/releasesmoke` directly testable with focused
-  command-owner coverage, without changing release smoke behavior, moving
-  verification logic into shell wrappers, or broadening into workflow or
-  artifact-packaging changes
+  - `Makefile` still exposes the maintainer release surface as
+    `go run ./cmd/releaseprep -version $(VERSION)`
+  - `cmd/releaseprep/main.go` still owns command-visible `-version` flag
+    parsing, stdout or stderr wiring, and exit behavior for the release-prep
+    lane
+  - `internal/releaseprep/releaseprep_test.go` already covers the policy
+    behavior beneath that boundary, but there is still no checked-in
+    `cmd/releaseprep/main_test.go`
+- the next idea should make `cmd/releaseprep` directly testable with focused
+  command-owner coverage, without changing release policy sequencing,
+  broadening into GitHub release workflow changes, or moving those assertions
+  down into `internal/releaseprep`
 
 ## theory of mind
 
@@ -190,3 +189,7 @@
 - when a GitHub workflow shells through a repo-owned `cmd/` entrypoint, treat
   its output format and flag-routing behavior as command-owner seams even if
   helper packages beneath it already have unit tests
+- when a root `Makefile` maintainer command still shells through a repo-owned
+  `cmd/` entrypoint and the internal policy package already has behavioral
+  tests, prefer adding command-local seam coverage there before widening the
+  scope into release-process refactors
