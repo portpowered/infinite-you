@@ -365,8 +365,10 @@ async function expectTypographyRegressionSurface(
 
   expect(heading.className).toContain(DASHBOARD_PAGE_HEADING_CLASS);
   expect(hiddenWordmark.className).toContain("sr-only");
-  expect(heading.textContent).toContain("∞");
-  expect(heading.textContent).toContain("U");
+  expect(heading.textContent).toBe("∞Infinite You");
+  expect(heading.querySelector("[aria-hidden='true']")?.className).toContain(
+    "text-af-accent",
+  );
   expect(streamStatus.className).toContain(DASHBOARD_BODY_TEXT_CLASS);
   expect(streamStatus.className).toContain(DASHBOARD_SUPPORTING_LABELS_CLASS);
   expect(within(toolbar).queryByText("Factory state")).toBeNull();

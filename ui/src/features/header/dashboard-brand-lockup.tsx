@@ -6,7 +6,7 @@ interface DashboardBrandLockupProps {
 }
 
 const BRAND_MARK_CLASS =
-  "inline-flex h-8 items-center gap-1 rounded-full border border-af-accent/28 bg-af-accent/12 px-2.5 text-[0.72rem] font-black uppercase tracking-[0.2em] text-af-accent";
+  "inline-flex h-8 items-center justify-center rounded-full border border-af-accent/28 bg-af-accent/12 px-3 text-[1.05rem] font-black leading-none text-af-accent";
 
 export function DashboardBrandLockup({
   className = "",
@@ -15,8 +15,7 @@ export function DashboardBrandLockup({
   return (
     <span className={cx("inline-flex min-w-0 items-center gap-3", className)}>
       <span aria-hidden="true" className={BRAND_MARK_CLASS}>
-        <span className="text-[0.96rem] leading-none">∞</span>
-        <span className="leading-none">U</span>
+        ∞
       </span>
       <span className={cx("sr-only", wordmarkClassName)}>
         Infinite You

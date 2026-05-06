@@ -104,8 +104,10 @@ describe("DashboardHeader", () => {
     expect(exportButton.getAttribute("aria-haspopup")).toBe("dialog");
     expect(exportButton.getAttribute("aria-expanded")).toBe("false");
     expect(wordmark.className).toContain("sr-only");
-    expect(heading.textContent).toContain("∞");
-    expect(heading.textContent).toContain("U");
+    expect(heading.textContent).toBe("∞Infinite You");
+    expect(heading.querySelector("[aria-hidden='true']")?.className).toContain(
+      "text-af-accent",
+    );
     expect(toolbar.firstElementChild).toBe(heading);
     expect(slider.closest("div")?.parentElement?.className).toContain(
       "justify-end",
