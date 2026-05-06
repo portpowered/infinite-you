@@ -18,6 +18,7 @@ const (
 var (
 	commandMain                  = run
 	runDeadcodeCommand           = runDeadcode
+	execCommand                  = exec.Command
 	exitFunc                     = os.Exit
 	stdout             io.Writer = os.Stdout
 	stderr             io.Writer = os.Stderr
@@ -61,7 +62,7 @@ func run(_ []string, stdout io.Writer, stderr io.Writer) int {
 }
 
 func runDeadcode() (string, error) {
-	cmd := exec.Command("go", "run", deadcodeTool, "-test", "./...")
+	cmd := execCommand("go", "run", deadcodeTool, "-test", "./...")
 	cmd.Env = deadcodeEnv()
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
