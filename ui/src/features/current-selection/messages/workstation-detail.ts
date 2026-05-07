@@ -8,6 +8,7 @@ export interface WorkstationDetailMessages {
   activeWorkEmpty: string;
   activeWorkHeading: string;
   collapseAction: string;
+  currentDispatchLabel: string;
   dispatchLabel: string;
   elapsedLabel: string;
   expandAction: string;
@@ -22,6 +23,7 @@ export interface WorkstationDetailMessages {
   noWorkstationRuns: string;
   openRequestAction: string;
   openRequestDetailsAction: string;
+  openNamedWorkItemAction: (workItemLabel: string) => string;
   openWorkItemAction: string;
   outputWorkTypesLabel: string;
   projectedWorkstationRequestSummary: string;
@@ -31,7 +33,11 @@ export interface WorkstationDetailMessages {
   requestSelectedAction: string;
   requestStatusStartedAgo: (elapsed: string) => string;
   runHistoryHeading: string;
+  providerSessionLogAction: string;
+  providerSessionLogUnavailable: string;
   scriptCommandSummary: (command: string) => string;
+  selectWorkItemLabel: (workItemLabel: string) => string;
+  selectWorkstationRequestLabel: (dispatchId: string) => string;
   selectedRequestLabel: (dispatchId: string) => string;
   stationLabel: string;
   startedLabel: string;
@@ -56,6 +62,7 @@ const workstationDetailMessagesByLocale = {
     activeWorkEmpty: "No active work is running on this workstation.",
     activeWorkHeading: "Active work",
     collapseAction: "Collapse",
+    currentDispatchLabel: "Current dispatch",
     dispatchLabel: "Dispatch",
     elapsedLabel: "Elapsed",
     expandAction: "Expand",
@@ -73,6 +80,7 @@ const workstationDetailMessagesByLocale = {
       "No workstation runs have been recorded for this workstation yet.",
     openRequestAction: "Open request",
     openRequestDetailsAction: "Open request details",
+    openNamedWorkItemAction: (workItemLabel) => `Open ${workItemLabel}`,
     openWorkItemAction: "Open work item",
     outputWorkTypesLabel: "Output work types",
     projectedWorkstationRequestSummary: "Projected workstation request",
@@ -84,7 +92,12 @@ const workstationDetailMessagesByLocale = {
     requestSelectedAction: "Request selected",
     requestStatusStartedAgo: (elapsed) => `Started ${elapsed} ago`,
     runHistoryHeading: "Run history",
+    providerSessionLogAction: "Codex session log",
+    providerSessionLogUnavailable: "Session log unavailable",
     scriptCommandSummary: (command) => `Script command ${command}`,
+    selectWorkItemLabel: (workItemLabel) => `Select work item ${workItemLabel}`,
+    selectWorkstationRequestLabel: (dispatchId) =>
+      `Select workstation request ${dispatchId}`,
     selectedRequestLabel: (dispatchId) => `Selected request: ${dispatchId}.`,
     stationLabel: "Station",
     startedLabel: "Started",
@@ -106,6 +119,7 @@ const workstationDetailMessagesByLocale = {
       "このワークステーションでは現在アクティブな作業は実行されていません。",
     activeWorkHeading: "アクティブな作業",
     collapseAction: "折りたたむ",
+    currentDispatchLabel: "現在のディスパッチ",
     dispatchLabel: "ディスパッチ",
     elapsedLabel: "経過時間",
     expandAction: "展開",
@@ -122,6 +136,7 @@ const workstationDetailMessagesByLocale = {
       "このワークステーションではまだワークステーションのランが記録されていません。",
     openRequestAction: "リクエストを開く",
     openRequestDetailsAction: "リクエスト詳細を開く",
+    openNamedWorkItemAction: (workItemLabel) => `${workItemLabel} を開く`,
     openWorkItemAction: "ワークアイテムを開く",
     outputWorkTypesLabel: "出力ワークタイプ",
     projectedWorkstationRequestSummary:
@@ -134,7 +149,12 @@ const workstationDetailMessagesByLocale = {
     requestSelectedAction: "リクエストを選択済み",
     requestStatusStartedAgo: (elapsed) => `${elapsed} 前に開始`,
     runHistoryHeading: "ラン履歴",
+    providerSessionLogAction: "Codex セッションログ",
+    providerSessionLogUnavailable: "セッションログは利用できません",
     scriptCommandSummary: (command) => `スクリプトコマンド ${command}`,
+    selectWorkItemLabel: (workItemLabel) => `ワークアイテム ${workItemLabel} を選択`,
+    selectWorkstationRequestLabel: (dispatchId) =>
+      `ワークステーションリクエスト ${dispatchId} を選択`,
     selectedRequestLabel: (dispatchId) => `選択中のリクエスト: ${dispatchId}。`,
     stationLabel: "ステーション",
     startedLabel: "開始",
@@ -155,6 +175,7 @@ const workstationDetailMessagesByLocale = {
     activeWorkEmpty: "이 워크스테이션에서 현재 실행 중인 활성 작업이 없습니다.",
     activeWorkHeading: "활성 작업",
     collapseAction: "접기",
+    currentDispatchLabel: "현재 디스패치",
     dispatchLabel: "디스패치",
     elapsedLabel: "경과 시간",
     expandAction: "펼치기",
@@ -171,6 +192,7 @@ const workstationDetailMessagesByLocale = {
       "이 워크스테이션에는 아직 워크스테이션 실행 기록이 없습니다.",
     openRequestAction: "요청 열기",
     openRequestDetailsAction: "요청 세부정보 열기",
+    openNamedWorkItemAction: (workItemLabel) => `${workItemLabel} 열기`,
     openWorkItemAction: "작업 항목 열기",
     outputWorkTypesLabel: "출력 작업 유형",
     projectedWorkstationRequestSummary: "예상 워크스테이션 요청",
@@ -182,7 +204,12 @@ const workstationDetailMessagesByLocale = {
     requestSelectedAction: "요청 선택됨",
     requestStatusStartedAgo: (elapsed) => `${elapsed} 전에 시작됨`,
     runHistoryHeading: "실행 기록",
+    providerSessionLogAction: "Codex 세션 로그",
+    providerSessionLogUnavailable: "세션 로그를 사용할 수 없음",
     scriptCommandSummary: (command) => `스크립트 명령 ${command}`,
+    selectWorkItemLabel: (workItemLabel) => `작업 항목 ${workItemLabel} 선택`,
+    selectWorkstationRequestLabel: (dispatchId) =>
+      `워크스테이션 요청 ${dispatchId} 선택`,
     selectedRequestLabel: (dispatchId) => `선택된 요청: ${dispatchId}.`,
     stationLabel: "스테이션",
     startedLabel: "시작",
@@ -203,6 +230,7 @@ const workstationDetailMessagesByLocale = {
     activeWorkEmpty: "此工作站当前没有正在运行的活动工作。",
     activeWorkHeading: "活动工作",
     collapseAction: "收起",
+    currentDispatchLabel: "当前分派",
     dispatchLabel: "分派",
     elapsedLabel: "已用时间",
     expandAction: "展开",
@@ -217,6 +245,7 @@ const workstationDetailMessagesByLocale = {
     noWorkstationRuns: "此工作站尚未记录任何工作站运行。",
     openRequestAction: "打开请求",
     openRequestDetailsAction: "打开请求详情",
+    openNamedWorkItemAction: (workItemLabel) => `打开 ${workItemLabel}`,
     openWorkItemAction: "打开工作项",
     outputWorkTypesLabel: "输出工作类型",
     projectedWorkstationRequestSummary: "预测的工作站请求",
@@ -228,7 +257,12 @@ const workstationDetailMessagesByLocale = {
     requestSelectedAction: "请求已选中",
     requestStatusStartedAgo: (elapsed) => `开始于 ${elapsed} 前`,
     runHistoryHeading: "运行历史",
+    providerSessionLogAction: "Codex 会话日志",
+    providerSessionLogUnavailable: "会话日志不可用",
     scriptCommandSummary: (command) => `脚本命令 ${command}`,
+    selectWorkItemLabel: (workItemLabel) => `选择工作项 ${workItemLabel}`,
+    selectWorkstationRequestLabel: (dispatchId) =>
+      `选择工作站请求 ${dispatchId}`,
     selectedRequestLabel: (dispatchId) => `已选择请求：${dispatchId}。`,
     stationLabel: "站点",
     startedLabel: "开始时间",

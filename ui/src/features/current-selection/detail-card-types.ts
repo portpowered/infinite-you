@@ -137,6 +137,20 @@ export interface ProviderSessionAttemptsProps {
   emptyMessage: string;
   expandActionLabel?: string;
   historyItemCountLabel?: (count: number) => string;
+  messages?: Pick<
+    WorkstationDetailMessages,
+    | "currentDispatchLabel"
+    | "openNamedWorkItemAction"
+    | "openRequestDetailsAction"
+    | "providerSessionLogAction"
+    | "providerSessionLogUnavailable"
+    | "requestDetailsUnavailable"
+    | "requestSelectedAction"
+    | "selectWorkItemLabel"
+    | "selectWorkstationRequestLabel"
+    | "workDetailsUnavailable"
+    | "workSelectedAction"
+  >;
   onSelectWorkID?: (workID: string) => void;
   onSelectWorkstationRequest?: (request: DashboardWorkstationRequest) => void;
   renderHeading: (attempt: DashboardProviderSessionAttempt) => string;
@@ -153,6 +167,7 @@ export interface CollapsibleProviderSessionAttemptsProps
 }
 
 export interface ProviderSessionLogAccessProps {
+  messages?: ProviderSessionAttemptsProps["messages"];
   session: DashboardProviderSession | undefined;
   startedAt?: string;
 }

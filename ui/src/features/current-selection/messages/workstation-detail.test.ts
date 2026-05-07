@@ -45,6 +45,15 @@ describe("getWorkstationDetailMessages", () => {
     expect(messages.selectedRequestLabel("dispatch-review-active")).toContain(
       "dispatch-review-active",
     );
+    expect(messages.openNamedWorkItemAction("Rejected Story")).toContain(
+      "Rejected Story",
+    );
+    expect(messages.selectWorkItemLabel("Rejected Story")).toContain(
+      "Rejected Story",
+    );
+    expect(
+      messages.selectWorkstationRequestLabel("dispatch-review-active"),
+    ).toContain("dispatch-review-active");
     expect(messages.workDetailsUnavailable("dispatch-review-active")).toContain(
       "dispatch-review-active",
     );
@@ -61,5 +70,8 @@ describe("getWorkstationDetailMessages", () => {
     expect(
       messages.requestDetailsUnavailable("dispatch-review-active"),
     ).toContain("dispatch-review-active");
+    expect(messages.openNamedWorkItemAction("Retry Story")).toContain(
+      "Retry Story",
+    );
   });
 });

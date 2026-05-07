@@ -98,7 +98,7 @@ export function CurrentSelectionWidget({
     detailCard = (
       <WorkstationDetailCard
         activeExecutions={selectedNodeActiveExecutions}
-        locale={locale}
+        locale={locale ?? undefined}
         now={now}
         onSelectWorkID={selectWorkByID}
         onSelectWorkstationRequest={selectWorkstationRequest}
@@ -115,7 +115,7 @@ export function CurrentSelectionWidget({
   }
 
   return (
-    <CurrentSelectionLocaleProvider locale={locale}>
+    <CurrentSelectionLocaleProvider locale={locale ?? undefined}>
       {detailCard}
     </CurrentSelectionLocaleProvider>
   );

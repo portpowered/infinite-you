@@ -96,6 +96,7 @@ export function WorkstationDetailCard({
           emptyMessage={messages.noWorkstationRuns}
           expandActionLabel={messages.expandAction}
           historyItemCountLabel={messages.historyRunCountLabel}
+          messages={messages}
           onSelectWorkID={onSelectWorkID}
           onSelectWorkstationRequest={onSelectWorkstationRequest}
           renderHeading={(attempt) =>
