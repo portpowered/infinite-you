@@ -38,6 +38,7 @@ export interface WorkstationDetailMessages {
   summaryHeading: string;
   traceIdLabel: string;
   unknownActiveWorkLabel: string;
+  unavailableValue: string;
   unknownWorkerTypeValue: string;
   unknownWorkLabel: string;
   workDetailsUnavailable: (dispatchId: string) => string;
@@ -90,6 +91,7 @@ const workstationDetailMessagesByLocale = {
     summaryHeading: "Workstation summary",
     traceIdLabel: "Trace ID",
     unknownActiveWorkLabel: "Unknown active work",
+    unavailableValue: "Unavailable",
     unknownWorkerTypeValue: "Unknown",
     unknownWorkLabel: "Unknown work",
     workDetailsUnavailable: (dispatchId) =>
@@ -139,6 +141,7 @@ const workstationDetailMessagesByLocale = {
     summaryHeading: "ワークステーション概要",
     traceIdLabel: "トレース ID",
     unknownActiveWorkLabel: "不明なアクティブ作業",
+    unavailableValue: "利用不可",
     unknownWorkerTypeValue: "不明",
     unknownWorkLabel: "不明な作業",
     workDetailsUnavailable: (dispatchId) =>
@@ -186,6 +189,7 @@ const workstationDetailMessagesByLocale = {
     summaryHeading: "워크스테이션 요약",
     traceIdLabel: "추적 ID",
     unknownActiveWorkLabel: "알 수 없는 활성 작업",
+    unavailableValue: "사용할 수 없음",
     unknownWorkerTypeValue: "알 수 없음",
     unknownWorkLabel: "알 수 없는 작업",
     workDetailsUnavailable: (dispatchId) =>
@@ -231,6 +235,7 @@ const workstationDetailMessagesByLocale = {
     summaryHeading: "工作站摘要",
     traceIdLabel: "跟踪 ID",
     unknownActiveWorkLabel: "未知活动工作",
+    unavailableValue: "不可用",
     unknownWorkerTypeValue: "未知",
     unknownWorkLabel: "未知工作",
     workDetailsUnavailable: (dispatchId) =>

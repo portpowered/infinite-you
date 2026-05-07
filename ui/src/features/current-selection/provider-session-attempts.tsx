@@ -31,8 +31,11 @@ import type {
 
 export function CollapsibleProviderSessionAttempts({
   attempts,
+  collapseActionLabel = "Collapse",
   currentDispatchID,
   emptyMessage,
+  expandActionLabel = "Expand",
+  historyItemCountLabel,
   onSelectWorkID,
   onSelectWorkstationRequest,
   renderHeading,
@@ -45,7 +48,9 @@ export function CollapsibleProviderSessionAttempts({
 }: CollapsibleProviderSessionAttemptsProps) {
   const [expanded, setExpanded] = useState(false);
   const historyID = `workstation-run-history-${resetKey}`;
-  const itemCountLabel = `${attempts.length} ${attempts.length === 1 ? "run" : "runs"}`;
+  const itemCountLabel = historyItemCountLabel
+    ? historyItemCountLabel(attempts.length)
+    : `${attempts.length} ${attempts.length === 1 ? "run" : "runs"}`;
 
   useEffect(() => {
     setExpanded(false);
@@ -69,7 +74,7 @@ export function CollapsibleProviderSessionAttempts({
           onClick={() => setExpanded((current) => !current)}
           type="button"
         >
-          {expanded ? "Collapse" : "Expand"}
+          {expanded ? collapseActionLabel : expandActionLabel}
         </button>
       </div>
       {expanded ? (

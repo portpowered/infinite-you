@@ -98,6 +98,7 @@ export function CurrentSelectionWidget({
     detailCard = (
       <WorkstationDetailCard
         activeExecutions={selectedNodeActiveExecutions}
+        locale={locale}
         now={now}
         onSelectWorkID={selectWorkByID}
         onSelectWorkstationRequest={selectWorkstationRequest}

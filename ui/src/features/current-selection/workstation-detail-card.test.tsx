@@ -24,6 +24,48 @@ function requireValue<T>(value: T | null | undefined, message: string): T {
 }
 
 describe("WorkstationDetailCard", () => {
+  it("renders workstation-detail copy from the requested locale when provided", () => {
+    const snapshot = semanticWorkflowDashboardSnapshot;
+    const selectedNode = snapshot.topology.workstation_nodes_by_id.review;
+
+    render(
+      <WorkstationDetailCard
+        activeExecutions={[]}
+        locale="ja"
+        now={DETAIL_CARD_NOW}
+        providerSessions={[]}
+        selectedNode={selectedNode}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "アクティブな作業" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: "ワークステーション概要" }),
+    ).toBeTruthy();
+    expect(screen.getByText("ワーカータイプ")).toBeTruthy();
+    expect(
+      screen.getByText("このワークステーションでは現在アクティブな作業は実行されていません。"),
+    ).toBeTruthy();
+
+    const runHistorySection = screen
+      .getByRole("heading", { name: "ラン履歴" })
+      .closest("section");
+    const resolvedRunHistorySection = requireValue(
+      runHistorySection,
+      "expected localized run history section",
+    );
+    fireEvent.click(
+      within(resolvedRunHistorySection).getByRole("button", { name: "展開" }),
+    );
+    expect(
+      within(resolvedRunHistorySection).getByText(
+        "このワークステーションではまだワークステーションのランが記録されていません。",
+      ),
+    ).toBeTruthy();
+  });
+
   it("renders selected workstation detail with active workstation runs", () => {
     const snapshot = semanticWorkflowDashboardSnapshot;
     const selectedNode = snapshot.topology.workstation_nodes_by_id.review;

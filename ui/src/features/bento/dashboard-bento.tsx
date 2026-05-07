@@ -45,7 +45,11 @@ const EMPTY_DASHBOARD_SNAPSHOT: DashboardSnapshot = {
   uptime_seconds: 0,
 };
 
-export function DashboardBento() {
+export interface DashboardBentoProps {
+  locale?: string;
+}
+
+export function DashboardBento({ locale }: DashboardBentoProps) {
   const { dashboardLayout, persistDashboardLayout } = useDashboardLayout();
   const now = useDashboardNow();
   const incrementRefreshToken = useDashboardBentoStore(
@@ -107,6 +111,7 @@ export function DashboardBento() {
   const cards = buildDashboardCards({
     currentSelection,
     importController,
+    locale,
     now,
     selectedTrace,
     selectedTraceID,
@@ -146,6 +151,7 @@ export function DashboardBento() {
 interface DashboardCardBuilderArgs {
   currentSelection: ReturnType<typeof useCurrentSelection>;
   importController: ReturnType<typeof useCurrentActivityImportController>;
+  locale?: string;
   now: number;
   selectedTrace: ReturnType<typeof useTraceDrilldown>["selectedTrace"];
   selectedTraceID: string | null;
@@ -161,6 +167,7 @@ interface DashboardCardBuilderArgs {
 function buildDashboardCards({
   currentSelection,
   importController,
+  locale,
   now,
   selectedTrace,
   selectedTraceID,
@@ -219,6 +226,7 @@ function buildDashboardCards({
           failedWorkDetailsByWorkID={
             snapshot.runtime.session.failed_work_details_by_work_id
           }
+          locale={locale}
           now={now}
           onSelectTraceID={setSelectedTraceID}
           selectedTrace={selectedTrace}

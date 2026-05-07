@@ -13,6 +13,7 @@ import type {
   DashboardWorkstationNode,
   DashboardWorkstationRequest,
 } from "../../api/dashboard/types";
+import type { WorkstationDetailMessages } from "./messages";
 import type { SelectedWorkItemExecutionDetails } from "./state/executionDetails";
 import type { DashboardWorkItemSelection } from "./types";
 
@@ -92,6 +93,7 @@ export interface WorkItemDetailCardProps {
 
 export interface WorkstationDetailCardProps {
   activeExecutions: DashboardActiveExecution[];
+  locale?: string;
   now: number;
   onSelectWorkID?: (workID: string) => void;
   onSelectWorkstationRequest?: (request: DashboardWorkstationRequest) => void;
@@ -105,6 +107,7 @@ export interface WorkstationDetailCardProps {
 
 export interface WorkstationActiveWorkListProps {
   executions: DashboardActiveExecution[];
+  messages: WorkstationDetailMessages;
   now: number;
   onSelectWorkID?: (workID: string) => void;
   onSelectWorkstationRequest?: (request: DashboardWorkstationRequest) => void;
@@ -118,6 +121,7 @@ export interface WorkstationSummaryProps {
   activeRunCount: number;
   historyCount: number;
   historyLabel: string;
+  messages: WorkstationDetailMessages;
   selectedNode: DashboardWorkstationNode;
 }
 
@@ -128,8 +132,11 @@ export interface WorkstationSummaryItemProps {
 
 export interface ProviderSessionAttemptsProps {
   attempts: DashboardProviderSessionAttempt[];
+  collapseActionLabel?: string;
   currentDispatchID?: string | null;
   emptyMessage: string;
+  expandActionLabel?: string;
+  historyItemCountLabel?: (count: number) => string;
   onSelectWorkID?: (workID: string) => void;
   onSelectWorkstationRequest?: (request: DashboardWorkstationRequest) => void;
   renderHeading: (attempt: DashboardProviderSessionAttempt) => string;
