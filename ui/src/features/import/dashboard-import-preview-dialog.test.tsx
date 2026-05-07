@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { axe } from "jest-axe";
 
 import { NamedFactoryAPIError } from "../../api/named-factory";
 import {
@@ -64,6 +65,46 @@ describe("DashboardImportPreviewDialog", () => {
     fireEvent.click(within(previewDialog).getByRole("button", { name: messages.cancelAction }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("has no accessibility violations in the ready preview state", async () => {
+    const { container } = render(
+      <DashboardImportPreviewDialog
+        activationState={{ status: "idle" }}
+        importPreviewState={createReadyImportPreviewState()}
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
+      />,
+    );
+    await screen.findByRole("dialog", {
+      name: getImportPreviewDialogMessages("en").title,
+    });
+
+    const results = await axe(container);
+
+    expect(results.violations).toEqual([]);
+  });
+
+  it("has no accessibility violations when activation fails", async () => {
+    const { container } = render(
+      <DashboardImportPreviewDialog
+        activationState={{
+          error: new NamedFactoryAPIError("Network unreachable", { code: "NETWORK_ERROR" }),
+          status: "error",
+        }}
+        importPreviewState={createReadyImportPreviewState()}
+        onCancel={vi.fn()}
+        onConfirm={vi.fn()}
+      />,
+    );
+    const messages = getImportPreviewDialogMessages("en");
+    const previewDialog = await screen.findByRole("dialog", { name: messages.title });
+
+    expect(within(previewDialog).getByRole("alert")).toBeTruthy();
+
+    const results = await axe(container);
+
+    expect(results.violations).toEqual([]);
   });
 
   it("blocks close interactions while activation is submitting", async () => {
@@ -241,6 +282,25 @@ describe("DashboardImportPreviewDialog", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog", { name: messages.title })).toBeNull();
     });
+  });
+
+  it("renders the localized dialog copy and controls for a non-default locale", async () => {
+    const { onCancel } = renderDialog({ locale: "ja" });
+    const messages = getImportPreviewDialogMessages("ja");
+
+    const previewDialog = await screen.findByRole("dialog", { name: messages.title });
+    const scope = within(previewDialog);
+
+    expect(scope.getByRole("img", { name: messages.previewImageAlt("Dropped Factory") })).toBeTruthy();
+    expect(scope.getByText("factory-import.png")).toBeTruthy();
+    expect(scope.getByText(messages.hint)).toBeTruthy();
+    expect(scope.getByRole("button", { name: messages.cancelAction })).toBeTruthy();
+    expect(scope.getByRole("button", { name: messages.activateAction })).toBeTruthy();
+    expect(scope.getByRole("button", { name: messages.closeLabel })).toBeTruthy();
+
+    fireEvent.click(scope.getByRole("button", { name: messages.cancelAction }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
   it("does not render when no preview is ready", () => {
