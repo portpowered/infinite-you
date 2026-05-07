@@ -1,6 +1,5 @@
-import type {
-  DashboardSnapshot,
-} from "../../api/dashboard/types";
+import type { DashboardSnapshot } from "../../api/dashboard/types";
+import { getWorkOutcomeTrendMessages } from "./messages/trend-messages";
 
 export type ThroughputRangeID = "5m" | "15m" | "session";
 
@@ -135,12 +134,45 @@ const _TREND_HEIGHT = 120;
 const TREND_PADDING = 14;
 const MAX_RETAINED_SAMPLE_AGE_MILLIS = 60 * 60 * 1000;
 
-export const WORK_CHART_SERIES_DEFINITIONS: readonly Omit<WorkChartSeries, "points">[] = [
-  { key: "queued", label: "Queued", unit: "count" },
-  { key: "inFlight", label: "In-flight", unit: "count" },
-  { key: "completed", label: "Completed", unit: "count" },
-  { key: "failed", label: "Failed/retried", unit: "count" },
-];
+const THROUGHPUT_RANGE_IDS = [
+  "5m",
+  "15m",
+  "session",
+] satisfies readonly ThroughputRangeID[];
+
+export function getWorkChartSeriesDefinitions(
+  locale?: string | null,
+): readonly Omit<WorkChartSeries, "points">[] {
+  const messages = getWorkOutcomeTrendMessages(locale);
+
+  return [
+    {
+      key: "queued",
+      label: messages.throughput.seriesLabels.queued,
+      unit: "count",
+    },
+    {
+      key: "inFlight",
+      label: messages.throughput.seriesLabels.inFlight,
+      unit: "count",
+    },
+    {
+      key: "completed",
+      label: messages.throughput.seriesLabels.completed,
+      unit: "count",
+    },
+    {
+      key: "failed",
+      label: messages.throughput.seriesLabels.failed,
+      unit: "count",
+    },
+  ];
+}
+
+export const WORK_CHART_SERIES_DEFINITIONS: readonly Omit<
+  WorkChartSeries,
+  "points"
+>[] = getWorkChartSeriesDefinitions();
 
 const WORK_CHART_SERIES_VALUE_ACCESSORS: Record<
   WorkChartSeriesKey,
@@ -163,11 +195,32 @@ const EMPTY_THROUGHPUT_SAMPLE: ThroughputSample = {
   tick: 0,
 };
 
-export const THROUGHPUT_RANGE_OPTIONS: ThroughputRangeOption[] = [
-  { id: "5m", label: "5m", durationMillis: 5 * 60 * 1000 },
-  { id: "15m", label: "15m", durationMillis: 15 * 60 * 1000 },
-  { id: "session", label: "Session", durationMillis: null },
-];
+export function getThroughputRangeOptions(
+  locale?: string | null,
+): ThroughputRangeOption[] {
+  const messages = getWorkOutcomeTrendMessages(locale);
+
+  return [
+    {
+      id: "5m",
+      label: messages.throughput.rangeLabels["5m"],
+      durationMillis: 5 * 60 * 1000,
+    },
+    {
+      id: "15m",
+      label: messages.throughput.rangeLabels["15m"],
+      durationMillis: 15 * 60 * 1000,
+    },
+    {
+      id: "session",
+      label: messages.throughput.rangeLabels.session,
+      durationMillis: null,
+    },
+  ];
+}
+
+export const THROUGHPUT_RANGE_OPTIONS: ThroughputRangeOption[] =
+  getThroughputRangeOptions();
 
 export function recordThroughputSample(
   samples: ThroughputSample[],
@@ -188,7 +241,8 @@ export function recordThroughputSample(
   };
   const lastSample = samples[samples.length - 1];
   const retainedSamples = samples.filter(
-    (sample) => observedAt - sample.observedAt <= MAX_RETAINED_SAMPLE_AGE_MILLIS,
+    (sample) =>
+      observedAt - sample.observedAt <= MAX_RETAINED_SAMPLE_AGE_MILLIS,
   );
 
   if (
@@ -199,8 +253,14 @@ export function recordThroughputSample(
     lastSample.inFlightCount === nextSample.inFlightCount &&
     lastSample.queuedCount === nextSample.queuedCount &&
     lastSample.tick === nextSample.tick &&
-    areStringRecordsEqual(lastSample.failedByWorkType, nextSample.failedByWorkType) &&
-    areStringArraysEqual(lastSample.failedWorkLabels, nextSample.failedWorkLabels)
+    areStringRecordsEqual(
+      lastSample.failedByWorkType,
+      nextSample.failedByWorkType,
+    ) &&
+    areStringArraysEqual(
+      lastSample.failedWorkLabels,
+      nextSample.failedWorkLabels,
+    )
   ) {
     return retainedSamples.length === 0 ? [nextSample] : retainedSamples;
   }
@@ -212,8 +272,11 @@ export function buildWorkChartModel(
   samples: ThroughputSample[],
   rangeID: ThroughputRangeID,
   now: number,
+  locale?: string | null,
 ): WorkChartModel {
-  const range = THROUGHPUT_RANGE_OPTIONS.find((option) => option.id === rangeID);
+  const throughputRangeOptions = getThroughputRangeOptions(locale);
+  const workChartSeriesDefinitions = getWorkChartSeriesDefinitions(locale);
+  const range = throughputRangeOptions.find((option) => option.id === rangeID);
   const visibleSamples = selectVisibleSamples(samples, rangeID, now);
   const chartSamples = visibleSamples
     .map((sample, index) => ({ sample, index }))
@@ -236,11 +299,13 @@ export function buildWorkChartModel(
     tick: sample.tick,
   }));
   const orderedSamples = chartSamples.map(({ sample }) => sample);
-  const series = WORK_CHART_SERIES_DEFINITIONS.map((definition) => ({
+  const series = workChartSeriesDefinitions.map((definition) => ({
     ...definition,
     points: orderedPoints.map((point, index) => {
       const value = WORK_CHART_SERIES_VALUE_ACCESSORS[definition.key](
-        orderedSamples[index] ?? (chartSamples[0]?.sample ?? EMPTY_THROUGHPUT_SAMPLE),
+        orderedSamples[index] ??
+          chartSamples[0]?.sample ??
+          EMPTY_THROUGHPUT_SAMPLE,
       );
       return {
         label: `${definition.label}: ${value}`,
@@ -259,8 +324,14 @@ export function buildWorkChartModel(
   };
   const delta: Record<WorkChartSeriesKey, number> = {
     queued: Math.max(0, latestValues.queued - (firstSample?.queuedCount ?? 0)),
-    inFlight: Math.max(0, latestValues.inFlight - (firstSample?.inFlightCount ?? 0)),
-    completed: Math.max(0, latestValues.completed - (firstSample?.completedCount ?? 0)),
+    inFlight: Math.max(
+      0,
+      latestValues.inFlight - (firstSample?.inFlightCount ?? 0),
+    ),
+    completed: Math.max(
+      0,
+      latestValues.completed - (firstSample?.completedCount ?? 0),
+    ),
     failed: Math.max(0, latestValues.failed - (firstSample?.failedCount ?? 0)),
   };
 
@@ -268,11 +339,13 @@ export function buildWorkChartModel(
     delta,
     failureGroups:
       lastSample && hasWorkHistory(lastSample)
-        ? buildFailureCauseGroups(lastSample)
+        ? buildFailureCauseGroups(lastSample, locale)
         : [],
     points: orderedPoints,
     rangeID,
-    rangeLabel: range?.label ?? "Session",
+    rangeLabel:
+      range?.label ??
+      getWorkOutcomeTrendMessages(locale).throughput.rangeLabels.session,
     samples: orderedSamples,
     series,
   };
@@ -283,8 +356,11 @@ function selectVisibleSamples(
   rangeID: ThroughputRangeID,
   now: number,
 ): ThroughputSample[] {
-  const range = THROUGHPUT_RANGE_OPTIONS.find((option) => option.id === rangeID);
-  const rangeStart = range?.durationMillis === null ? 0 : now - (range?.durationMillis ?? 0);
+  const range = getThroughputRangeOptions().find(
+    (option) => option.id === rangeID,
+  );
+  const rangeStart =
+    range?.durationMillis === null ? 0 : now - (range?.durationMillis ?? 0);
   const visibleSamples =
     range?.durationMillis === null
       ? samples
@@ -298,7 +374,8 @@ function _buildTrendPoints<Value>(
   selectValue: (sample: ThroughputSample, index: number) => Value,
 ): { value: Value; x: number }[] {
   const minObservedAt = samples[0]?.observedAt ?? 0;
-  const maxObservedAt = samples[samples.length - 1]?.observedAt ?? minObservedAt;
+  const maxObservedAt =
+    samples[samples.length - 1]?.observedAt ?? minObservedAt;
   const timeSpan = Math.max(maxObservedAt - minObservedAt, 1);
 
   return samples.map((sample, index) => ({
@@ -312,12 +389,16 @@ function _buildTrendPoints<Value>(
   }));
 }
 
-function buildFailureCauseGroups(sample: ThroughputSample): FailureCauseGroup[] {
+function buildFailureCauseGroups(
+  sample: ThroughputSample,
+  locale?: string | null,
+): FailureCauseGroup[] {
+  const messages = getWorkOutcomeTrendMessages(locale);
   const byWorkType = Object.entries(sample.failedByWorkType)
     .filter(([, count]) => count > 0)
     .map(([workType, count]) => ({
       count,
-      label: `Work type: ${workType}`,
+      label: messages.workTypeFailureGroupLabel(workType),
     }));
 
   if (byWorkType.length > 0) {
@@ -358,14 +439,18 @@ function countQueuedWork(snapshot: DashboardSnapshot): number {
   }
 
   return [...initialPlaceIDs].reduce(
-    (total, placeID) => total + (snapshot.runtime.place_token_counts?.[placeID] ?? 0),
+    (total, placeID) =>
+      total + (snapshot.runtime.place_token_counts?.[placeID] ?? 0),
     0,
   );
 }
 
 function _buildPath(points: { x: number; y: number }[]): string {
   return points
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
+    .map(
+      (point, index) =>
+        `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`,
+    )
     .join(" ");
 }
 
@@ -392,6 +477,12 @@ function areStringRecordsEqual(
 }
 
 function areStringArraysEqual(left: string[], right: string[]): boolean {
-  return left.length === right.length && left.every((value, index) => right[index] === value);
+  return (
+    left.length === right.length &&
+    left.every((value, index) => right[index] === value)
+  );
 }
 
+export function isThroughputRangeID(value: string): value is ThroughputRangeID {
+  return THROUGHPUT_RANGE_IDS.some((rangeID) => rangeID === value);
+}

@@ -1,15 +1,23 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-
-import { getDashboardChartSemanticStyle } from "./chart-contract";
-import { FailureTrendCard, ReworkTrendCard, TimingTrendCard } from "./trend-cards";
+import { describe, expect, it, vi } from "vitest";
 import {
   DASHBOARD_BODY_TEXT_CLASS,
   DASHBOARD_SUPPORTING_LABEL_CLASS,
   DASHBOARD_SUPPORTING_LABELS_CLASS,
   DASHBOARD_WIDGET_SUBTITLE_CLASS,
 } from "../../components/ui/dashboard-typography";
-import type { FailureTrendModel, ReworkTrendModel, TimingTrendModel } from "./trends";
-import { describe, it, vi, expect } from "vitest";
+import { getDashboardChartSemanticStyle } from "./chart-contract";
+import { getWorkOutcomeTrendMessages } from "./messages/trend-messages";
+import {
+  FailureTrendCard,
+  ReworkTrendCard,
+  TimingTrendCard,
+} from "./trend-cards";
+import type {
+  FailureTrendModel,
+  ReworkTrendModel,
+  TimingTrendModel,
+} from "./trends";
 
 const failureTrend: FailureTrendModel = {
   currentFailed: 3,
@@ -71,7 +79,9 @@ describe("dashboard trend cards", () => {
     expect(screen.getByRole("heading", { name: "Failure trend" })).toBeTruthy();
     expect(screen.getByText("Work type: story")).toBeTruthy();
 
-    fireEvent.change(screen.getByLabelText("Time range"), { target: { value: "5m" } });
+    fireEvent.change(screen.getByLabelText("Time range"), {
+      target: { value: "5m" },
+    });
 
     const chart = screen.getByRole("img", { name: /Failed work trend/ });
 
@@ -94,7 +104,9 @@ describe("dashboard trend cards", () => {
     const reworkChartStyle = getDashboardChartSemanticStyle("reworkTrend");
     render(<ReworkTrendCard model={reworkTrend} />);
 
-    expect(screen.getByRole("heading", { name: "Retry and rework trend" })).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: "Retry and rework trend" }),
+    ).toBeTruthy();
     expect(screen.getByText("work-active-story")).toBeTruthy();
     expect(screen.getByText("2")).toBeTruthy();
     const chart = screen.getByRole("img", { name: /Retry and rework trend/ });
@@ -149,9 +161,18 @@ describe("dashboard trend cards", () => {
       .getByRole("heading", { name: "Timing trend" })
       .closest("article");
 
-    const resolvedFailureCard = requireValue(failureCard, "expected failure trend card");
-    const resolvedReworkCard = requireValue(reworkCard, "expected rework trend card");
-    const resolvedTimingCard = requireValue(timingCard, "expected timing trend card");
+    const resolvedFailureCard = requireValue(
+      failureCard,
+      "expected failure trend card",
+    );
+    const resolvedReworkCard = requireValue(
+      reworkCard,
+      "expected rework trend card",
+    );
+    const resolvedTimingCard = requireValue(
+      timingCard,
+      "expected timing trend card",
+    );
 
     const failureScope = within(resolvedFailureCard);
     const reworkScope = within(resolvedReworkCard);
@@ -163,11 +184,14 @@ describe("dashboard trend cards", () => {
     expect(failureScope.getByLabelText("Time range").className).toContain(
       DASHBOARD_BODY_TEXT_CLASS,
     );
-    expect(failureScope.getByText("Failed in range").closest("dl")?.className).toContain(
-      DASHBOARD_SUPPORTING_LABELS_CLASS,
-    );
     expect(
-      failureScope.getByText("Failed in range").closest("div")?.querySelector("dd")?.className,
+      failureScope.getByText("Failed in range").closest("dl")?.className,
+    ).toContain(DASHBOARD_SUPPORTING_LABELS_CLASS);
+    expect(
+      failureScope
+        .getByText("Failed in range")
+        .closest("div")
+        ?.querySelector("dd")?.className,
     ).toContain(DASHBOARD_WIDGET_SUBTITLE_CLASS);
     expect(failureScope.getByText("Work type: story").className).toContain(
       DASHBOARD_BODY_TEXT_CLASS,
@@ -182,5 +206,59 @@ describe("dashboard trend cards", () => {
     expect(timingScope.getByText("450ms").className).toContain(
       DASHBOARD_WIDGET_SUBTITLE_CLASS,
     );
+  });
+
+  it("renders localized copy from feature-owned messages when a locale is provided", () => {
+    const messages = getWorkOutcomeTrendMessages("ja");
+
+    render(
+      <>
+        <FailureTrendCard
+          locale="ja"
+          model={failureTrend}
+          onRangeChange={() => undefined}
+          rangeID="15m"
+        />
+        <ReworkTrendCard locale="ja" model={reworkTrend} />
+        <TimingTrendCard locale="ja" model={timingTrend} />
+      </>,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: messages.failureCard.title }),
+    ).toBeTruthy();
+    const failureCard = screen
+      .getByRole("heading", { name: messages.failureCard.title })
+      .closest("article");
+    const timingCard = screen
+      .getByRole("heading", { name: messages.timingCard.title })
+      .closest("article");
+
+    expect(
+      within(
+        requireValue(failureCard, "expected localized failure trend card"),
+      ).getByLabelText(messages.failureCard.timeRangeLabel),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("img", {
+        name: messages.failureCard.chartAriaLabel(failureTrend.rangeLabel),
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: messages.reworkCard.title }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("img", {
+        name: messages.reworkCard.chartAriaLabel(reworkTrend.currentWorkLabel),
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: messages.timingCard.title }),
+    ).toBeTruthy();
+    expect(
+      within(
+        requireValue(timingCard, "expected localized timing trend card"),
+      ).getByLabelText(messages.timingCard.timingRangeAriaLabel),
+    ).toBeTruthy();
   });
 });
