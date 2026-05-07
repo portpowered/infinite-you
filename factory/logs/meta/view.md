@@ -2,10 +2,10 @@
 
 ## world state
 
-- as of `2026-05-07T05:03:44.1967849-07:00`, local `HEAD` on `main` points to
-  `3d0c461` (`docs: refresh meta world state`), is ahead of `origin/main` by
-  three local meta commits, and already contains upstream `origin/main` through
-  merged PR `#147` (`localize-export-dialog-and-trigger`) at `6451e25`
+- as of `2026-05-07T06:05:41.3101565-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260507-050344` points to `27bea8c`
+  (`localize-dashboard-header-timeline-and-stream-status (#151)`) and matches
+  live `origin/main` through merged PR `#151`
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the only tracked local dirtiness outside this meta refresh remains the
   user-maintained canonical ask file `factory/logs/meta/asks.md`
@@ -37,17 +37,18 @@
 - `.gitignore` still keeps live workflow submissions under `factory/inputs/**`
   out of normal commits except for those sentinel paths
 - the ignored idea files
-  `factory/inputs/idea/default/localize-export-dialog-and-trigger.md` and
-  `factory/inputs/idea/default/narrow-cron-watcher-runtime-lookup-contract.md`
-  were stale on live `main` because merged PR `#147` landed on
-  `2026-05-07T11:46:43Z` and merged PR `#146` landed on
-  `2026-05-07T11:39:54Z`
+  `factory/inputs/idea/default/localize-dashboard-header-timeline-and-stream-status.md`
+  and
+  `factory/inputs/idea/default/retire-template-fields-variadic-worktree-shim.md`
+  were stale on live `main` because merged PR `#151` landed on
+  `2026-05-07T12:21:01Z` and merged PR `#150` landed on
+  `2026-05-07T12:16:03Z`
 - after pruning those stale residues, the maintainer-owned ignored queue now
   carries three fresh non-overlapping idea files so the autonomous lane still
   matches the standing ask to keep at least three tasks running:
   - `audit-repository-against-2026-website-and-backend-checklists.md`
-  - `retire-template-fields-variadic-worktree-shim.md`
-  - `localize-dashboard-header-timeline-and-stream-status.md`
+  - `localize-current-selection-shell-and-execution-details.md`
+  - `close-gocoveragecheck-helper-runtime-and-parser-branches.md`
 
 ## customer-ask truth
 
@@ -72,17 +73,25 @@
 - there is still no merged checked-in repo-wide review record mapping this
   repository against those external checklist documents on live `main`; open
   PR `#141` currently owns that audit lane
-- the UI localization foothold now reaches both import and export surfaces on
-  live `main`:
+- the UI localization foothold now reaches the dashboard header in addition to
+  import and export surfaces on live `main`:
   - `ui/src/i18n/index.ts`, `ui/src/i18n/locales.ts`, and
     `ui/src/i18n/messages.ts` exist on `main`
   - merged PR `#142` localized and accessibility-hardened the import preview
     dialog
   - merged PR `#147` localized the export dialog and export trigger
-  - `ui/src/features/header/tick-slider-control.tsx` and
-    `ui/src/features/header/dashboard-header.tsx` still keep concentrated
-    hardcoded English timeline and stream-status accessibility text, which is
-    now the next narrow header-local follow-up
+  - merged PR `#151` localized the dashboard header timeline and stream-status
+    accessibility labels
+  - `ui/src/features/current-selection/current-selection-detail-layout.tsx`,
+    `no-selection-detail-card.tsx`, `execution-details.tsx`, and
+    `terminal-work-summary-detail.tsx` still keep the next concentrated
+    hardcoded English dashboard copy block on the live path
+- the next narrow backend testing seam on live `main` is now
+  `cmd/gocoveragecheck`:
+  - `go test -cover ./cmd/...` reports `75.0%` for `cmd/gocoveragecheck`
+  - peer repo-owned command packages now sit materially higher after merged
+    PR `#149`, leaving the remaining helper/runtime/parser branches as the next
+    small command-owner closeout
 
 ## replay truth
 
@@ -97,16 +106,16 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#151` `localize-dashboard-header-timeline-and-stream-status`, merged on
+    `2026-05-07T12:21:01Z`
+  - `#150` `retire-template-fields-variadic-worktree-shim`, merged on
+    `2026-05-07T12:16:03Z`
+  - `#149` `cover-releaseprep-help-and-parse-failure-branches`, merged on
+    `2026-05-07T12:12:27Z`
+  - `#148` `docs: refresh meta world state`, merged on
+    `2026-05-07T12:06:55Z`
   - `#147` `localize-export-dialog-and-trigger`, merged on
-    `2026-05-07T11:46:43Z`
-  - `#146` `narrow-cron-watcher-runtime-lookup-contract`, merged on
-    `2026-05-07T11:39:54Z`
-  - `#144` `cover-releasesmoke-command-owner-parse-and-json-error-branches`,
-    merged on `2026-05-07T10:13:02Z`
-  - `#142` `localize-and-accessibility-harden-import-preview-dialog`, merged
-    on `2026-05-07T09:34:50Z`
-  - `#140` `retire-deadcodecheck-gotypesalias-compat-shim`, merged on
-    `2026-05-07T09:25:03Z`
+    `2026-05-07T11:25:43Z`
 - `gh pr list --state open` now reports:
   - `#145` `docs: refresh meta world state`
   - `#143` `docs: refresh meta world state`
@@ -121,39 +130,29 @@
 
 - the repo-wide standards audit remains the highest-priority checklist ask on
   live `main`, but PR `#141` already owns that documentation lane
-- the next narrow backend simplification seam is the workers template-field
-  helper:
-  - `pkg/workers/template_fields.go` still exposes `ResolveTemplateFields`
-    with an explicitly backwards-compat variadic `worktreeTemplate ...string`
-    parameter
-  - the production caller in `pkg/workers/workstation_executor.go` already
-    passes one concrete `workstationDef.Worktree` value, so the legacy
-    compatibility shape is no longer needed on the live path
-  - the direct fallout is localized to `pkg/workers/template_fields_test.go`
-    plus the one production caller, making this a small implementation-ready
-    shim retirement
-- the next narrow UI checklist-alignment seam is the dashboard header control
-  surface:
-  - `ui/src/features/header/tick-slider-control.tsx` still hardcodes the slider
-    label, slider `aria-label`, waiting-state text, tick status text, and
-    "Return to current tick" button name
-  - `ui/src/features/header/dashboard-header.tsx` still hardcodes the region
-    label and stream-status accessible names for `live`, `offline`, and
-    `connecting`
-  - the import/export dialog localization pattern already exists on live
+- the next narrow UI checklist-alignment seam is the current-selection shared
+  shell and execution-details surface:
+  - `ui/src/features/current-selection/current-selection-detail-layout.tsx`
+    still hardcodes `Current selection`, `Undo`, and `Redo`
+  - `ui/src/features/current-selection/no-selection-detail-card.tsx`,
+    `execution-details.tsx`, and `terminal-work-summary-detail.tsx` still
+    hardcode the empty-state guidance, section headings, trace guidance,
+    terminal status text, and failure fallback copy
+  - the import/export/header feature-local i18n pattern already exists on live
     `main`, so this is now a small feature-local follow-up rather than a new
     i18n foundation project
-- the next backup backend seam after that is `cmd/releaseprep`:
-  - `go test -cover ./cmd/...` now reports `94.1%` for `cmd/releaseprep`
-  - `cmd/releaseprep/main.go` still leaves the explicit `flag.ErrHelp` success
-    branch and direct parse-failure routing as a small command-owner coverage
-    closeout
-- the next backup backend testing seam after that is still `cmd/gocoveragecheck`:
-  - `go test -cover ./cmd/...` now reports `75.0%` for
+- the next narrow backend testing seam is `cmd/gocoveragecheck`:
+  - `go test -cover ./cmd/...` reports `75.0%` for
     `cmd/gocoveragecheck`
-  - remaining coverage is concentrated in command-owner execution, package-list,
-    and coverage-evaluation error branches rather than in backend application
-    packages
+  - remaining coverage is concentrated in package-local helper/runtime/parser
+    branches such as combined failure aggregation, repo-root discovery, package
+    listing, profile parsing, and path normalization
+- the next backup UI seam after that is the dashboard event-stream message
+  pipeline:
+  - `ui/src/api/events/api.ts` and
+    `ui/src/features/dashboard/state/dashboardStreamStore.ts` still hardcode
+    English stream lifecycle and fallback messages outside the feature-local
+    message catalogs
 
 ## theory of mind
 
@@ -175,13 +174,17 @@
 - when a localization follow-up merges on one dashboard dialog, re-read the
   adjacent header controls and accessibility labels next; the concentrated
   English-only residue often lives there rather than in a second dialog
+- when a dashboard header-localization follow-up merges, re-read the adjacent
+  current-selection shell and execution-details surfaces next; shared detail
+  widgets can still keep the next concentrated block of English-only copy
 - when a helper still advertises an explicitly backwards-compatible variadic or
   optional parameter but the live production caller already passes the
   canonical explicit shape, retire the shim before widening into larger runtime
   refactors
-- when a repo-owned command package is already above 90% coverage, prefer the
-  remaining help, parse, or exit-routing branches in that thin command owner
-  before widening into the underlying internal package
+- when neighboring repo-owned command packages have already closed their thin
+  owner seams, queue the next-lowest command package and keep the follow-up
+  local to that command file and tests before widening into application
+  packages
 - when the linked external checklist repo omits one requested source such as
   `asks.md`, record that as an evidence gap and continue from the sources that
   are actually retrievable instead of inventing missing checklist content

@@ -154,16 +154,19 @@
 - After a localized dashboard dialog merges, re-read the adjacent header
   controls and status accessibility labels next; concentrated English-only
   residue often remains there rather than in another dialog.
+- After a dashboard header-localization follow-up merges, re-read the adjacent
+  current-selection shell and execution-details surfaces next; shared detail
+  widgets can still keep the next concentrated block of English-only copy.
 - When a helper still carries an explicitly backwards-compatible variadic
   parameter but the live production caller already passes one concrete explicit
   value, prefer deleting the shim over preserving two call shapes.
 
 ## Current Summary
 
-- As of `2026-05-07T05:03:44.1967849-07:00`, `HEAD` points to `3d0c461` on
-  branch `main`, is ahead of `origin/main` by three local meta commits, and
-  already contains merged PR `#147` (`localize-export-dialog-and-trigger`) from
-  `origin/main`.
+- As of `2026-05-07T06:05:41.3101565-07:00`, `HEAD` points to `27bea8c` on
+  branch `meta-refresh-world-state-20260507-050344` and matches live
+  `origin/main` through merged PR `#151`
+  (`localize-dashboard-header-timeline-and-stream-status`).
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -175,9 +178,9 @@
   user-owned tracked edit and the maintainer meta refresh updates the tracked
   view/progress docs; ignored workflow files under `factory/inputs/**` remain
   operating state rather than canonical queue truth.
-- Recent merged PRs now include `#146` and `#147`; open PR `#141` owns the
-  active checklist-audit lane, while `#145`, `#143`, `#139`, `#123`, and
-  `#120` remain meta refresh branches.
+- Recent merged PRs now include `#149`, `#150`, and `#151`; open PR `#141`
+  owns the active checklist-audit lane, while `#145`, `#143`, `#139`, `#123`,
+  and `#120` remain meta refresh branches.
 - The canonical ask surface remains the quality-oriented rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
   alignment, stronger backend and website testing, ongoing simplification, and
@@ -188,13 +191,58 @@
 - The external website and backend checklist URLs remain readable on
   `2026-05-07`, but the linked external `asks.md` URL still does not produce a
   readable checklist document and must be treated as a source-evidence gap.
-- The previously queued ignored ideas `localize-export-dialog-and-trigger` and
-  `narrow-cron-watcher-runtime-lookup-contract` are stale because merged PRs
-  `#147` and `#146` landed those exact lanes on `main`.
-- The next maintainer-owned operating queue should hold three non-overlapping
-  ideas together: repo-wide checklist audit evidence,
-  `retire-template-fields-variadic-worktree-shim`, and
-  `localize-dashboard-header-timeline-and-stream-status`.
+- The previously queued ignored ideas
+  `localize-dashboard-header-timeline-and-stream-status` and
+  `retire-template-fields-variadic-worktree-shim` are stale because merged PRs
+  `#151` and `#150` landed those exact lanes on `main`.
+- The current maintainer-owned operating queue should hold three
+  non-overlapping ideas together: repo-wide checklist audit evidence,
+  `localize-current-selection-shell-and-execution-details`, and
+  `close-gocoveragecheck-helper-runtime-and-parser-branches`.
+
+## 2026-05-07T06:05:41.3101565-07:00 - meta state refresh
+
+- Ran `git pull`, saw that the branch-local remote was current but live
+  `origin/main` had advanced, then ran `git pull --rebase --autostash origin
+  main`; Git fast-forwarded this meta branch onto `27bea8c`, pulling in merged
+  PR `#149`, merged PR `#150`, and merged PR `#151` while preserving the
+  user-owned tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, the backend and
+  website standards, current PR state, the tracked-versus-ignored
+  `factory/inputs/**` surface, the live external checklist sources, and the
+  newly merged UI/backend follow-up seams on live `main`.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea files are ignored local
+  operating residue.
+- Confirmed the previously queued ignored ideas
+  `factory/inputs/idea/default/localize-dashboard-header-timeline-and-stream-status.md`
+  and
+  `factory/inputs/idea/default/retire-template-fields-variadic-worktree-shim.md`
+  are stale because merged PR `#151` and merged PR `#150` already landed those
+  exact cleanup lanes on `main`, then pruned those ignored residues locally.
+- Re-checked the linked external checklist sources on `2026-05-07` and
+  confirmed the website and backend checklist documents remain readable, while
+  the linked `portpowered/checklists` `asks.md` source still does not resolve
+  to a readable document and must remain an evidence gap instead of an assumed
+  requirement source.
+- Used delegated explorer passes, direct code reads, graph-backed discovery,
+  and fresh `go test -cover ./cmd/...` output to choose two fresh
+  non-overlapping replacements for the merged queue slots:
+  `ui/src/features/current-selection/current-selection-detail-layout.tsx`,
+  `no-selection-detail-card.tsx`, `execution-details.tsx`, and
+  `terminal-work-summary-detail.tsx` for the next narrow dashboard
+  localization seam, and `cmd/gocoveragecheck/main.go` plus
+  `cmd/gocoveragecheck/main_test.go` for the next narrow backend
+  command-owner coverage seam.
+- Recorded one backup UI seam from direct reads as well:
+  `ui/src/api/events/api.ts` and
+  `ui/src/features/dashboard/state/dashboardStreamStore.ts` still keep English
+  stream lifecycle and fallback messages outside the feature-local catalogs,
+  but that remains a backup lane rather than one of the three active backlog
+  slots.
 
 ## 2026-05-07T05:03:44.1967849-07:00 - meta state refresh
 
