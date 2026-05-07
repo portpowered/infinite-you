@@ -24,6 +24,40 @@ function requireValue<T>(value: T | null | undefined, message: string): T {
 }
 
 describe("WorkstationDetailCard", () => {
+  it("falls back to English workstation-detail copy for unsupported locales", () => {
+    const snapshot = semanticWorkflowDashboardSnapshot;
+    const selectedNode = snapshot.topology.workstation_nodes_by_id.review;
+
+    render(
+      <WorkstationDetailCard
+        activeExecutions={[]}
+        locale="fr"
+        now={DETAIL_CARD_NOW}
+        providerSessions={[]}
+        selectedNode={selectedNode}
+      />,
+    );
+
+    expect(screen.getByRole("heading", { name: "Active work" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Workstation summary" })).toBeTruthy();
+    expect(screen.getByText("Worker type")).toBeTruthy();
+    expect(screen.getByText("No active work is running on this workstation.")).toBeTruthy();
+
+    const runHistorySection = screen.getByRole("heading", { name: "Run history" }).closest("section");
+    const resolvedRunHistorySection = requireValue(
+      runHistorySection,
+      "expected fallback run history section",
+    );
+    fireEvent.click(
+      within(resolvedRunHistorySection).getByRole("button", { name: "Expand" }),
+    );
+    expect(
+      within(resolvedRunHistorySection).getByText(
+        "No workstation runs have been recorded for this workstation yet.",
+      ),
+    ).toBeTruthy();
+  });
+
   it("renders workstation-detail copy from the requested locale when provided", () => {
     const snapshot = semanticWorkflowDashboardSnapshot;
     const selectedNode = snapshot.topology.workstation_nodes_by_id.review;
@@ -63,6 +97,9 @@ describe("WorkstationDetailCard", () => {
       within(resolvedRunHistorySection).getByText(
         "このワークステーションではまだワークステーションのランが記録されていません。",
       ),
+    ).toBeTruthy();
+    expect(
+      within(resolvedRunHistorySection).getByText("0 件のラン"),
     ).toBeTruthy();
   });
 
