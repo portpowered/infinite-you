@@ -18,7 +18,10 @@ import {
 } from "../../components/ui";
 import { cx } from "../../lib/cx";
 import type { FactoryPngImportValue } from "./factory-png-import";
-import { getImportPreviewDialogMessages } from "./messages/import-preview-dialog";
+import {
+  getImportPreviewDialogMessages,
+  IMPORT_PREVIEW_FACTORY_NAME_TOKEN,
+} from "./messages/import-preview-dialog";
 import type { FactoryImportActivationState } from "./use-factory-import-activation";
 import type { FactoryImportPreviewState } from "./use-factory-import-preview";
 
@@ -50,6 +53,24 @@ export interface DashboardImportPreviewDialogProps {
   locale?: string;
   onCancel: () => void;
   onConfirm: (value: FactoryPngImportValue) => void;
+}
+
+function renderImportPreviewDescription(template: string, factoryName: string) {
+  const [beforeFactoryName, afterFactoryName] = template.split(
+    IMPORT_PREVIEW_FACTORY_NAME_TOKEN,
+  );
+
+  if (afterFactoryName === undefined) {
+    return template;
+  }
+
+  return (
+    <>
+      {beforeFactoryName}
+      <span className="font-semibold text-af-ink">{factoryName}</span>
+      {afterFactoryName}
+    </>
+  );
 }
 
 function factoryImportActivationErrorCopy(
@@ -146,11 +167,10 @@ export function FactoryImportPreviewDialog({
                 {messages.title}
               </DialogTitle>
               <DialogDescription className={IMPORT_DIALOG_DESCRIPTION_CLASS}>
-                {messages.descriptionLead}{" "}
-                <span className="font-semibold text-af-ink">
-                  {previewState.value.factory.name}
-                </span>
-                {messages.descriptionTail}
+                {renderImportPreviewDescription(
+                  messages.descriptionTemplate,
+                  previewState.value.factory.name,
+                )}
               </DialogDescription>
             </div>
           </DialogHeader>

@@ -1,6 +1,7 @@
 import { SUPPORTED_LOCALES } from "../../../i18n";
 import {
   getImportPreviewDialogMessages,
+  IMPORT_PREVIEW_FACTORY_NAME_TOKEN,
   importPreviewDialogMessagesByLocale,
 } from "./import-preview-dialog";
 
@@ -30,8 +31,7 @@ describe("getImportPreviewDialogMessages", () => {
   it("keeps interpolation and mapped activation copy available through the resolved locale catalog", () => {
     const messages = getImportPreviewDialogMessages("zh");
 
-    expect(messages.descriptionLead.length).toBeGreaterThan(0);
-    expect(messages.descriptionTail.length).toBeGreaterThan(0);
+    expect(messages.descriptionTemplate).toContain(IMPORT_PREVIEW_FACTORY_NAME_TOKEN);
     expect(messages.previewImageAlt("Dropped Factory")).toContain("Dropped Factory");
     expect(messages.errorByCode.NETWORK_ERROR).toBe(
       "仪表板无法连接到启用 API。请在连接恢复后重试。",

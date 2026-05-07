@@ -16,8 +16,7 @@ export interface ImportPreviewDialogMessages {
   activationErrorTitle: string;
   cancelAction: string;
   closeLabel: string;
-  descriptionLead: string;
-  descriptionTail: string;
+  descriptionTemplate: string;
   droppedFileLabel: string;
   embeddedFactoryLabel: string;
   errorByCode: Record<MappedImportPreviewErrorCode, string>;
@@ -27,6 +26,8 @@ export interface ImportPreviewDialogMessages {
   title: string;
 }
 
+export const IMPORT_PREVIEW_FACTORY_NAME_TOKEN = "{{factoryName}}";
+
 const importPreviewDialogMessagesByLocale = {
   en: {
     activateAction: "Activate factory",
@@ -34,9 +35,8 @@ const importPreviewDialogMessagesByLocale = {
     activationErrorTitle: "Activation failed",
     cancelAction: "Cancel import",
     closeLabel: "Close import preview",
-    descriptionLead:
-      "Review the dropped factory before activation. Confirming this import in the next step will switch the current factory to",
-    descriptionTail: ".",
+    descriptionTemplate:
+      `Review the dropped factory before activation. Confirming this import in the next step will switch the current factory to ${IMPORT_PREVIEW_FACTORY_NAME_TOKEN}.`,
     droppedFileLabel: "Dropped file",
     embeddedFactoryLabel: "Embedded factory",
     errorByCode: {
@@ -61,9 +61,8 @@ const importPreviewDialogMessagesByLocale = {
     activationErrorTitle: "有効化に失敗しました",
     cancelAction: "インポートをキャンセル",
     closeLabel: "インポートのプレビューを閉じる",
-    descriptionLead:
-      "有効化する前に、ドロップしたファクトリーを確認してください。インポートを確定すると、現在のファクトリーは",
-    descriptionTail: "に切り替わります。",
+    descriptionTemplate:
+      `有効化する前に、ドロップしたファクトリーを確認してください。インポートを確定すると、現在のファクトリーは${IMPORT_PREVIEW_FACTORY_NAME_TOKEN}に切り替わります。`,
     droppedFileLabel: "ドロップしたファイル",
     embeddedFactoryLabel: "埋め込みファクトリー",
     errorByCode: {
@@ -88,9 +87,8 @@ const importPreviewDialogMessagesByLocale = {
     activationErrorTitle: "활성화 실패",
     cancelAction: "가져오기 취소",
     closeLabel: "가져오기 미리보기 닫기",
-    descriptionLead:
-      "드롭한 팩토리를 활성화 전에 검토하세요. 이 가져오기를 확인하면 현재 팩토리가 다음 단계에서",
-    descriptionTail: "로 전환됩니다.",
+    descriptionTemplate:
+      `드롭한 팩토리를 활성화 전에 검토하세요. 이 가져오기를 확인하면 현재 팩토리가 다음 단계에서 ${IMPORT_PREVIEW_FACTORY_NAME_TOKEN}로 전환됩니다.`,
     droppedFileLabel: "드롭한 파일",
     embeddedFactoryLabel: "내장된 팩토리",
     errorByCode: {
@@ -115,8 +113,8 @@ const importPreviewDialogMessagesByLocale = {
     activationErrorTitle: "启用失败",
     cancelAction: "取消导入",
     closeLabel: "关闭导入预览",
-    descriptionLead: "请在启用前检查已拖入的工厂。确认导入后，当前工厂将切换为",
-    descriptionTail: "。",
+    descriptionTemplate:
+      `请在启用前检查已拖入的工厂。确认导入后，当前工厂将切换为${IMPORT_PREVIEW_FACTORY_NAME_TOKEN}。`,
     droppedFileLabel: "拖入的文件",
     embeddedFactoryLabel: "嵌入的工厂",
     errorByCode: {
