@@ -68,7 +68,7 @@ describe("DashboardImportPreviewDialog", () => {
   });
 
   it("has no accessibility violations in the ready preview state", async () => {
-    const { container } = render(
+    const { baseElement } = render(
       <DashboardImportPreviewDialog
         activationState={{ status: "idle" }}
         importPreviewState={createReadyImportPreviewState()}
@@ -80,13 +80,13 @@ describe("DashboardImportPreviewDialog", () => {
       name: getImportPreviewDialogMessages("en").title,
     });
 
-    const results = await axe(container);
+    const results = await axe(baseElement);
 
     expect(results.violations).toEqual([]);
   });
 
   it("has no accessibility violations when activation fails", async () => {
-    const { container } = render(
+    const { baseElement } = render(
       <DashboardImportPreviewDialog
         activationState={{
           error: new NamedFactoryAPIError("Network unreachable", { code: "NETWORK_ERROR" }),
@@ -102,7 +102,7 @@ describe("DashboardImportPreviewDialog", () => {
 
     expect(within(previewDialog).getByRole("alert")).toBeTruthy();
 
-    const results = await axe(container);
+    const results = await axe(baseElement);
 
     expect(results.violations).toEqual([]);
   });
