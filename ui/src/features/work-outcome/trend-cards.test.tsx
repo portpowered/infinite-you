@@ -55,6 +55,33 @@ const timingTrend: TimingTrendModel = {
   slowestDurationMillis: 3_000,
 };
 
+const emptyFailureTrend: FailureTrendModel = {
+  currentFailed: 0,
+  failureDelta: 0,
+  groups: [],
+  path: "",
+  points: [],
+  rangeLabel: "15m",
+};
+
+const emptyReworkTrend: ReworkTrendModel = {
+  currentWorkLabel: "work-empty",
+  path: "",
+  points: [],
+  retryOrReworkCount: 0,
+  terminalOutcome: "COMPLETED",
+};
+
+const emptyTimingTrend: TimingTrendModel = {
+  averageDurationMillis: 0,
+  currentWorkLabel: "work-empty",
+  fastestDurationMillis: 0,
+  latestDurationMillis: 0,
+  path: "",
+  points: [],
+  slowestDurationMillis: 0,
+};
+
 function requireValue<T>(value: T | null | undefined, message: string): T {
   if (value === null || value === undefined) {
     throw new Error(message);
@@ -245,6 +272,11 @@ describe("dashboard trend cards", () => {
       }),
     ).toBeTruthy();
     expect(
+      screen.getByRole("list", {
+        name: messages.failureCard.causeGroupsAriaLabel,
+      }),
+    ).toBeTruthy();
+    expect(
       screen.getByRole("heading", { name: messages.reworkCard.title }),
     ).toBeTruthy();
     expect(
@@ -260,5 +292,66 @@ describe("dashboard trend cards", () => {
         requireValue(timingCard, "expected localized timing trend card"),
       ).getByLabelText(messages.timingCard.timingRangeAriaLabel),
     ).toBeTruthy();
+  });
+
+  it("falls back to English rendered copy when the locale is unsupported", () => {
+    const messages = getWorkOutcomeTrendMessages("fr");
+
+    render(
+      <FailureTrendCard
+        locale="fr"
+        model={failureTrend}
+        onRangeChange={() => undefined}
+        rangeID="15m"
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: messages.failureCard.title }),
+    ).toBeTruthy();
+    expect(screen.getByText(messages.failureCard.subtitle)).toBeTruthy();
+    expect(
+      screen.getByText(messages.failureCard.failedInRangeSummaryLabel),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("combobox", {
+        name: messages.failureCard.timeRangeLabel,
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("img", {
+        name: messages.failureCard.chartAriaLabel(failureTrend.rangeLabel),
+      }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("list", {
+        name: messages.failureCard.causeGroupsAriaLabel,
+      }),
+    ).toBeTruthy();
+  });
+
+  it("renders translated empty states for the touched trend cards", () => {
+    const messages = getWorkOutcomeTrendMessages("ja");
+
+    render(
+      <>
+        <FailureTrendCard
+          locale="ja"
+          model={emptyFailureTrend}
+          onRangeChange={() => undefined}
+          rangeID="15m"
+        />
+        <ReworkTrendCard locale="ja" model={emptyReworkTrend} />
+        <TimingTrendCard locale="ja" model={emptyTimingTrend} />
+      </>,
+    );
+
+    expect(screen.getByText(messages.failureCard.emptyTitle)).toBeTruthy();
+    expect(screen.getByText(messages.failureCard.emptyBody)).toBeTruthy();
+    expect(screen.getByText(messages.failureCard.emptyGroups)).toBeTruthy();
+    expect(screen.getAllByText(messages.reworkCard.emptyTitle)).toHaveLength(2);
+    expect(screen.getByText(messages.reworkCard.emptyBody)).toBeTruthy();
+    expect(screen.getAllByText(messages.timingCard.emptyTitle)).toHaveLength(2);
+    expect(screen.getByText(messages.timingCard.emptyBody)).toBeTruthy();
   });
 });

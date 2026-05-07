@@ -1,11 +1,10 @@
-import { getDashboardWorkChartSeriesDefinitions } from "./chart-contract";
-import { cx } from "../../lib/cx";
-import { WORK_CHART_SERIES_DEFINITIONS } from "./trends";
-import type { WorkChartModel } from "./trends";
-import { WorkChart } from "./work-chart";
-import type { WorkChartSeriesDefinition, WorkChartState } from "./work-chart";
 import { DASHBOARD_WIDGET_CLASS } from "../../components/dashboard/widget-board";
 import { AgentBentoCard } from "../../components/ui";
+import { cx } from "../../lib/cx";
+import { getDashboardWorkChartSeriesDefinitions } from "./chart-contract";
+import type { WorkChartModel } from "./trends";
+import type { WorkChartSeriesDefinition, WorkChartState } from "./work-chart";
+import { WorkChart } from "./work-chart";
 
 export interface WorkChartCardProps {
   chartState?: WorkChartState;
@@ -19,9 +18,6 @@ export type D3CompletionInformationCardProps = WorkChartCardProps;
 const WORK_CHART_BODY_CLASS = "!flex !gap-0 !overflow-hidden !p-0";
 const WORK_CHART_REGION_CLASS = "min-h-0 flex-1 px-4 sm:px-5";
 
-const WORK_CHART_SERIES: readonly WorkChartSeriesDefinition[] =
-  getDashboardWorkChartSeriesDefinitions(WORK_CHART_SERIES_DEFINITIONS);
-
 export function WorkChartCard({
   chartState,
   className = "",
@@ -29,8 +25,17 @@ export function WorkChartCard({
   title = "Work outcome chart",
   widgetId,
 }: WorkChartCardProps) {
-  const chartRegionID = widgetId ? `${widgetId}-chart-region` : "work-outcome-chart-region";
+  const chartRegionID = widgetId
+    ? `${widgetId}-chart-region`
+    : "work-outcome-chart-region";
   const cardClassName = cx(DASHBOARD_WIDGET_CLASS, className);
+  const chartSeries: readonly WorkChartSeriesDefinition[] =
+    getDashboardWorkChartSeriesDefinitions(
+      model.series.map((series) => ({
+        key: series.key,
+        label: series.label,
+      })),
+    );
 
   return (
     <AgentBentoCard
@@ -47,7 +52,7 @@ export function WorkChartCard({
           ariaLabel={`Work outcome chart for ${model.rangeLabel}`}
           className="h-full"
           model={model}
-          series={WORK_CHART_SERIES}
+          series={chartSeries}
           state={chartState}
         />
       </section>
@@ -56,4 +61,3 @@ export function WorkChartCard({
 }
 
 export const D3CompletionInformationCard = WorkChartCard;
-
