@@ -41,7 +41,6 @@ export interface WorkstationDetailMessages {
   selectWorkstationRequestLabel: (dispatchId: string) => string;
   selectedRequestLabel: (dispatchId: string) => string;
   stationLabel: string;
-  startedLabel: string;
   summaryHeading: string;
   traceIdLabel: string;
   unknownActiveWorkLabel: string;
@@ -103,7 +102,6 @@ const workstationDetailMessagesByLocale = {
       `Select workstation request ${dispatchId}`,
     selectedRequestLabel: (dispatchId) => `Selected request: ${dispatchId}.`,
     stationLabel: "Station",
-    startedLabel: "Started",
     summaryHeading: "Workstation summary",
     traceIdLabel: "Trace ID",
     unknownActiveWorkLabel: "Unknown active work",
@@ -157,12 +155,12 @@ const workstationDetailMessagesByLocale = {
     scriptCommandSummary: (command) => `スクリプトコマンド ${command}`,
     selectRequestLabel: (requestLabel, dispatchId) =>
       `リクエスト ${requestLabel} (${dispatchId}) を選択`,
-    selectWorkItemLabel: (workItemLabel) => `ワークアイテム ${workItemLabel} を選択`,
+    selectWorkItemLabel: (workItemLabel) =>
+      `ワークアイテム ${workItemLabel} を選択`,
     selectWorkstationRequestLabel: (dispatchId) =>
       `ワークステーションリクエスト ${dispatchId} を選択`,
     selectedRequestLabel: (dispatchId) => `選択中のリクエスト: ${dispatchId}。`,
     stationLabel: "ステーション",
-    startedLabel: "開始",
     summaryHeading: "ワークステーション概要",
     traceIdLabel: "トレース ID",
     unknownActiveWorkLabel: "不明なアクティブ作業",
@@ -219,7 +217,6 @@ const workstationDetailMessagesByLocale = {
       `워크스테이션 요청 ${dispatchId} 선택`,
     selectedRequestLabel: (dispatchId) => `선택된 요청: ${dispatchId}.`,
     stationLabel: "스테이션",
-    startedLabel: "시작",
     summaryHeading: "워크스테이션 요약",
     traceIdLabel: "추적 ID",
     unknownActiveWorkLabel: "알 수 없는 활성 작업",
@@ -274,7 +271,6 @@ const workstationDetailMessagesByLocale = {
       `选择工作站请求 ${dispatchId}`,
     selectedRequestLabel: (dispatchId) => `已选择请求：${dispatchId}。`,
     stationLabel: "站点",
-    startedLabel: "开始时间",
     summaryHeading: "工作站摘要",
     traceIdLabel: "跟踪 ID",
     unknownActiveWorkLabel: "未知活动工作",

@@ -503,6 +503,10 @@ describe("App current selection", () => {
     window.localStorage.clear();
     MockEventSource.instances = [];
     restoreBrowserTestShims = installDashboardBrowserTestShims();
+    Object.defineProperty(window.navigator, "language", {
+      configurable: true,
+      value: "en-US",
+    });
   });
 
   afterEach(() => {
@@ -582,6 +586,62 @@ describe("App current selection", () => {
     expect(within(traceCard).queryByText("Workstation run")).toBeNull();
     expect(within(traceCard).queryByText("Consumed tokens")).toBeNull();
     expect(within(traceCard).queryByText("Output mutations")).toBeNull();
+  });
+
+  it("uses the browser locale for live workstation-detail and export copy", async () => {
+    Object.defineProperty(window.navigator, "language", {
+      configurable: true,
+      value: "ja-JP",
+    });
+
+    const { fetchMock } = renderApp({ snapshot: activeSnapshot });
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          code: "NOT_FOUND",
+          family: "NOT_FOUND",
+          message: "Current named factory not found.",
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          status: 404,
+          statusText: "Not Found",
+        },
+      ),
+    );
+
+    await screen.findByRole("heading", { name: "Infinite You" });
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Select Review workstation" }),
+    );
+
+    const currentSelection = await screen.findByRole("article", {
+      name: "現在の選択",
+    });
+    expect(
+      within(currentSelection).getByRole("heading", {
+        name: "ワークステーション概要",
+      }),
+    ).toBeTruthy();
+    expect(
+      within(currentSelection).getByRole("button", { name: "展開" }),
+    ).toBeTruthy();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "PNG をエクスポート",
+      }),
+    );
+
+    const exportDialog = await screen.findByRole("dialog", {
+      name: "ファクトリーをエクスポート",
+    });
+    expect(
+      within(exportDialog).getByRole("button", { name: "PNG をエクスポート" }),
+    ).toBeTruthy();
   });
 
   it("renders one selected-work dispatch history list with mixed inference and script-backed rows", async () => {
@@ -671,20 +731,46 @@ describe("App current selection", () => {
         "Inference request details are shown under Inference attempts.",
       ),
     ).toBeTruthy();
-    expect(within(readyRequestDetails).queryByText(
-      "Review the active story and decide whether it is ready.",
-    )).toBeNull();
-    expect(within(readyAttempt).getByText("Retry the review with the latest context.")).toBeTruthy();
-    expect(within(readyAttempt).getByText("Ready for the next workstation.")).toBeTruthy();
-    expect(within(readyAttempt).getByText("codex / session_id / dispatch-review-ready/session/1")).toBeTruthy();
+    expect(
+      within(readyRequestDetails).queryByText(
+        "Review the active story and decide whether it is ready.",
+      ),
+    ).toBeNull();
+    expect(
+      within(readyAttempt).getByText(
+        "Retry the review with the latest context.",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(readyAttempt).getByText("Ready for the next workstation."),
+    ).toBeTruthy();
+    expect(
+      within(readyAttempt).getByText(
+        "codex / session_id / dispatch-review-ready/session/1",
+      ),
+    ).toBeTruthy();
     expect(within(readyAttempt).getByText("gpt-5.4")).toBeTruthy();
     expect(within(readyAttempt).getByText("C:\\work\\portos")).toBeTruthy();
-    expect(within(readyAttempt).getByText("C:\\work\\portos\\.worktrees\\active-story")).toBeTruthy();
-    expect(within(readyCard).queryByText("Provider", { selector: "dt" })).toBeNull();
-    expect(within(readyCard).queryByText("Model", { selector: "dt" })).toBeNull();
-    expect(within(readyCard).queryByText("Provider session", { selector: "dt" })).toBeNull();
-    expect(within(readyCard).queryByText("Working directory", { selector: "dt" })).toBeNull();
-    expect(within(readyCard).queryByText("Worktree", { selector: "dt" })).toBeNull();
+    expect(
+      within(readyAttempt).getByText(
+        "C:\\work\\portos\\.worktrees\\active-story",
+      ),
+    ).toBeTruthy();
+    expect(
+      within(readyCard).queryByText("Provider", { selector: "dt" }),
+    ).toBeNull();
+    expect(
+      within(readyCard).queryByText("Model", { selector: "dt" }),
+    ).toBeNull();
+    expect(
+      within(readyCard).queryByText("Provider session", { selector: "dt" }),
+    ).toBeNull();
+    expect(
+      within(readyCard).queryByText("Working directory", { selector: "dt" }),
+    ).toBeNull();
+    expect(
+      within(readyCard).queryByText("Worktree", { selector: "dt" }),
+    ).toBeNull();
 
     const rejectedCard = getDispatchHistoryCard(
       dispatchHistory,
