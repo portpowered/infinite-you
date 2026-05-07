@@ -2,10 +2,9 @@
 
 ## world state
 
-- as of `2026-05-07T07:05:05.7996914-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260507-050344` points to `74dca31`
-  (`docs: refresh meta world state`) and includes live `origin/main` through
-  merged PR `#154` and merged PR `#153`
+- as of `2026-05-07T09:02:56.1302415-07:00`, this meta refresh rebases
+  `meta-refresh-world-state-20260507-050344` onto live `origin/main` through
+  merged PR `#158` and merged PR `#157`
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the only tracked local dirtiness outside this meta refresh remains the
   user-maintained canonical ask file `factory/logs/meta/asks.md`
@@ -37,18 +36,18 @@
 - `.gitignore` still keeps live workflow submissions under `factory/inputs/**`
   out of normal commits except for those sentinel paths
 - the ignored idea files
-  `factory/inputs/idea/default/localize-current-selection-shell-and-execution-details.md`
+  `factory/inputs/idea/default/localize-selected-work-dispatch-history-card-copy.md`
   and
-  `factory/inputs/idea/default/close-gocoveragecheck-helper-runtime-and-parser-branches.md`
-  are now stale on live `main` because merged PR `#154` landed on
-  `2026-05-07T13:44:01Z` and merged PR `#153` landed on
-  `2026-05-07T13:56:22Z`
+  `factory/inputs/idea/default/cover-releasetagcheck-command-owner-parse-failure-branch.md`
+  are now stale on live `main` because merged PR `#158` landed on
+  `2026-05-07T15:53:40Z` and merged PR `#157` landed on
+  `2026-05-07T15:20:04Z`
 - after pruning those stale residues, the maintainer-owned ignored queue now
   carries three fresh non-overlapping idea files so the autonomous lane still
   matches the standing ask to keep at least three tasks running:
   - `audit-repository-against-2026-website-and-backend-checklists.md`
-  - `localize-current-selection-shell-history-controls.md`
-  - `cover-deadcodecheck-write-read-and-stderr-branches.md`
+  - `localize-current-selection-workstation-detail-card-copy.md`
+  - `cover-gocoveragecheck-malformed-percentage-parser-branches.md`
 
 ## customer-ask truth
 
@@ -67,16 +66,18 @@
   - `website-development-checklist.md`
   - `backend-development-checklist.md`
 - the linked external `asks.md` source still has an evidence gap on
-  `2026-05-07`: `https://raw.githubusercontent.com/portpowered/checklists/main/asks.md`
-  does not resolve to a readable checklist document, so that ask reference
-  still needs to be treated as unavailable evidence rather than assumed input
+  `2026-05-07`: both
+  `https://raw.githubusercontent.com/portpowered/checklists/main/asks.md` and
+  the live `portpowered/checklists` repository root listing remain missing a
+  readable `asks.md`, so that ask reference still needs to be treated as
+  unavailable evidence rather than assumed input
 - there is still no merged checked-in repo-wide review record mapping this
   repository against those external checklist documents on live `main`; open
   PR `#141` currently owns that audit lane and already stages repo-owned
   follow-up ideas under `tasks/ideas-to-review/`
-- the UI localization foothold now reaches the current-selection detail-body
-  surfaces in addition to the earlier import, export, and header work on live
-  `main`:
+- the UI localization foothold now reaches the selected-work dispatch-history
+  card in addition to the earlier import, export, header, and current-selection
+  shell/detail-body work on live `main`:
   - `ui/src/i18n/index.ts`, `ui/src/i18n/locales.ts`, and
     `ui/src/i18n/messages.ts` exist on `main`
   - merged PR `#142` localized and accessibility-hardened the import preview
@@ -87,20 +88,28 @@
   - merged PR `#154` localized `no-selection-detail-card.tsx`,
     `execution-details.tsx`, `terminal-work-summary-detail.tsx`, and the
     current-selection locale plumbing
-  - `ui/src/features/current-selection/current-selection-detail-layout.tsx`
-    still hardcodes `Current selection`, `Undo selection`, `Undo`,
-    `Redo selection`, and `Redo`
-  - `ui/src/features/terminal-work/terminal-work-card.tsx` still hardcodes its
-    widget title, legend, empty states, status meta copy, and generic
-    `Expand`/`Collapse` toggle names
+  - merged PR `#156` localized
+    `ui/src/features/current-selection/current-selection-detail-layout.tsx`
+  - merged PR `#158` localized
+    `ui/src/features/current-selection/selected-work-dispatch-history-card.tsx`
+    and added focused locale regressions for that surface
+  - `ui/src/features/current-selection/workstation-detail-card.tsx` still
+    hardcodes concentrated user-facing copy such as `Workstation summary`,
+    `Active work`, `Historical requests`, `Historical runs`, `Request history`,
+    `Run history`, `Expand`, `Collapse`, `Open request`, `Open request details`,
+    `Open work item`, `Work selected`, `Request selected`, and multiple empty
+    or unavailable-state strings
+  - the workstation-detail surface has focused component tests, but no
+    locale-aware regression for default and non-default locales
 - the next narrow backend testing seam on live `main` is now
-  `cmd/deadcodecheck`:
-  - `go test ./cmd/deadcodecheck` reports `83.7%` statement coverage on
-    `2026-05-07`
-  - remaining command-owner gaps stay local to `cmd/deadcodecheck/main.go`
-    and `cmd/deadcodecheck/main_test.go`, including the current-report write
-    branch, baseline-read branch, and successful stderr passthrough in
-    `runDeadcode`
+  `cmd/gocoveragecheck`:
+  - `go test -cover ./cmd/gocoveragecheck` reports `94.3%` statement coverage
+    on `2026-05-07`
+  - the remaining command-owner gap stays local to
+    `cmd/gocoveragecheck/main.go` and `cmd/gocoveragecheck/main_test.go`
+  - parser helper coverage remains concentrated in malformed numeric tokens
+    that still reach `strconv.ParseFloat` error branches in
+    `parseTotalCoverage()` and `parseZeroCoveragePackagesFromReport()`
 
 ## replay truth
 
@@ -115,18 +124,18 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#158` `localize-selected-work-dispatch-history-card-copy`, merged on
+    `2026-05-07T15:53:40Z`
+  - `#157` `cover-releasetagcheck-command-owner-parse-failure-branch`, merged
+    on `2026-05-07T15:20:04Z`
+  - `#156` `localize-current-selection-shell-history-controls`, merged on
+    `2026-05-07T14:24:31Z`
+  - `#155` `cover-deadcodecheck-write-read-and-stderr-branches`, merged on
+    `2026-05-07T14:15:16Z`
   - `#154` `localize-current-selection-shell-and-execution-details`, merged on
-    `2026-05-07T13:44:01Z`
+    `2026-05-07T13:27:26Z`
   - `#153` `close-gocoveragecheck-helper-runtime-and-parser-branches`, merged
-    on `2026-05-07T13:56:22Z`
-  - `#151` `localize-dashboard-header-timeline-and-stream-status`, merged on
-    `2026-05-07T12:21:01Z`
-  - `#150` `retire-template-fields-variadic-worktree-shim`, merged on
-    `2026-05-07T12:16:03Z`
-  - `#149` `cover-releaseprep-help-and-parse-failure-branches`, merged on
-    `2026-05-07T12:12:27Z`
-  - `#148` `docs: refresh meta world state`, merged on
-    `2026-05-07T12:06:55Z`
+    on `2026-05-07T13:26:42Z`
 - `gh pr list --state open` now reports:
   - `#152` `docs: refresh meta world state`
   - `#145` `docs: refresh meta world state`
@@ -142,22 +151,24 @@
 
 - the repo-wide standards audit remains the highest-priority checklist ask on
   live `main`, but PR `#141` already owns that documentation lane
-- the next narrow UI checklist-alignment seam is the current-selection shell
-  history-control wrapper:
-  - `ui/src/features/current-selection/current-selection-detail-layout.tsx`
-    still hardcodes the widget title plus undo and redo button labels even
-    after the current-selection detail-body localization landed
-  - `ui/src/features/current-selection/current-selection-locale.tsx` and
-    `ui/src/features/current-selection/messages/current-selection-shell.ts`
-    already exist on live `main`, so this is now a one-file feature-local
-    follow-up rather than a new i18n foundation project
-- the next narrow backend testing seam is `cmd/deadcodecheck`:
-  - `go test ./cmd/deadcodecheck` reports `83.7%` statement coverage
-  - remaining coverage is concentrated in package-local branches for writing
-    `bin/deadcode-current.txt`, reading
-    `docs/internal/development/deadcode-baseline.txt`, and preserving stderr
-    passthrough from successful `runDeadcode` execution
-- the next backup UI seam after that is the dashboard event-stream message
+- the next narrow UI checklist-alignment seam is the current-selection
+  workstation detail card:
+  - `ui/src/features/current-selection/workstation-detail-card.tsx` still
+    hardcodes dense user-facing copy across the summary, active-work list,
+    request or run history labels, toggle labels, CTA labels, and empty-state
+    messaging
+  - `ui/src/features/current-selection/current-selection-locale.tsx` already
+    exists on live `main`, so this is now a feature-local follow-up rather
+    than a new i18n foundation project
+  - focused tests already exist in
+    `ui/src/features/current-selection/workstation-detail-card.test.tsx`, but
+    the surface still lacks a locale-aware regression
+- the next narrow backend testing seam is `cmd/gocoveragecheck`:
+  - `go test -cover ./cmd/gocoveragecheck` reports `94.3%` statement coverage
+  - remaining coverage is concentrated in one malformed-percentage parser lane
+    that stays inside `parseTotalCoverage()` and
+    `parseZeroCoveragePackagesFromReport()`
+- the next backup UI seam after that is the dashboard terminal-work message
   lane in `ui/src/features/terminal-work/terminal-work-card.tsx`:
   - the widget still hardcodes `Completed and failed work`,
     `Terminal work outcomes`, row empty states, session-summary fallback copy,
@@ -173,7 +184,7 @@
   checked-in contract versus ignored operating residue
 - when a previously queued idea lands on `main`, prune the ignored residue and
   refresh the next seam from live code and PR state before queuing anything
-  else; merged PRs `#146` and `#147` invalidated two of the three active
+  else; merged PRs `#157` and `#158` invalidated two of the three active
   backlog slots within the same cycle
 - when the customer ask requires at least three tasks in flight, satisfy that
   ask with three narrow non-overlapping idea files rather than one broad batch
@@ -181,27 +192,13 @@
 - when checklist conformance is still undocumented, queue one audit lane plus
   smaller implementation-ready follow-ups instead of claiming alignment from
   standards intent alone
-- when a localization follow-up merges on one dashboard dialog, re-read the
-  adjacent header controls and accessibility labels next; the concentrated
-  English-only residue often lives there rather than in a second dialog
-- when a dashboard header-localization follow-up merges, re-read the adjacent
-  current-selection shell and execution-details surfaces next; shared detail
-  widgets can still keep the next concentrated block of English-only copy
-- when a merged localization PR claims a broad dashboard surface, re-open the
-  exact touched file before declaring the lane closed; merged PR `#154` still
-  left English-only shell chrome in
-  `ui/src/features/current-selection/current-selection-detail-layout.tsx`
-- when one repo-owned command package just absorbed a large test expansion,
-  prefer moving sideways to the next small command-owner testing seam unless
-  the remaining same-file follow-up is clearly smaller than changing packages
-- when a helper still advertises an explicitly backwards-compatible variadic or
-  optional parameter but the live production caller already passes the
-  canonical explicit shape, retire the shim before widening into larger runtime
-  refactors
-- when neighboring repo-owned command packages have already closed their thin
-  owner seams, queue the next-lowest command package and keep the follow-up
-  local to that command file and tests before widening into application
-  packages
+- when a current-selection dispatch-history localization follow-up merges,
+  re-read the adjacent workstation-detail card before jumping to broader
+  dashboard widgets; the next concentrated English-only residue can stay
+  inside the same feature
+- when a repo-owned parser already covers happy-path and missing-line shapes,
+  inspect malformed numeric tokens next; regex-matched bad percentages can
+  leave narrow parse-error branches uncovered without widening the lane
 - when the linked external checklist repo omits one requested source such as
   `asks.md`, record that as an evidence gap and continue from the sources that
   are actually retrievable instead of inventing missing checklist content

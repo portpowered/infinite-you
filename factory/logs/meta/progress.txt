@@ -160,17 +160,24 @@
 - When a merged localization PR claims a broad dashboard surface, re-open the
   exact touched file before declaring the lane closed; this repo can still
   leave English-only shell chrome behind inside the named feature.
+- When a current-selection dispatch-history localization follow-up merges,
+  re-read the adjacent workstation-detail card before jumping to broader
+  dashboard widgets; the next concentrated English-only residue can stay
+  inside the same feature.
+- When a repo-owned parser already covers happy-path and missing-line shapes,
+  inspect malformed numeric tokens next; regex-matched bad percentages can
+  leave narrow parse-error branches uncovered without widening the lane.
 - When a helper still carries an explicitly backwards-compatible variadic
   parameter but the live production caller already passes one concrete explicit
   value, prefer deleting the shim over preserving two call shapes.
 
 ## Current Summary
 
-- As of `2026-05-07T07:05:05.7996914-07:00`, `HEAD` points to `74dca31` on
-  branch `meta-refresh-world-state-20260507-050344` and includes live
-  `origin/main` through merged PR `#154`
-  (`localize-current-selection-shell-and-execution-details`) and merged PR
-  `#153` (`close-gocoveragecheck-helper-runtime-and-parser-branches`).
+- As of `2026-05-07T09:02:56.1302415-07:00`, this meta refresh rebases
+  `meta-refresh-world-state-20260507-050344` onto live `origin/main` through
+  merged PR `#158` (`localize-selected-work-dispatch-history-card-copy`) and
+  merged PR `#157`
+  (`cover-releasetagcheck-command-owner-parse-failure-branch`).
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -182,7 +189,7 @@
   user-owned tracked edit and the maintainer meta refresh updates the tracked
   view/progress docs; ignored workflow files under `factory/inputs/**` remain
   operating state rather than canonical queue truth.
-- Recent merged PRs now include `#153` and `#154`; open PR `#141` owns the
+- Recent merged PRs now include `#157` and `#158`; open PR `#141` owns the
   active checklist-audit lane, while `#152`, `#145`, `#143`, `#139`, `#123`,
   and `#120` remain meta refresh branches.
 - The canonical ask surface remains the quality-oriented rewrite in
@@ -196,52 +203,55 @@
   `2026-05-07`, but the linked external `asks.md` URL still does not produce a
   readable checklist document and must be treated as a source-evidence gap.
 - The previously queued ignored ideas
-  `localize-current-selection-shell-and-execution-details` and
-  `close-gocoveragecheck-helper-runtime-and-parser-branches` are stale because
-  merged PRs `#154` and `#153` landed those exact lanes on `main`.
+  `localize-selected-work-dispatch-history-card-copy` and
+  `cover-releasetagcheck-command-owner-parse-failure-branch` are stale because
+  merged PRs `#158` and `#157` landed those exact lanes on `main`.
 - The current maintainer-owned operating queue should hold three
   non-overlapping ideas together: repo-wide checklist audit evidence,
-  `localize-current-selection-shell-history-controls`, and
-  `cover-deadcodecheck-write-read-and-stderr-branches`.
+  `localize-current-selection-workstation-detail-card-copy`, and
+  `cover-gocoveragecheck-malformed-percentage-parser-branches`.
 
-## 2026-05-07T07:05:05.7996914-07:00 - meta state refresh
+## 2026-05-07T09:02:56.1302415-07:00 - meta state refresh
 
-- Ran `git pull --ff-only`, saw that the branch-local tracking ref had not yet
-  incorporated live `origin/main`, then ran `git pull --rebase --autostash
-  origin main`; Git rebased this meta branch onto live `origin/main`, pulling
-  in merged PR `#154` and merged PR `#153` while preserving the user-owned
+- Ran `git pull --rebase --autostash`, confirmed the branch-local remote was
+  current but live `origin/main` had advanced through merged PRs `#157` and
+  `#158`, then ran `git pull --rebase --autostash origin main`; the rebase
+  surfaced stale meta-refresh conflicts in `factory/logs/meta/view.md` and
+  `factory/logs/meta/progress.txt`, so this refresh resolves those files
+  directly against the newer live state while preserving the user-owned
   tracked edit in `factory/logs/meta/asks.md`.
 - Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
   `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
-  `factory/logs/agent-fails.replay.json`, `factory/README.md`, the backend and
-  website standards, current PR state, the tracked-versus-ignored
-  `factory/inputs/**` surface, and the live external checklist sources.
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  repo-owned `cmd/` and `ui/` candidate seams.
 - Re-validated tracked queue truth with `git ls-files factory/inputs` and
   `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
   inboxes remain sentinel-only while the visible idea files are ignored local
   operating residue.
 - Confirmed the previously queued ignored ideas
-  `factory/inputs/idea/default/localize-current-selection-shell-and-execution-details.md`
+  `factory/inputs/idea/default/localize-selected-work-dispatch-history-card-copy.md`
   and
-  `factory/inputs/idea/default/close-gocoveragecheck-helper-runtime-and-parser-branches.md`
-  are stale because merged PR `#154` and merged PR `#153` already landed those
-  exact lanes on `main`, so they should be pruned rather than re-queued.
+  `factory/inputs/idea/default/cover-releasetagcheck-command-owner-parse-failure-branch.md`
+  are stale because merged PR `#158` and merged PR `#157` already landed those
+  exact lanes on `main`, then pruned those ignored residues locally.
 - Re-checked the linked external checklist sources on `2026-05-07` and
   confirmed the website and backend checklist documents remain readable, while
   the linked `portpowered/checklists` `asks.md` source still does not resolve
   to a readable document and must remain an evidence gap instead of an assumed
   requirement source.
-- Used direct file reads, delegated explorer passes, and current command-test
-  output to pick two fresh non-overlapping replacements for the merged queue
-  slots: `ui/src/features/current-selection/current-selection-detail-layout.tsx`
-  for the remaining current-selection shell title and history-control copy,
-  and `cmd/deadcodecheck/main.go` plus
-  `cmd/deadcodecheck/main_test.go` for the next small command-owner testing
-  closeout around write/read/stderr branches.
+- Used delegated explorer passes, graph-backed discovery, direct code reads,
+  and fresh focused coverage output to choose two fresh non-overlapping
+  replacements for the merged queue slots:
+  `ui/src/features/current-selection/workstation-detail-card.tsx` plus its
+  focused locale test seam for the next current-selection localization lane,
+  and `cmd/gocoveragecheck/main.go` plus
+  `cmd/gocoveragecheck/main_test.go` for the next narrow malformed-percentage
+  parser coverage closeout.
 - Recorded one backup UI seam from direct reads as well:
   `ui/src/features/terminal-work/terminal-work-card.tsx` still keeps
-  concentrated hardcoded outcome-widget copy and generic `Expand`/`Collapse`
-  names, but that remains a backup lane rather than one of the three active
+  concentrated hardcoded terminal-work copy and generic `Expand`/`Collapse`
+  labels, but that remains a backup lane rather than one of the three active
   backlog slots.
 
 ## 2026-05-07T06:05:41.3101565-07:00 - meta state refresh
