@@ -157,16 +157,20 @@
 - After a dashboard header-localization follow-up merges, re-read the adjacent
   current-selection shell and execution-details surfaces next; shared detail
   widgets can still keep the next concentrated block of English-only copy.
+- When a merged localization PR claims a broad dashboard surface, re-open the
+  exact touched file before declaring the lane closed; this repo can still
+  leave English-only shell chrome behind inside the named feature.
 - When a helper still carries an explicitly backwards-compatible variadic
   parameter but the live production caller already passes one concrete explicit
   value, prefer deleting the shim over preserving two call shapes.
 
 ## Current Summary
 
-- As of `2026-05-07T06:05:41.3101565-07:00`, `HEAD` points to `27bea8c` on
-  branch `meta-refresh-world-state-20260507-050344` and matches live
-  `origin/main` through merged PR `#151`
-  (`localize-dashboard-header-timeline-and-stream-status`).
+- As of `2026-05-07T07:05:05.7996914-07:00`, `HEAD` points to `74dca31` on
+  branch `meta-refresh-world-state-20260507-050344` and includes live
+  `origin/main` through merged PR `#154`
+  (`localize-current-selection-shell-and-execution-details`) and merged PR
+  `#153` (`close-gocoveragecheck-helper-runtime-and-parser-branches`).
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -178,8 +182,8 @@
   user-owned tracked edit and the maintainer meta refresh updates the tracked
   view/progress docs; ignored workflow files under `factory/inputs/**` remain
   operating state rather than canonical queue truth.
-- Recent merged PRs now include `#149`, `#150`, and `#151`; open PR `#141`
-  owns the active checklist-audit lane, while `#145`, `#143`, `#139`, `#123`,
+- Recent merged PRs now include `#153` and `#154`; open PR `#141` owns the
+  active checklist-audit lane, while `#152`, `#145`, `#143`, `#139`, `#123`,
   and `#120` remain meta refresh branches.
 - The canonical ask surface remains the quality-oriented rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
@@ -192,13 +196,53 @@
   `2026-05-07`, but the linked external `asks.md` URL still does not produce a
   readable checklist document and must be treated as a source-evidence gap.
 - The previously queued ignored ideas
-  `localize-dashboard-header-timeline-and-stream-status` and
-  `retire-template-fields-variadic-worktree-shim` are stale because merged PRs
-  `#151` and `#150` landed those exact lanes on `main`.
+  `localize-current-selection-shell-and-execution-details` and
+  `close-gocoveragecheck-helper-runtime-and-parser-branches` are stale because
+  merged PRs `#154` and `#153` landed those exact lanes on `main`.
 - The current maintainer-owned operating queue should hold three
   non-overlapping ideas together: repo-wide checklist audit evidence,
-  `localize-current-selection-shell-and-execution-details`, and
-  `close-gocoveragecheck-helper-runtime-and-parser-branches`.
+  `localize-current-selection-shell-history-controls`, and
+  `cover-deadcodecheck-write-read-and-stderr-branches`.
+
+## 2026-05-07T07:05:05.7996914-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, saw that the branch-local tracking ref had not yet
+  incorporated live `origin/main`, then ran `git pull --rebase --autostash
+  origin main`; Git rebased this meta branch onto live `origin/main`, pulling
+  in merged PR `#154` and merged PR `#153` while preserving the user-owned
+  tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, the backend and
+  website standards, current PR state, the tracked-versus-ignored
+  `factory/inputs/**` surface, and the live external checklist sources.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea files are ignored local
+  operating residue.
+- Confirmed the previously queued ignored ideas
+  `factory/inputs/idea/default/localize-current-selection-shell-and-execution-details.md`
+  and
+  `factory/inputs/idea/default/close-gocoveragecheck-helper-runtime-and-parser-branches.md`
+  are stale because merged PR `#154` and merged PR `#153` already landed those
+  exact lanes on `main`, so they should be pruned rather than re-queued.
+- Re-checked the linked external checklist sources on `2026-05-07` and
+  confirmed the website and backend checklist documents remain readable, while
+  the linked `portpowered/checklists` `asks.md` source still does not resolve
+  to a readable document and must remain an evidence gap instead of an assumed
+  requirement source.
+- Used direct file reads, delegated explorer passes, and current command-test
+  output to pick two fresh non-overlapping replacements for the merged queue
+  slots: `ui/src/features/current-selection/current-selection-detail-layout.tsx`
+  for the remaining current-selection shell title and history-control copy,
+  and `cmd/deadcodecheck/main.go` plus
+  `cmd/deadcodecheck/main_test.go` for the next small command-owner testing
+  closeout around write/read/stderr branches.
+- Recorded one backup UI seam from direct reads as well:
+  `ui/src/features/terminal-work/terminal-work-card.tsx` still keeps
+  concentrated hardcoded outcome-widget copy and generic `Expand`/`Collapse`
+  names, but that remains a backup lane rather than one of the three active
+  backlog slots.
 
 ## 2026-05-07T06:05:41.3101565-07:00 - meta state refresh
 

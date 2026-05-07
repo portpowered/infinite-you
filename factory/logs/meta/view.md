@@ -2,10 +2,10 @@
 
 ## world state
 
-- as of `2026-05-07T06:05:41.3101565-07:00`, local `HEAD` on
-  `meta-refresh-world-state-20260507-050344` points to `27bea8c`
-  (`localize-dashboard-header-timeline-and-stream-status (#151)`) and matches
-  live `origin/main` through merged PR `#151`
+- as of `2026-05-07T07:05:05.7996914-07:00`, local `HEAD` on
+  `meta-refresh-world-state-20260507-050344` points to `74dca31`
+  (`docs: refresh meta world state`) and includes live `origin/main` through
+  merged PR `#154` and merged PR `#153`
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the only tracked local dirtiness outside this meta refresh remains the
   user-maintained canonical ask file `factory/logs/meta/asks.md`
@@ -37,18 +37,18 @@
 - `.gitignore` still keeps live workflow submissions under `factory/inputs/**`
   out of normal commits except for those sentinel paths
 - the ignored idea files
-  `factory/inputs/idea/default/localize-dashboard-header-timeline-and-stream-status.md`
+  `factory/inputs/idea/default/localize-current-selection-shell-and-execution-details.md`
   and
-  `factory/inputs/idea/default/retire-template-fields-variadic-worktree-shim.md`
-  were stale on live `main` because merged PR `#151` landed on
-  `2026-05-07T12:21:01Z` and merged PR `#150` landed on
-  `2026-05-07T12:16:03Z`
+  `factory/inputs/idea/default/close-gocoveragecheck-helper-runtime-and-parser-branches.md`
+  are now stale on live `main` because merged PR `#154` landed on
+  `2026-05-07T13:44:01Z` and merged PR `#153` landed on
+  `2026-05-07T13:56:22Z`
 - after pruning those stale residues, the maintainer-owned ignored queue now
   carries three fresh non-overlapping idea files so the autonomous lane still
   matches the standing ask to keep at least three tasks running:
   - `audit-repository-against-2026-website-and-backend-checklists.md`
-  - `localize-current-selection-shell-and-execution-details.md`
-  - `close-gocoveragecheck-helper-runtime-and-parser-branches.md`
+  - `localize-current-selection-shell-history-controls.md`
+  - `cover-deadcodecheck-write-read-and-stderr-branches.md`
 
 ## customer-ask truth
 
@@ -72,9 +72,11 @@
   still needs to be treated as unavailable evidence rather than assumed input
 - there is still no merged checked-in repo-wide review record mapping this
   repository against those external checklist documents on live `main`; open
-  PR `#141` currently owns that audit lane
-- the UI localization foothold now reaches the dashboard header in addition to
-  import and export surfaces on live `main`:
+  PR `#141` currently owns that audit lane and already stages repo-owned
+  follow-up ideas under `tasks/ideas-to-review/`
+- the UI localization foothold now reaches the current-selection detail-body
+  surfaces in addition to the earlier import, export, and header work on live
+  `main`:
   - `ui/src/i18n/index.ts`, `ui/src/i18n/locales.ts`, and
     `ui/src/i18n/messages.ts` exist on `main`
   - merged PR `#142` localized and accessibility-hardened the import preview
@@ -82,16 +84,23 @@
   - merged PR `#147` localized the export dialog and export trigger
   - merged PR `#151` localized the dashboard header timeline and stream-status
     accessibility labels
-  - `ui/src/features/current-selection/current-selection-detail-layout.tsx`,
-    `no-selection-detail-card.tsx`, `execution-details.tsx`, and
-    `terminal-work-summary-detail.tsx` still keep the next concentrated
-    hardcoded English dashboard copy block on the live path
+  - merged PR `#154` localized `no-selection-detail-card.tsx`,
+    `execution-details.tsx`, `terminal-work-summary-detail.tsx`, and the
+    current-selection locale plumbing
+  - `ui/src/features/current-selection/current-selection-detail-layout.tsx`
+    still hardcodes `Current selection`, `Undo selection`, `Undo`,
+    `Redo selection`, and `Redo`
+  - `ui/src/features/terminal-work/terminal-work-card.tsx` still hardcodes its
+    widget title, legend, empty states, status meta copy, and generic
+    `Expand`/`Collapse` toggle names
 - the next narrow backend testing seam on live `main` is now
-  `cmd/gocoveragecheck`:
-  - `go test -cover ./cmd/...` reports `75.0%` for `cmd/gocoveragecheck`
-  - peer repo-owned command packages now sit materially higher after merged
-    PR `#149`, leaving the remaining helper/runtime/parser branches as the next
-    small command-owner closeout
+  `cmd/deadcodecheck`:
+  - `go test ./cmd/deadcodecheck` reports `83.7%` statement coverage on
+    `2026-05-07`
+  - remaining command-owner gaps stay local to `cmd/deadcodecheck/main.go`
+    and `cmd/deadcodecheck/main_test.go`, including the current-report write
+    branch, baseline-read branch, and successful stderr passthrough in
+    `runDeadcode`
 
 ## replay truth
 
@@ -106,6 +115,10 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#154` `localize-current-selection-shell-and-execution-details`, merged on
+    `2026-05-07T13:44:01Z`
+  - `#153` `close-gocoveragecheck-helper-runtime-and-parser-branches`, merged
+    on `2026-05-07T13:56:22Z`
   - `#151` `localize-dashboard-header-timeline-and-stream-status`, merged on
     `2026-05-07T12:21:01Z`
   - `#150` `retire-template-fields-variadic-worktree-shim`, merged on
@@ -114,9 +127,8 @@
     `2026-05-07T12:12:27Z`
   - `#148` `docs: refresh meta world state`, merged on
     `2026-05-07T12:06:55Z`
-  - `#147` `localize-export-dialog-and-trigger`, merged on
-    `2026-05-07T11:25:43Z`
 - `gh pr list --state open` now reports:
+  - `#152` `docs: refresh meta world state`
   - `#145` `docs: refresh meta world state`
   - `#143` `docs: refresh meta world state`
   - `#141` `audit-repository-against-2026-website-and-backend-checklists`
@@ -130,29 +142,27 @@
 
 - the repo-wide standards audit remains the highest-priority checklist ask on
   live `main`, but PR `#141` already owns that documentation lane
-- the next narrow UI checklist-alignment seam is the current-selection shared
-  shell and execution-details surface:
+- the next narrow UI checklist-alignment seam is the current-selection shell
+  history-control wrapper:
   - `ui/src/features/current-selection/current-selection-detail-layout.tsx`
-    still hardcodes `Current selection`, `Undo`, and `Redo`
-  - `ui/src/features/current-selection/no-selection-detail-card.tsx`,
-    `execution-details.tsx`, and `terminal-work-summary-detail.tsx` still
-    hardcode the empty-state guidance, section headings, trace guidance,
-    terminal status text, and failure fallback copy
-  - the import/export/header feature-local i18n pattern already exists on live
-    `main`, so this is now a small feature-local follow-up rather than a new
-    i18n foundation project
-- the next narrow backend testing seam is `cmd/gocoveragecheck`:
-  - `go test -cover ./cmd/...` reports `75.0%` for
-    `cmd/gocoveragecheck`
-  - remaining coverage is concentrated in package-local helper/runtime/parser
-    branches such as combined failure aggregation, repo-root discovery, package
-    listing, profile parsing, and path normalization
+    still hardcodes the widget title plus undo and redo button labels even
+    after the current-selection detail-body localization landed
+  - `ui/src/features/current-selection/current-selection-locale.tsx` and
+    `ui/src/features/current-selection/messages/current-selection-shell.ts`
+    already exist on live `main`, so this is now a one-file feature-local
+    follow-up rather than a new i18n foundation project
+- the next narrow backend testing seam is `cmd/deadcodecheck`:
+  - `go test ./cmd/deadcodecheck` reports `83.7%` statement coverage
+  - remaining coverage is concentrated in package-local branches for writing
+    `bin/deadcode-current.txt`, reading
+    `docs/internal/development/deadcode-baseline.txt`, and preserving stderr
+    passthrough from successful `runDeadcode` execution
 - the next backup UI seam after that is the dashboard event-stream message
-  pipeline:
-  - `ui/src/api/events/api.ts` and
-    `ui/src/features/dashboard/state/dashboardStreamStore.ts` still hardcode
-    English stream lifecycle and fallback messages outside the feature-local
-    message catalogs
+  lane in `ui/src/features/terminal-work/terminal-work-card.tsx`:
+  - the widget still hardcodes `Completed and failed work`,
+    `Terminal work outcomes`, row empty states, session-summary fallback copy,
+    and generic `Expand`/`Collapse` labels that do not expose row-specific
+    accessible names
 
 ## theory of mind
 
@@ -177,6 +187,13 @@
 - when a dashboard header-localization follow-up merges, re-read the adjacent
   current-selection shell and execution-details surfaces next; shared detail
   widgets can still keep the next concentrated block of English-only copy
+- when a merged localization PR claims a broad dashboard surface, re-open the
+  exact touched file before declaring the lane closed; merged PR `#154` still
+  left English-only shell chrome in
+  `ui/src/features/current-selection/current-selection-detail-layout.tsx`
+- when one repo-owned command package just absorbed a large test expansion,
+  prefer moving sideways to the next small command-owner testing seam unless
+  the remaining same-file follow-up is clearly smaller than changing packages
 - when a helper still advertises an explicitly backwards-compatible variadic or
   optional parameter but the live production caller already passes the
   canonical explicit shape, retire the shim before widening into larger runtime
