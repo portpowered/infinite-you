@@ -59,10 +59,13 @@
   - keep at least three non-overlapping tasks running at a time
 - the external checklist links in `factory/logs/meta/asks.md` still point at
   the live `portpowered/checklists` repository, and the explicit linked docs
-  remain the current `2026` checklist revisions:
+  remain the current checklist revisions:
   - `website-development-checklist.md`
   - `backend-development-checklist.md`
-  - `asks.md`
+- the checklist repository still does not expose a verifiable external
+  `asks.md` on `main`, so source-traceability claims for that ask surface must
+  stay local to `factory/logs/meta/asks.md` rather than being attributed to
+  `portpowered/checklists`
 - there is still no checked-in repo-wide review record mapping this repository
   against those external checklist documents; the only checked-in alignment
   checklist found this turn is the narrower import/export lane record at

@@ -1919,8 +1919,11 @@
   `main`, so it should be pruned rather than re-queued.
 - Re-checked the live `portpowered/checklists` customer references and
   confirmed there is still no checked-in repo-wide audit record for the linked
-  `website-development-checklist.md`, `backend-development-checklist.md`, and
-  `asks.md` documents; only the narrower import/export checklist record exists.
+  `website-development-checklist.md` and
+  `backend-development-checklist.md` documents; the checklist repository still
+  does not expose a verifiable external `asks.md` on `main`, so only the local
+  canonical ask surface in `factory/logs/meta/asks.md` can be cited for that
+  expectation.
 - Verified the next narrow UI checklist-alignment seam is
   `ui/src/features/import/dashboard-import-preview-dialog.tsx`: the repo still
   has no `ui/src/i18n` directory or automated accessibility test dependency in
