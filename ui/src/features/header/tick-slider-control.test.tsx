@@ -1,11 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-
-import { graphStateSmokeTimelineEvents } from "../../components/dashboard/fixtures";
-import { TickSliderControl } from "./tick-slider-control";
+import { afterEach, describe, expect, it } from "vitest";
 import type { FactoryEvent } from "../../api/events";
 import { FACTORY_EVENT_TYPES } from "../../api/events";
+import { graphStateSmokeTimelineEvents } from "../../components/dashboard/fixtures";
 import { useFactoryTimelineStore } from "../timeline/state/factoryTimelineStore";
-import { describe, afterEach, it, expect } from "vitest";
+import { getHeaderControlsMessages } from "./messages/header-controls";
+import { TickSliderControl } from "./tick-slider-control";
 
 type TimelineWorldState = ReturnType<
   typeof useFactoryTimelineStore.getState
@@ -50,15 +50,18 @@ describe("TickSliderControl", () => {
       }),
     ]);
 
+    const messages = getHeaderControlsMessages("en");
+
     render(<TickSliderControl />);
 
     expect(
-      screen.getByRole<HTMLInputElement>("slider", { name: "Timeline tick" })
-        .disabled,
+      screen.getByRole<HTMLInputElement>("slider", {
+        name: messages.sliderAriaLabel,
+      }).disabled,
     ).toBe(true);
-    expect(screen.getByText("Waiting for more ticks")).toBeTruthy();
+    expect(screen.getByText(messages.waitingForMoreTicks)).toBeTruthy();
     const currentButton = screen.getByRole<HTMLButtonElement>("button", {
-      name: "Return to current tick",
+      name: messages.returnToCurrentTickLabel,
     });
 
     expect(currentButton.disabled).toBe(true);
@@ -70,13 +73,15 @@ describe("TickSliderControl", () => {
       .getState()
       .replaceEvents(graphStateSmokeTimelineEvents);
 
+    const messages = getHeaderControlsMessages("en");
+
     render(<TickSliderControl />);
 
     const slider = screen.getByRole<HTMLInputElement>("slider", {
-      name: "Timeline tick",
+      name: messages.sliderAriaLabel,
     });
     const currentButton = screen.getByRole<HTMLButtonElement>("button", {
-      name: "Return to current tick",
+      name: messages.returnToCurrentTickLabel,
     });
 
     expect(slider.value).toBe("9");
@@ -115,20 +120,22 @@ describe("TickSliderControl", () => {
       worldViewCache: {} as Record<number, TimelineWorldState>,
     });
 
+    const messages = getHeaderControlsMessages("en");
+
     render(<TickSliderControl />);
 
     const slider = screen.getByRole<HTMLInputElement>("slider", {
-      name: "Timeline tick",
+      name: messages.sliderAriaLabel,
     });
     const currentButton = screen.getByRole<HTMLButtonElement>("button", {
-      name: "Return to current tick",
+      name: messages.returnToCurrentTickLabel,
     });
 
     expect(slider.disabled).toBe(true);
     expect(slider.min).toBe("0");
     expect(slider.max).toBe("0");
     expect(slider.value).toBe("0");
-    expect(screen.getByText("Waiting for more ticks")).toBeTruthy();
+    expect(screen.getByText(messages.waitingForMoreTicks)).toBeTruthy();
     expect(currentButton.disabled).toBe(true);
   });
 
@@ -145,13 +152,15 @@ describe("TickSliderControl", () => {
       } as Record<number, TimelineWorldState>,
     });
 
+    const messages = getHeaderControlsMessages("en");
+
     render(<TickSliderControl />);
 
     const slider = screen.getByRole<HTMLInputElement>("slider", {
-      name: "Timeline tick",
+      name: messages.sliderAriaLabel,
     });
     const currentButton = screen.getByRole<HTMLButtonElement>("button", {
-      name: "Return to current tick",
+      name: messages.returnToCurrentTickLabel,
     });
 
     expect(slider.disabled).toBe(false);
@@ -161,5 +170,32 @@ describe("TickSliderControl", () => {
     expect(screen.getByText("Tick 4 of 4")).toBeTruthy();
     expect(currentButton.disabled).toBe(false);
     expect(currentButton.className).not.toContain("opacity-75");
+  });
+
+  it("renders the slider copy from the requested locale catalog", async () => {
+    useFactoryTimelineStore
+      .getState()
+      .replaceEvents(graphStateSmokeTimelineEvents);
+
+    const messages = getHeaderControlsMessages("ja");
+
+    render(<TickSliderControl locale="ja" />);
+
+    const slider = screen.getByRole<HTMLInputElement>("slider", {
+      name: messages.sliderAriaLabel,
+    });
+    const currentButton = screen.getByRole<HTMLButtonElement>("button", {
+      name: messages.returnToCurrentTickLabel,
+    });
+
+    expect(screen.getByText(messages.sliderLabel)).toBeTruthy();
+    expect(screen.getByText("9 件中 9 件目のティック")).toBeTruthy();
+    expect(currentButton.disabled).toBe(true);
+
+    fireEvent.change(slider, { target: { value: "3" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("9 件中 3 件目のティック")).toBeTruthy();
+    });
   });
 });

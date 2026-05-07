@@ -13,6 +13,7 @@ import { getExportDialogMessages } from "../export/messages/export-dialog";
 import { useExportDialogStore } from "../export/state/exportDialogStore";
 import { useFactoryTimelineStore } from "../timeline/state/factoryTimelineStore";
 import { DashboardHeader } from "./dashboard-header";
+import { getHeaderControlsMessages } from "./messages/header-controls";
 
 function timelineEvent(
   id: string,
@@ -95,16 +96,24 @@ describe("DashboardHeader", () => {
 
     render(<DashboardHeader />);
     const messages = getExportDialogMessages("en");
-    const toolbar = screen.getByRole("region", { name: "dashboard summary" });
+    const headerMessages = getHeaderControlsMessages("en");
+    const toolbar = screen.getByRole("region", {
+      name: headerMessages.dashboardSummaryLabel,
+    });
     const heading = screen.getByRole("heading", { name: "Infinite You" });
     const wordmark = screen.getByText("Infinite You");
-    const slider = screen.getByRole("slider", { name: "Timeline tick" });
+    const slider = screen.getByRole("slider", {
+      name: headerMessages.sliderAriaLabel,
+    });
 
     const exportButton = screen.getByRole<HTMLButtonElement>("button", {
       name: messages.triggerLabel,
     });
     const currentButton = screen.getByRole<HTMLButtonElement>("button", {
-      name: "Return to current tick",
+      name: headerMessages.returnToCurrentTickLabel,
+    });
+    const streamStatus = screen.getByRole("status", {
+      name: headerMessages.streamStatusConnectingLabel,
     });
 
     expect(exportButton.dataset.dashboardHeaderAction).toBe("neutral");
@@ -118,6 +127,7 @@ describe("DashboardHeader", () => {
     expect(slider.closest("div")?.parentElement?.className).toContain(
       "justify-end",
     );
+    expect(streamStatus).toBeTruthy();
     expect(useExportDialogStore.getState().isExportDialogOpen).toBe(false);
 
     fireEvent.click(exportButton);
@@ -164,6 +174,79 @@ describe("DashboardHeader", () => {
 
     expect(
       screen.getByRole("button", { name: messages.triggerLabel }),
+    ).toBeTruthy();
+  });
+
+  it("resolves the header summary, slider, and stream-status labels from the requested locale catalog", () => {
+    act(() => {
+      useFactoryTimelineStore.setState({
+        events: [
+          timelineEvent(
+            "tick-1",
+            1,
+            FACTORY_EVENT_TYPES.initialStructureRequest,
+            {
+              factory: {
+                workTypes: [
+                  {
+                    name: "story",
+                    states: [{ name: "ready", type: "INITIAL" }],
+                  },
+                ],
+                workstations: [],
+                workers: [],
+              },
+            },
+          ),
+          timelineEvent(
+            "tick-2",
+            2,
+            FACTORY_EVENT_TYPES.initialStructureRequest,
+            {
+              factory: {
+                workTypes: [
+                  {
+                    name: "story",
+                    states: [{ name: "ready", type: "INITIAL" }],
+                  },
+                ],
+                workstations: [],
+                workers: [],
+              },
+            },
+          ),
+        ],
+        latestTick: 2,
+        mode: "fixed",
+        selectedTick: 1,
+        worldViewCache: {
+          1: {} as never,
+          2: {} as never,
+        },
+      });
+      useDashboardStreamStore.setState({
+        streamState: {
+          message: "Infinite You event stream is offline.",
+          status: "offline",
+        },
+      });
+    });
+
+    const messages = getHeaderControlsMessages("ja");
+
+    render(<DashboardHeader locale="ja" />);
+
+    expect(
+      screen.getByRole("region", { name: messages.dashboardSummaryLabel }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("slider", { name: messages.sliderAriaLabel }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: messages.returnToCurrentTickLabel }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("status", { name: messages.streamStatusOfflineLabel }),
     ).toBeTruthy();
   });
 });
