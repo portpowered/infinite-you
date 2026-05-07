@@ -188,4 +188,35 @@ authenticated or operator-facing application shell.
 
 ## Follow-Up Seam Ledger
 
-Pending story `audit-repository-against-2026-website-and-backend-checklists-004`.
+The audit rows above are the completed evidence record for the repository as of
+`2026-05-07`. The seams below are deferred implementation lanes only: each one
+exists because the current audit found a durable, evidence-backed gap that
+future workers can close without re-auditing the whole repository.
+
+| Seam ID | Area | Current audit status | Target behavior | Why still open | Observable evidence that closes it | Task |
+| --- | --- | --- | --- | --- | --- | --- |
+| `backend-auth-boundary` | Backend security and deployment assumptions | `Fail` | Add an explicit runtime API auth boundary or enforce and document a verifiable local-only deployment constraint. | The public API contract still declares `security: []`, and this checkout does not prove a separate transport or deployment guard. | Public contract, handler enforcement, tests, and operator docs all describe and prove the chosen boundary. | [`tasks/ideas-to-review/backend/runtime-api-security-boundary.md`](../../../tasks/ideas-to-review/backend/runtime-api-security-boundary.md) |
+| `backend-operational-readiness` | Backend operator readiness and secret inventory | `Needs Evidence` | Publish one maintained operator runbook for service-mode startup, readiness validation, rollback, and required secret-bearing config. | Release automation exists, but there is no single backend operations note that lets a reviewer verify safe startup and recovery behavior. | One checked-in backend runbook names required secrets, startup checks, healthy-service signals, and rollback steps. | [`tasks/ideas-to-review/backend/service-mode-operational-readiness-runbook.md`](../../../tasks/ideas-to-review/backend/service-mode-operational-readiness-runbook.md) |
+| `backend-observability-inventory` | Backend logs, metrics, traces, and health signals | `Needs Evidence` | Record the canonical operator-visible observability surface for service mode, including structured logs, trace IDs, and any future health or metrics endpoints. | Structured logging exists, but the repository does not yet have one maintained inventory that states which production signals operators can actually rely on. | A checked-in observability note names current signals, collection points, and the gaps that remain before fuller health or metrics support exists. | [`tasks/ideas-to-review/backend/service-mode-observability-inventory.md`](../../../tasks/ideas-to-review/backend/service-mode-observability-inventory.md) |
+| `backend-dependency-hygiene` | Backend dependency updates and vulnerability evidence | `Needs Evidence` | Define one repo-owned dependency-hygiene lane that documents update ownership, secret-bearing provider review, and vulnerability-scanning expectations. | CI and release lanes exist, but this audit did not find a dedicated dependency or provider-hygiene verification surface. | Maintained docs or CI show how dependency updates, provider secrets, and vulnerability checks are reviewed and enforced. | [`tasks/ideas-to-review/backend/dependency-hygiene-and-provider-review-lane.md`](../../../tasks/ideas-to-review/backend/dependency-hygiene-and-provider-review-lane.md) |
+| `ui-accessibility-automation` | Dashboard accessibility tooling | `Needs Evidence` | Add automated accessibility checks for the highest-value dashboard flows in CI. | Semantic and keyboard coverage exists, but there is no accessibility-specific automated lane yet. | Repo-owned accessibility command, CI wiring, and maintained docs for covered flows. | [`tasks/ideas-to-review/ui/dashboard-accessibility-automation-baseline.md`](../../../tasks/ideas-to-review/ui/dashboard-accessibility-automation-baseline.md) |
+| `ui-localization-foundation` | Dashboard localization readiness | `Fail` | Introduce `ui/src/i18n/`, feature-owned message catalogs, and at least one non-default locale proof path. | User-visible copy is still inline across reusable UI, and no scalable localization boundary is checked in. | Central i18n setup, feature-local messages, and locale-sensitive tests are present. | [`tasks/ideas-to-review/ui/dashboard-localization-readiness-foundation.md`](../../../tasks/ideas-to-review/ui/dashboard-localization-readiness-foundation.md) |
+| `ui-browser-performance-evidence` | Dashboard browser policy and performance thresholds | `Needs Evidence` | Define the supported browser set and promote replay or memory tooling into a documented compatibility or performance lane. | Browser-backed verification exists, but it is Chromium-only and not tied to an explicit support policy or performance budget. | Maintained browser-support docs plus CI or scripted evidence for compatibility and replay-heavy performance expectations. | [`tasks/ideas-to-review/ui/dashboard-browser-support-and-performance-evidence.md`](../../../tasks/ideas-to-review/ui/dashboard-browser-support-and-performance-evidence.md) |
+
+### Completed Evidence vs Deferred Work
+
+Completed evidence in this audit:
+
+- Source snapshot, review metadata, and evidence rules are now fixed in this
+  document.
+- Backend and website checklist rows cite inspectable repository evidence and
+  mark unsupported claims as `Fail` or `Needs Evidence`.
+- The absence of an external `asks.md` file on `portpowered/checklists` `main`
+  is recorded explicitly instead of being assumed away.
+
+Deferred work for later lanes:
+
+- Every seam above requires implementation or maintained operator evidence that
+  does not yet exist in this checkout.
+- Those seams are intentionally narrow and independently executable, so future
+  workers can close one gap at a time without widening into a broad rewrite.
