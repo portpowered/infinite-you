@@ -30,6 +30,10 @@
 - Prune ignored local idea files once their owning PR has merged; otherwise the
   canonical inbox can retain stale residue that no longer represents an
   actionable backlog item.
+- When a queued idea has already advanced into an open PR, prune the ignored
+  inbox residue and treat the PR as the active lane; refill only genuinely
+  vacant task slots instead of counting duplicate idea files and PRs as
+  separate work.
 - Import/export contract cleanup crosses more than one layer: confirm
   `api/openapi.yaml`, generated API artifacts, `pkg/config` mapping logic, and
   runtime/functional tests together before assuming a field has really been
@@ -2073,3 +2077,45 @@
   `factory/inputs/idea/default/cover-releasesmoke-command-owner-parse-and-json-error-branches.md`
   so the operating backlog returns to three narrow active lanes without
   overlapping PR `#141` or `#142`.
+
+## 2026-05-07T11:03:26.5424733-07:00 - meta state refresh
+
+- Switched to a fresh branch from live `origin/main` because the older
+  meta-refresh branch had become a stack of stale worldview commits that no
+  longer rebased cleanly after merged PRs `#160` and `#161`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, the backend and
+  website standards, current PR state, the tracked-versus-ignored
+  `factory/inputs/**` surface, and live terminal-work, current-selection,
+  workflow-activity, workers, cmd, and `pkg/cli` candidate seams.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea files were ignored local
+  operating residue.
+- Confirmed the previously visible ignored ideas
+  `audit-repository-against-2026-website-and-backend-checklists.md`,
+  `cover-cli-docs-command-surface.md`, and
+  `localize-current-selection-workstation-detail-card-copy.md` were stale for
+  active-queue purposes because the audit lane already advanced into open
+  PR `#141` and merged PRs `#161` and `#160` already landed the latter two
+  lanes on `main`; pruned that residue locally.
+- Re-checked open PR ownership and found a new live owner:
+  open PR `#162` now covers the workflow-activity dashboard flow-axis legend
+  localization lane, so fresh backlog work needs to stay outside that surface.
+- Verified by direct reads of
+  `ui/src/features/terminal-work/terminal-work-card.tsx`,
+  `ui/src/features/terminal-work/terminal-work-card.test.tsx`, and
+  `ui/src/features/terminal-work/terminal-work-card.stories.tsx` that the next
+  concentrated non-overlapping localization seam is the terminal-work card,
+  which still hardcodes visible and accessible copy, empty states, and
+  session-summary fallback text while already having focused test seams.
+- Re-ran live coverage on `pkg/cli` and confirmed the prior docs-command lane
+  is materially closed on `main`; `go test -cover ./pkg/cli` now reports
+  `95.7%`, and the remaining uncovered `newDocsTopicCommand` branch is the
+  `docscli.Markdown(topic)` error return rather than the previously suspected
+  writer-failure or `Execute()` wrapper paths.
+- Queued one fresh ignored idea under
+  `factory/inputs/idea/default/localize-terminal-work-card-copy.md` so the
+  active maintainers' work returns to three non-overlapping lanes alongside
+  open PR `#141` and open PR `#162`.
