@@ -36,6 +36,7 @@ export interface WorkstationDetailMessages {
   providerSessionLogAction: string;
   providerSessionLogUnavailable: string;
   scriptCommandSummary: (command: string) => string;
+  selectRequestLabel: (requestLabel: string, dispatchId: string) => string;
   selectWorkItemLabel: (workItemLabel: string) => string;
   selectWorkstationRequestLabel: (dispatchId: string) => string;
   selectedRequestLabel: (dispatchId: string) => string;
@@ -95,6 +96,8 @@ const workstationDetailMessagesByLocale = {
     providerSessionLogAction: "Codex session log",
     providerSessionLogUnavailable: "Session log unavailable",
     scriptCommandSummary: (command) => `Script command ${command}`,
+    selectRequestLabel: (requestLabel, dispatchId) =>
+      `Select request ${requestLabel} (${dispatchId})`,
     selectWorkItemLabel: (workItemLabel) => `Select work item ${workItemLabel}`,
     selectWorkstationRequestLabel: (dispatchId) =>
       `Select workstation request ${dispatchId}`,
@@ -152,6 +155,8 @@ const workstationDetailMessagesByLocale = {
     providerSessionLogAction: "Codex セッションログ",
     providerSessionLogUnavailable: "セッションログは利用できません",
     scriptCommandSummary: (command) => `スクリプトコマンド ${command}`,
+    selectRequestLabel: (requestLabel, dispatchId) =>
+      `リクエスト ${requestLabel} (${dispatchId}) を選択`,
     selectWorkItemLabel: (workItemLabel) => `ワークアイテム ${workItemLabel} を選択`,
     selectWorkstationRequestLabel: (dispatchId) =>
       `ワークステーションリクエスト ${dispatchId} を選択`,
@@ -207,6 +212,8 @@ const workstationDetailMessagesByLocale = {
     providerSessionLogAction: "Codex 세션 로그",
     providerSessionLogUnavailable: "세션 로그를 사용할 수 없음",
     scriptCommandSummary: (command) => `스크립트 명령 ${command}`,
+    selectRequestLabel: (requestLabel, dispatchId) =>
+      `요청 ${requestLabel} (${dispatchId}) 선택`,
     selectWorkItemLabel: (workItemLabel) => `작업 항목 ${workItemLabel} 선택`,
     selectWorkstationRequestLabel: (dispatchId) =>
       `워크스테이션 요청 ${dispatchId} 선택`,
@@ -260,6 +267,8 @@ const workstationDetailMessagesByLocale = {
     providerSessionLogAction: "Codex 会话日志",
     providerSessionLogUnavailable: "会话日志不可用",
     scriptCommandSummary: (command) => `脚本命令 ${command}`,
+    selectRequestLabel: (requestLabel, dispatchId) =>
+      `选择请求 ${requestLabel} (${dispatchId})`,
     selectWorkItemLabel: (workItemLabel) => `选择工作项 ${workItemLabel}`,
     selectWorkstationRequestLabel: (dispatchId) =>
       `选择工作站请求 ${dispatchId}`,

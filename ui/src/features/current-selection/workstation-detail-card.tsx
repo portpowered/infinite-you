@@ -245,7 +245,10 @@ function CollapsibleWorkstationRequests({
                   </div>
                   {onSelectWorkstationRequest ? (
                     <button
-                      aria-label={`Select request ${requestLabel} (${request.dispatch_id})`}
+                      aria-label={messages.selectRequestLabel(
+                        requestLabel,
+                        request.dispatch_id,
+                      )}
                       className={WORK_SELECTION_BUTTON_CLASS}
                       onClick={() => onSelectWorkstationRequest(request)}
                       type="button"
@@ -338,7 +341,7 @@ function WorkstationActiveWorkList({
                   </dl>
                   {workItem && onSelectWorkID ? (
                     <button
-                      aria-label={`Select work item ${workLabel}`}
+                      aria-label={messages.selectWorkItemLabel(workLabel)}
                       aria-pressed={selectedWorkID === workItem.work_id}
                       className={WORK_SELECTION_BUTTON_CLASS}
                       onClick={() => onSelectWorkID(workItem.work_id)}
@@ -361,7 +364,9 @@ function WorkstationActiveWorkList({
                   {onSelectWorkstationRequest ? (
                     request ? (
                       <button
-                        aria-label={`Select workstation request ${request.dispatch_id}`}
+                        aria-label={messages.selectWorkstationRequestLabel(
+                          request.dispatch_id,
+                        )}
                         aria-pressed={requestSelected}
                         className={WORK_SELECTION_BUTTON_CLASS}
                         onClick={() => onSelectWorkstationRequest(request)}

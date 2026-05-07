@@ -52,6 +52,12 @@ describe("getWorkstationDetailMessages", () => {
       "Rejected Story",
     );
     expect(
+      messages.selectRequestLabel(
+        "Rejected Story",
+        "dispatch-review-rejected",
+      ),
+    ).toContain("dispatch-review-rejected");
+    expect(
       messages.selectWorkstationRequestLabel("dispatch-review-active"),
     ).toContain("dispatch-review-active");
     expect(messages.workDetailsUnavailable("dispatch-review-active")).toContain(

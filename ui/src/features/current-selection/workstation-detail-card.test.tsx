@@ -23,6 +23,141 @@ function requireValue<T>(value: T | null | undefined, message: string): T {
   return value;
 }
 
+function expectLocalizedSelectionControlNames() {
+  const snapshot = semanticWorkflowDashboardSnapshot;
+  const selectedNode = snapshot.topology.workstation_nodes_by_id.review;
+  const activeExecution =
+    snapshot.runtime.active_executions_by_dispatch_id?.["dispatch-review-active"];
+  const onSelectWorkID = vi.fn();
+  const onSelectWorkstationRequest = vi.fn();
+  const workstationRequests: DashboardWorkstationRequest[] = [
+    {
+      dispatch_id: "dispatch-review-active",
+      dispatched_request_count: 1,
+      errored_request_count: 0,
+      inference_attempts: [],
+      prompt: "Review the active story and decide whether it is ready.",
+      responded_request_count: 1,
+      transition_id: selectedNode.transition_id,
+      work_items: [
+        {
+          display_name: "Active Story",
+          trace_id: "trace-active-story",
+          work_id: "work-active-story",
+          work_type_id: "story",
+        },
+      ],
+      workstation_name: selectedNode.workstation_name,
+      workstation_node_id: selectedNode.node_id,
+    },
+    {
+      dispatch_id: "dispatch-review-rejected",
+      dispatched_request_count: 1,
+      errored_request_count: 0,
+      inference_attempts: [],
+      prompt: "Retry the review with the latest context.",
+      responded_request_count: 0,
+      transition_id: selectedNode.transition_id,
+      work_items: [
+        {
+          display_name: "Rejected Story",
+          trace_id: "trace-rejected-story",
+          work_id: "work-rejected-story",
+          work_type_id: "story",
+        },
+      ],
+      workstation_name: selectedNode.workstation_name,
+      workstation_node_id: selectedNode.node_id,
+    },
+  ];
+
+  const resolvedActiveExecution = requireValue(
+    activeExecution,
+    "expected active workstation execution fixture",
+  );
+  const { rerender } = render(
+    <WorkstationDetailCard
+      activeExecutions={[resolvedActiveExecution]}
+      locale="fr"
+      now={DETAIL_CARD_NOW}
+      onSelectWorkID={onSelectWorkID}
+      onSelectWorkstationRequest={onSelectWorkstationRequest}
+      providerSessions={[]}
+      selectedNode={selectedNode}
+      workstationRequests={workstationRequests}
+    />,
+  );
+
+  let activeWorkSection = screen.getByRole("heading", { name: "Active work" }).closest("section");
+  let resolvedActiveWorkSection = requireValue(activeWorkSection, "expected active work section");
+  let requestHistorySection = screen
+    .getByRole("heading", { name: "Request history" })
+    .closest("section");
+  let resolvedRequestHistorySection = requireValue(
+    requestHistorySection,
+    "expected request history section",
+  );
+
+  expect(
+    within(resolvedActiveWorkSection).getByRole("button", {
+      name: "Select work item Active Story",
+    }),
+  ).toBeTruthy();
+  expect(
+    within(resolvedActiveWorkSection).getByRole("button", {
+      name: "Select workstation request dispatch-review-active",
+    }),
+  ).toBeTruthy();
+
+  fireEvent.click(within(resolvedRequestHistorySection).getByRole("button", { name: "Expand" }));
+  expect(
+    within(resolvedRequestHistorySection).getByRole("button", {
+      name: "Select request Rejected Story (dispatch-review-rejected)",
+    }),
+  ).toBeTruthy();
+
+  rerender(
+    <WorkstationDetailCard
+      activeExecutions={[resolvedActiveExecution]}
+      locale="ja"
+      now={DETAIL_CARD_NOW}
+      onSelectWorkID={onSelectWorkID}
+      onSelectWorkstationRequest={onSelectWorkstationRequest}
+      providerSessions={[]}
+      selectedNode={selectedNode}
+      workstationRequests={workstationRequests}
+    />,
+  );
+
+  activeWorkSection = screen.getByRole("heading", { name: "アクティブな作業" }).closest("section");
+  resolvedActiveWorkSection = requireValue(activeWorkSection, "expected localized active work section");
+  requestHistorySection = screen
+    .getByRole("heading", { name: "リクエスト履歴" })
+    .closest("section");
+  resolvedRequestHistorySection = requireValue(
+    requestHistorySection,
+    "expected localized request history section",
+  );
+
+  expect(
+    within(resolvedActiveWorkSection).getByRole("button", {
+      name: "ワークアイテム Active Story を選択",
+    }),
+  ).toBeTruthy();
+  expect(
+    within(resolvedActiveWorkSection).getByRole("button", {
+      name: "ワークステーションリクエスト dispatch-review-active を選択",
+    }),
+  ).toBeTruthy();
+
+  fireEvent.click(within(resolvedRequestHistorySection).getByRole("button", { name: "展開" }));
+  expect(
+    within(resolvedRequestHistorySection).getByRole("button", {
+      name: "リクエスト Rejected Story (dispatch-review-rejected) を選択",
+    }),
+  ).toBeTruthy();
+}
+
 describe("WorkstationDetailCard", () => {
   it("falls back to English workstation-detail copy for unsupported locales", () => {
     const snapshot = semanticWorkflowDashboardSnapshot;
@@ -330,6 +465,10 @@ describe("WorkstationDetailCard", () => {
       }),
     );
     expect(onSelectWorkID).toHaveBeenCalledWith("work-rejected-story");
+  });
+
+  it("localizes active-work and request-history selection control names", () => {
+    expectLocalizedSelectionControlNames();
   });
 
   it("routes workstation request selection affordances through active work and request history", () => {
