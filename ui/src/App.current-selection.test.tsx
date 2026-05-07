@@ -671,46 +671,20 @@ describe("App current selection", () => {
         "Inference request details are shown under Inference attempts.",
       ),
     ).toBeTruthy();
-    expect(
-      within(readyRequestDetails).queryByText(
-        "Review the active story and decide whether it is ready.",
-      ),
-    ).toBeNull();
-    expect(
-      within(readyAttempt).getByText(
-        "Retry the review with the latest context.",
-      ),
-    ).toBeTruthy();
-    expect(
-      within(readyAttempt).getByText("Ready for the next workstation."),
-    ).toBeTruthy();
-    expect(
-      within(readyAttempt).getByText(
-        "codex / session_id / dispatch-review-ready/session/1",
-      ),
-    ).toBeTruthy();
+    expect(within(readyRequestDetails).queryByText(
+      "Review the active story and decide whether it is ready.",
+    )).toBeNull();
+    expect(within(readyAttempt).getByText("Retry the review with the latest context.")).toBeTruthy();
+    expect(within(readyAttempt).getByText("Ready for the next workstation.")).toBeTruthy();
+    expect(within(readyAttempt).getByText("codex / session_id / dispatch-review-ready/session/1")).toBeTruthy();
     expect(within(readyAttempt).getByText("gpt-5.4")).toBeTruthy();
     expect(within(readyAttempt).getByText("C:\\work\\portos")).toBeTruthy();
-    expect(
-      within(readyAttempt).getByText(
-        "C:\\work\\portos\\.worktrees\\active-story",
-      ),
-    ).toBeTruthy();
-    expect(
-      within(readyCard).queryByText("Provider", { selector: "dt" }),
-    ).toBeNull();
-    expect(
-      within(readyCard).queryByText("Model", { selector: "dt" }),
-    ).toBeNull();
-    expect(
-      within(readyCard).queryByText("Provider session", { selector: "dt" }),
-    ).toBeNull();
-    expect(
-      within(readyCard).queryByText("Working directory", { selector: "dt" }),
-    ).toBeNull();
-    expect(
-      within(readyCard).queryByText("Worktree", { selector: "dt" }),
-    ).toBeNull();
+    expect(within(readyAttempt).getByText("C:\\work\\portos\\.worktrees\\active-story")).toBeTruthy();
+    expect(within(readyCard).queryByText("Provider", { selector: "dt" })).toBeNull();
+    expect(within(readyCard).queryByText("Model", { selector: "dt" })).toBeNull();
+    expect(within(readyCard).queryByText("Provider session", { selector: "dt" })).toBeNull();
+    expect(within(readyCard).queryByText("Working directory", { selector: "dt" })).toBeNull();
+    expect(within(readyCard).queryByText("Worktree", { selector: "dt" })).toBeNull();
 
     const rejectedCard = getDispatchHistoryCard(
       dispatchHistory,

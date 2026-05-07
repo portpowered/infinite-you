@@ -8,9 +8,7 @@ export function isSupportedLocale(locale: string): locale is SupportedLocale {
   return SUPPORTED_LOCALES.includes(locale as SupportedLocale);
 }
 
-export function resolveSupportedLocale(
-  locale: string | undefined | null,
-): SupportedLocale {
+export function resolveSupportedLocale(locale: string | undefined | null): SupportedLocale {
   if (!locale) {
     return DEFAULT_LOCALE;
   }
