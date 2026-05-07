@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -95,6 +96,33 @@ func TestRunForwardsParsedConfigToHarness(t *testing.T) {
 	}
 	if got := stderr.String(); got != "" {
 		t.Fatalf("run() stderr = %q, want empty", got)
+	}
+}
+
+func TestRunInvalidArgsWritesFlagParseErrorToStderrAndReturnsNonZero(t *testing.T) {
+	originalRunReleaseSmoke := runReleaseSmoke
+	t.Cleanup(func() {
+		runReleaseSmoke = originalRunReleaseSmoke
+	})
+
+	runReleaseSmoke = func(_ context.Context, cfg releasesmoke.Config) (releasesmoke.Result, error) {
+		t.Fatalf("runReleaseSmoke() should not be called for invalid args: %+v", cfg)
+		return releasesmoke.Result{}, nil
+	}
+
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+
+	exitCode := run([]string{"-bogus"}, &stdout, &stderr)
+
+	if exitCode == 0 {
+		t.Fatalf("run() exit code = %d, want non-zero", exitCode)
+	}
+	if got := stdout.String(); got != "" {
+		t.Fatalf("run() stdout = %q, want empty", got)
+	}
+	if got := strings.TrimSpace(stderr.String()); !strings.Contains(got, "flag provided but not defined: -bogus") {
+		t.Fatalf("run() stderr = %q, want raw flag parse error", got)
 	}
 }
 
