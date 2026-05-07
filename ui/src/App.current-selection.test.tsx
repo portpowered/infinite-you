@@ -503,10 +503,6 @@ describe("App current selection", () => {
     window.localStorage.clear();
     MockEventSource.instances = [];
     restoreBrowserTestShims = installDashboardBrowserTestShims();
-    Object.defineProperty(window.navigator, "language", {
-      configurable: true,
-      value: "en-US",
-    });
   });
 
   afterEach(() => {
@@ -586,62 +582,6 @@ describe("App current selection", () => {
     expect(within(traceCard).queryByText("Workstation run")).toBeNull();
     expect(within(traceCard).queryByText("Consumed tokens")).toBeNull();
     expect(within(traceCard).queryByText("Output mutations")).toBeNull();
-  });
-
-  it("uses the browser locale for live workstation-detail and export copy", async () => {
-    Object.defineProperty(window.navigator, "language", {
-      configurable: true,
-      value: "ja-JP",
-    });
-
-    const { fetchMock } = renderApp({ snapshot: activeSnapshot });
-    fetchMock.mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          code: "NOT_FOUND",
-          family: "NOT_FOUND",
-          message: "Current named factory not found.",
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          status: 404,
-          statusText: "Not Found",
-        },
-      ),
-    );
-
-    await screen.findByRole("heading", { name: "Infinite You" });
-
-    fireEvent.click(
-      await screen.findByRole("button", { name: "Select Review workstation" }),
-    );
-
-    const currentSelection = await screen.findByRole("article", {
-      name: "現在の選択",
-    });
-    expect(
-      within(currentSelection).getByRole("heading", {
-        name: "ワークステーション概要",
-      }),
-    ).toBeTruthy();
-    expect(
-      within(currentSelection).getByRole("button", { name: "展開" }),
-    ).toBeTruthy();
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "PNG をエクスポート",
-      }),
-    );
-
-    const exportDialog = await screen.findByRole("dialog", {
-      name: "ファクトリーをエクスポート",
-    });
-    expect(
-      within(exportDialog).getByRole("button", { name: "PNG をエクスポート" }),
-    ).toBeTruthy();
   });
 
   it("renders one selected-work dispatch history list with mixed inference and script-backed rows", async () => {

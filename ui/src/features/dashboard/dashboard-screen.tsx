@@ -10,11 +10,7 @@ import { useDashboardSnapshot } from "./useDashboardSnapshot";
 const DASHBOARD_SHELL_CLASS =
   "min-h-screen overflow-x-hidden p-5 max-[720px]:p-4";
 
-export interface DashboardScreenProps {
-  locale?: string;
-}
-
-export function DashboardScreen({ locale }: DashboardScreenProps) {
+export function DashboardScreen() {
   const refreshToken = useDashboardBentoStore((state) => state.refreshToken);
   const { snapshot, isInitialLoading, error } = useDashboardSnapshot({
     refreshToken,
@@ -46,9 +42,9 @@ export function DashboardScreen({ locale }: DashboardScreenProps) {
 
   return (
     <main className={DASHBOARD_SHELL_CLASS}>
-      <DashboardHeader locale={locale} />
-      <DashboardBento locale={locale} />
-      <DashboardExportDialog locale={locale} />
+      <DashboardHeader />
+      <DashboardBento />
+      <DashboardExportDialog />
     </main>
   );
 }
