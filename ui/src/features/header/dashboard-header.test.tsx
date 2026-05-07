@@ -1,5 +1,6 @@
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -248,5 +249,84 @@ describe("DashboardHeader", () => {
     expect(
       screen.getByRole("status", { name: messages.streamStatusOfflineLabel }),
     ).toBeTruthy();
+  });
+
+  it("renders each localized stream-status accessible name from the header catalog", () => {
+    act(() => {
+      useFactoryTimelineStore.setState({
+        events: [
+          timelineEvent(
+            "tick-1",
+            1,
+            FACTORY_EVENT_TYPES.initialStructureRequest,
+            {
+              factory: {
+                workTypes: [
+                  {
+                    name: "story",
+                    states: [{ name: "ready", type: "INITIAL" }],
+                  },
+                ],
+                workstations: [],
+                workers: [],
+              },
+            },
+          ),
+          timelineEvent(
+            "tick-2",
+            2,
+            FACTORY_EVENT_TYPES.initialStructureRequest,
+            {
+              factory: {
+                workTypes: [
+                  {
+                    name: "story",
+                    states: [{ name: "ready", type: "INITIAL" }],
+                  },
+                ],
+                workstations: [],
+                workers: [],
+              },
+            },
+          ),
+        ],
+        latestTick: 2,
+        mode: "current",
+        selectedTick: 2,
+        worldViewCache: {
+          1: {} as never,
+          2: {} as never,
+        },
+      });
+    });
+
+    const messages = getHeaderControlsMessages("ja");
+    const statuses = [
+      {
+        label: messages.streamStatusConnectingLabel,
+        status: "connecting" as const,
+      },
+      { label: messages.streamStatusLiveLabel, status: "live" as const },
+      {
+        label: messages.streamStatusOfflineLabel,
+        status: "offline" as const,
+      },
+    ];
+
+    for (const { label, status } of statuses) {
+      act(() => {
+        useDashboardStreamStore.setState({
+          streamState: {
+            message: `stream is ${status}`,
+            status,
+          },
+        });
+      });
+
+      cleanup();
+      render(<DashboardHeader locale="ja" />);
+
+      expect(screen.getByRole("status", { name: label })).toBeTruthy();
+    }
   });
 });

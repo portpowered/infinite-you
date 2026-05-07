@@ -1,10 +1,20 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import type { FactoryEvent } from "../../api/events";
 import { FACTORY_EVENT_TYPES } from "../../api/events";
 import { graphStateSmokeTimelineEvents } from "../../components/dashboard/fixtures";
 import { useFactoryTimelineStore } from "../timeline/state/factoryTimelineStore";
-import { getHeaderControlsMessages } from "./messages/header-controls";
+import {
+  getHeaderControlsMessages,
+  HEADER_CURRENT_TICK_TOKEN,
+  HEADER_MAX_TICK_TOKEN,
+} from "./messages/header-controls";
 import { TickSliderControl } from "./tick-slider-control";
 
 type TimelineWorldState = ReturnType<
@@ -27,6 +37,18 @@ function timelineEvent(
     payload,
     type,
   };
+}
+
+function currentTickStatus(
+  locale: string,
+  currentTick: number,
+  maxTick: number,
+): string {
+  const messages = getHeaderControlsMessages(locale);
+
+  return messages.currentTickStatusTemplate
+    .replaceAll(HEADER_CURRENT_TICK_TOKEN, String(currentTick))
+    .replaceAll(HEADER_MAX_TICK_TOKEN, String(maxTick));
 }
 
 describe("TickSliderControl", () => {
@@ -189,13 +211,53 @@ describe("TickSliderControl", () => {
     });
 
     expect(screen.getByText(messages.sliderLabel)).toBeTruthy();
-    expect(screen.getByText("9 件中 9 件目のティック")).toBeTruthy();
+    expect(screen.getByText(currentTickStatus("ja", 9, 9))).toBeTruthy();
     expect(currentButton.disabled).toBe(true);
 
     fireEvent.change(slider, { target: { value: "3" } });
 
     await waitFor(() => {
-      expect(screen.getByText("9 件中 3 件目のティック")).toBeTruthy();
+      expect(screen.getByText(currentTickStatus("ja", 3, 9))).toBeTruthy();
     });
+  });
+
+  it("renders the localized disabled-state copy from the requested locale catalog", () => {
+    act(() => {
+      useFactoryTimelineStore.getState().replaceEvents([
+        timelineEvent(
+          "tick-1",
+          1,
+          FACTORY_EVENT_TYPES.initialStructureRequest,
+          {
+            factory: {
+              workTypes: [
+                {
+                  name: "story",
+                  states: [{ name: "ready", type: "INITIAL" }],
+                },
+              ],
+              workstations: [],
+              workers: [],
+            },
+          },
+        ),
+      ]);
+    });
+
+    const messages = getHeaderControlsMessages("ja");
+
+    render(<TickSliderControl locale="ja" />);
+
+    expect(
+      screen.getByRole<HTMLInputElement>("slider", {
+        name: messages.sliderAriaLabel,
+      }).disabled,
+    ).toBe(true);
+    expect(screen.getByText(messages.waitingForMoreTicks)).toBeTruthy();
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: messages.returnToCurrentTickLabel,
+      }).disabled,
+    ).toBe(true);
   });
 });
