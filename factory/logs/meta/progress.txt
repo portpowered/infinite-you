@@ -155,6 +155,10 @@
 - When the customer-linked external checklist repository omits one of the
   requested documents, record that missing source as an evidence gap and avoid
   inferring checklist content that is not actually retrievable on that date.
+- When refreshing from a long-lived meta branch, compare `HEAD` against
+  `origin/main` directly; a plain branch-local `git pull` can leave the branch
+  current with its own remote tracking ref while still missing newer mainline
+  merges that change PR ownership or the next cleanup seam.
 - After a localized dashboard dialog merges, re-read the adjacent header
   controls and status accessibility labels next; concentrated English-only
   residue often remains there rather than in another dialog.
@@ -164,10 +168,10 @@
 
 ## Current Summary
 
-- As of `2026-05-07T05:03:44.1967849-07:00`, `HEAD` points to `3d0c461` on
-  branch `main`, is ahead of `origin/main` by three local meta commits, and
-  already contains merged PR `#147` (`localize-export-dialog-and-trigger`) from
-  `origin/main`.
+- As of `2026-05-07T12:06:28.9599999-07:00`, `HEAD` points to `cb24fe4` on
+  branch `meta-refresh-world-state-20260507-110000`, rebased onto live
+  `origin/main` through merged PR `#162`
+  (`localize-dashboard-flow-axis-legend-copy`).
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -179,9 +183,10 @@
   user-owned tracked edit and the maintainer meta refresh updates the tracked
   view/progress docs; ignored workflow files under `factory/inputs/**` remain
   operating state rather than canonical queue truth.
-- Recent merged PRs now include `#146` and `#147`; open PR `#141` owns the
-  active checklist-audit lane, while `#145`, `#143`, `#139`, `#123`, and
-  `#120` remain meta refresh branches.
+- Recent merged PRs now include `#162`, `#161`, and `#160`; open PR `#141`
+  owns the checklist-audit lane and open PR `#164` owns terminal-work
+  localization, while the older meta refresh PRs remain stacked beside this
+  branch.
 - The canonical ask surface remains the quality-oriented rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
   alignment, stronger backend and website testing, ongoing simplification, and
@@ -192,13 +197,51 @@
 - The external website and backend checklist URLs remain readable on
   `2026-05-07`, but the linked external `asks.md` URL still does not produce a
   readable checklist document and must be treated as a source-evidence gap.
-- The previously queued ignored ideas `localize-export-dialog-and-trigger` and
-  `narrow-cron-watcher-runtime-lookup-contract` are stale because merged PRs
-  `#147` and `#146` landed those exact lanes on `main`.
-- The next maintainer-owned operating queue should hold three non-overlapping
-  ideas together: repo-wide checklist audit evidence,
-  `retire-template-fields-variadic-worktree-shim`, and
-  `localize-dashboard-header-timeline-and-stream-status`.
+- The previously queued ignored idea
+  `localize-terminal-work-card-copy.md` is stale because that lane has now
+  advanced into open PR `#164`.
+- The next maintainer-owned operating queue slot should now be
+  `localize-workflow-activity-graph-import-copy.md`, which keeps three
+  non-overlapping active lanes alongside open PR `#141` and open PR `#164`.
+
+## 2026-05-07T12:06:28.9599999-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, then confirmed the branch was still seven commits
+  behind live `origin/main` despite being current with its own remote tracking
+  ref, so ran `git pull --rebase --autostash origin main` to rebase the meta
+  branch onto live `main` and pull in merged PR `#162`
+  (`localize-dashboard-flow-axis-legend-copy`) while preserving the user-owned
+  tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, the backend and
+  website standards, current PR state, the tracked-versus-ignored
+  `factory/inputs/**` surface, and the live external checklist sources.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea file is ignored local
+  operating residue.
+- Confirmed the previously visible ignored idea
+  `factory/inputs/idea/default/localize-terminal-work-card-copy.md` is now
+  stale because that lane has advanced into open PR `#164`, so pruned that
+  residue locally instead of counting it as a third active lane beside the PR.
+- Re-checked open PR ownership with `gh pr list --state open --limit 20` and
+  `gh pr view 164`, confirming open PR `#141` still owns the repo-wide
+  checklist audit and open PR `#164` now owns the terminal-work localization
+  seam while merged PR `#162` closed the workflow-activity legend lane on
+  `main`.
+- Used delegated explorer passes, graph-backed discovery, direct reads of
+  `ui/src/features/workflow-activity/react-flow-current-activity-card-import.tsx`
+  and `ui/src/features/workflow-activity/mutation-dialog.tsx`, plus focused
+  test inventory reads, to choose the next replacement lane:
+  `localize-workflow-activity-graph-import-copy.md`.
+- Verified that the replacement seam stays implementation-ready and
+  non-overlapping because the graph-import overlay still hardcodes PNG import
+  guidance, loading, error, and dismiss copy, `mutation-dialog.tsx` still owns
+  the shared shell copy `Close dialog` and `Mutation flow`, and focused
+  coverage already exists in
+  `ui/src/features/workflow-activity/react-flow-current-activity-card-import.test.tsx`
+  and `ui/src/features/workflow-activity/mutation-dialog.test.tsx`.
 
 ## 2026-05-07T05:03:44.1967849-07:00 - meta state refresh
 

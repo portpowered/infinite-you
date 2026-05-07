@@ -2,12 +2,12 @@
 
 ## world state
 
-- as of `2026-05-07T11:03:26.5424733-07:00`, this meta refresh runs from
-  branch `meta-refresh-world-state-20260507-110000` created directly from live
-  `origin/main`, which now includes merged PR `#160`
-  (`localize-current-selection-workstation-detail-card-copy`) at
-  `2026-05-07T17:53:59Z` and merged PR `#161`
-  (`cover-cli-docs-command-surface`) at `2026-05-07T17:25:09Z`
+- as of `2026-05-07T12:06:28.9599999-07:00`, this meta refresh branch
+  `meta-refresh-world-state-20260507-110000` has been rebased onto live
+  `origin/main`, which now includes merged PR `#162`
+  (`localize-dashboard-flow-axis-legend-copy`) at `2026-05-07T17:24:30Z`
+  and keeps open PR `#164`
+  (`localize-terminal-work-card-copy`) active at `2026-05-07T18:23:49Z`
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the only tracked local dirtiness outside this meta refresh remains the
   user-maintained canonical ask file `factory/logs/meta/asks.md`
@@ -40,15 +40,16 @@
   out of normal commits except for those sentinel paths
 - the previously ignored idea files
   `audit-repository-against-2026-website-and-backend-checklists.md`,
-  `cover-cli-docs-command-surface.md`, and
-  `localize-current-selection-workstation-detail-card-copy.md` were stale for
-  active-queue purposes because the audit lane already advanced into open
-  PR `#141` and merged PRs `#161` and `#160` already landed the latter two
-  lanes on `main`
+  `cover-cli-docs-command-surface.md`,
+  `localize-current-selection-workstation-detail-card-copy.md`, and
+  `localize-terminal-work-card-copy.md` were stale for active-queue purposes
+  because the audit lane already advanced into open PR `#141`, merged
+  PRs `#161` and `#160` already landed the earlier queue slots on `main`, and
+  the terminal-work lane has now advanced into open PR `#164`
 - after pruning that residue, the maintainer-owned ignored queue now carries
   one fresh non-overlapping replacement idea:
-  - `localize-terminal-work-card-copy.md`
-- combined with open PR `#141` and open PR `#162`, the active maintainers'
+  - `localize-workflow-activity-graph-import-copy.md`
+- combined with open PR `#141` and open PR `#164`, the active maintainers'
   work now again spans three non-overlapping lanes
 
 ## customer-ask truth
@@ -79,15 +80,18 @@
   work item on live `main`; that remains an acknowledged ask gap rather than a
   completed capability
 - the UI localization foothold now reaches both current-selection workstation
-  detail and the repo-owned CLI docs package lane is materially closed:
+  detail and workflow-activity legend, while the repo-owned CLI docs package
+  lane is materially closed:
   - merged PR `#160` localized
     `ui/src/features/current-selection/workstation-detail-card.tsx`
+  - merged PR `#162` localized
+    `ui/src/features/workflow-activity/dashboard-flow-axis-legend.tsx`
   - merged PR `#161` raised `pkg/cli` coverage to `95.7%` on
     `2026-05-07`; the previously suspected `Execute()` wrapper and docs-topic
     writer-failure gaps are already covered
-  - open PR `#162` now owns the workflow-activity legend localization lane
-  - `ui/src/features/terminal-work/terminal-work-card.tsx` is now the next
-    concentrated non-overlapping English-only dashboard surface
+  - open PR `#164` now owns the terminal-work localization lane
+  - the next concentrated non-overlapping English-only dashboard surface now
+    sits in the workflow-activity graph import overlay and dialog shell
 
 ## replay truth
 
@@ -102,18 +106,19 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
-  - `#160` `localize-current-selection-workstation-detail-card-copy`, merged
-    on `2026-05-07T17:53:59Z`
+  - `#162` `localize-dashboard-flow-axis-legend-copy`, merged on
+    `2026-05-07T17:24:30Z`
   - `#161` `cover-cli-docs-command-surface`, merged on
-    `2026-05-07T17:25:09Z`
+    `2026-05-07T17:12:20Z`
+  - `#160` `localize-current-selection-workstation-detail-card-copy`, merged
+    on `2026-05-07T16:32:50Z`
   - `#159` `cover-gocoveragecheck-malformed-percentage-parser-branches`,
     merged on `2026-05-07T16:18:02Z`
   - `#158` `localize-selected-work-dispatch-history-card-copy`, merged on
     `2026-05-07T15:22:57Z`
-  - `#157` `cover-releasetagcheck-command-owner-parse-failure-branch`, merged
-    on `2026-05-07T15:12:40Z`
 - `gh pr list --state open` now reports:
-  - `#162` `localize-dashboard-flow-axis-legend-copy`
+  - `#164` `localize-terminal-work-card-copy`
+  - `#163` `docs: refresh meta world state`
   - `#152` `docs: refresh meta world state`
   - `#145` `docs: refresh meta world state`
   - `#143` `docs: refresh meta world state`
@@ -121,26 +126,29 @@
   - `#139` `docs: refresh meta world state`
   - `#123` `docs: refresh meta world state`
   - `#120` `docs: refresh meta world state`
-- open PR `#141` owns the current checklist-audit lane and open PR `#162`
-  owns the current workflow-activity legend lane, so fresh backlog work must
-  stay outside both surfaces
+- open PR `#141` owns the current checklist-audit lane and open PR `#164`
+  owns the current terminal-work lane, so fresh backlog work must stay
+  outside both surfaces
 
 ## next cleanup candidates
 
 - the repo-wide standards audit remains the highest-priority checklist ask on
   live `main`, but PR `#141` already owns that documentation lane
-- the current workflow-activity legend seam is already owned by open PR `#162`
-- the next replacement backlog slot on live `main` is now the terminal-work
-  detail card:
-  - `ui/src/features/terminal-work/terminal-work-card.tsx` still hardcodes
-    user-facing and accessible copy such as `Completed and failed work`,
-    `Terminal work outcomes`, `Completed`, `Failed`, `Expand`, `Collapse`,
-    `Completed work`, `Failed work`, and the empty and fallback summary text
+- the terminal-work seam is already owned by open PR `#164`
+- the next replacement backlog slot on live `main` is now the workflow-
+  activity graph-import copy surface:
+  - `ui/src/features/workflow-activity/react-flow-current-activity-card-import.tsx`
+    still hardcodes user-facing and accessible copy such as
+    `Drop an Infinite You PNG onto this graph to start import.`,
+    `Import factory PNG`, `Validating factory PNG`, `Factory import failed`,
+    `Dismiss`, and the PNG import error-copy mapping
+  - `ui/src/features/workflow-activity/mutation-dialog.tsx` still hardcodes
+    the shared dialog-shell copy `Close dialog` and `Mutation flow`
   - focused coverage already exists in
-    `ui/src/features/terminal-work/terminal-work-card.test.tsx` and
-    `ui/src/features/terminal-work/terminal-work-card.stories.tsx`
+    `ui/src/features/workflow-activity/react-flow-current-activity-card-import.test.tsx`
+    and `ui/src/features/workflow-activity/mutation-dialog.test.tsx`
   - the lane is feature-local, implementation-ready, and does not overlap the
-    open checklist-audit or workflow-activity legend branches
+    open checklist-audit or terminal-work branches
 - the `pkg/cli` docs lane is no longer the next candidate:
   - `go test -cover ./pkg/cli` now reports `95.7%` on `2026-05-07`
   - the remaining uncovered `newDocsTopicCommand` branch is the
@@ -164,6 +172,14 @@
   legend is already owned by an open PR, move the next localization follow-up
   to another dashboard-adjacent feature such as terminal-work rather than
   stacking siblings onto the same owned surfaces
+- when a queued ignored idea advances into an open PR, replace that queue slot
+  from the next adjacent but non-identical feature seam instead of leaving the
+  same idea file in place or hopping back into already-localized header or
+  current-selection surfaces
+- after the workflow-activity legend merges and terminal-work advances into an
+  open PR, the least-overlap localization follow-up is the graph-import overlay
+  and mutation-dialog shell inside `workflow-activity`, not another header or
+  current-selection lane
 - when a repo-owned coverage package has just merged a focused branch-coverage
   PR, re-run live coverage and inspect exact uncovered lines before re-queueing
   the same seam; stale summaries can miss that the remaining gap moved to a
