@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"os"
 	"strings"
@@ -12,6 +13,14 @@ import (
 
 	"github.com/portpowered/infinite-you/internal/releasesmoke"
 )
+
+type failingWriter struct {
+	err error
+}
+
+func (writer failingWriter) Write(_ []byte) (int, error) {
+	return 0, writer.err
+}
 
 func TestMainRoutesThroughCommandMain(t *testing.T) {
 	originalCommandMain := commandMain
@@ -245,5 +254,21 @@ func TestRunFailureWritesStructuredJSONToStderrAndReturnsNonZero(t *testing.T) {
 	}
 	if !bytes.Contains(stderr.Bytes(), []byte("\n  \"phase\": ")) {
 		t.Fatalf("run() stderr = %q, want indented JSON field", stderr.String())
+	}
+}
+
+func TestWriteJSONReportsEncodeFailuresToStderr(t *testing.T) {
+	originalStderr := stderr
+	t.Cleanup(func() {
+		stderr = originalStderr
+	})
+
+	var errOut bytes.Buffer
+	stderr = &errOut
+
+	writeJSON(failingWriter{err: errors.New("writer failed")}, map[string]string{"status": "ok"})
+
+	if got := strings.TrimSpace(errOut.String()); !strings.Contains(got, "encode JSON output: writer failed") {
+		t.Fatalf("writeJSON() stderr = %q, want encode failure diagnostic", got)
 	}
 }
