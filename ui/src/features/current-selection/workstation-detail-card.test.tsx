@@ -150,7 +150,9 @@ function expectLocalizedSelectionControlNames() {
     }),
   ).toBeTruthy();
 
-  fireEvent.click(within(resolvedRequestHistorySection).getByRole("button", { name: "展開" }));
+  expect(
+    within(resolvedRequestHistorySection).getByRole("button", { name: "折りたたむ" }),
+  ).toBeTruthy();
   expect(
     within(resolvedRequestHistorySection).getByRole("button", {
       name: "リクエスト Rejected Story (dispatch-review-rejected) を選択",
