@@ -164,20 +164,24 @@
   re-read the adjacent workstation-detail card before jumping to broader
   dashboard widgets; the next concentrated English-only residue can stay
   inside the same feature.
-- When a repo-owned parser already covers happy-path and missing-line shapes,
-  inspect malformed numeric tokens next; regex-matched bad percentages can
-  leave narrow parse-error branches uncovered without widening the lane.
+- When that adjacent current-selection follow-up has already advanced into an
+  open PR, refill the third backlog slot with a non-overlapping repo-owned
+  backend package seam instead of stacking another sibling UI idea onto the
+  same feature.
+- When a repo-owned command or package already covers happy-path docs
+  rendering, inspect thin writer-failure and wrapper branches next; those can
+  keep small owner coverage gaps alive without requiring broader runtime
+  refactors.
 - When a helper still carries an explicitly backwards-compatible variadic
   parameter but the live production caller already passes one concrete explicit
   value, prefer deleting the shim over preserving two call shapes.
 
 ## Current Summary
 
-- As of `2026-05-07T09:02:56.1302415-07:00`, this meta refresh rebases
+- As of `2026-05-07T10:03:45.2950540-07:00`, this meta refresh rebases
   `meta-refresh-world-state-20260507-050344` onto live `origin/main` through
-  merged PR `#158` (`localize-selected-work-dispatch-history-card-copy`) and
-  merged PR `#157`
-  (`cover-releasetagcheck-command-owner-parse-failure-branch`).
+  merged PR `#159` (`cover-gocoveragecheck-malformed-percentage-parser-branches`),
+  while open PR `#160` now owns the next workstation-detail localization lane.
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -189,8 +193,9 @@
   user-owned tracked edit and the maintainer meta refresh updates the tracked
   view/progress docs; ignored workflow files under `factory/inputs/**` remain
   operating state rather than canonical queue truth.
-- Recent merged PRs now include `#157` and `#158`; open PR `#141` owns the
-  active checklist-audit lane, while `#152`, `#145`, `#143`, `#139`, `#123`,
+- Recent merged PRs now include `#159`, `#158`, and `#157`; open PR `#141`
+  owns the active checklist-audit lane, open PR `#160` owns the next
+  current-selection UI lane, while `#152`, `#145`, `#143`, `#139`, `#123`,
   and `#120` remain meta refresh branches.
 - The canonical ask surface remains the quality-oriented rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
@@ -202,14 +207,52 @@
 - The external website and backend checklist URLs remain readable on
   `2026-05-07`, but the linked external `asks.md` URL still does not produce a
   readable checklist document and must be treated as a source-evidence gap.
-- The previously queued ignored ideas
-  `localize-selected-work-dispatch-history-card-copy` and
-  `cover-releasetagcheck-command-owner-parse-failure-branch` are stale because
-  merged PRs `#158` and `#157` landed those exact lanes on `main`.
+- The previously queued ignored idea
+  `cover-gocoveragecheck-malformed-percentage-parser-branches` is stale
+  because merged PR `#159` landed that exact lane on `main`.
 - The current maintainer-owned operating queue should hold three
   non-overlapping ideas together: repo-wide checklist audit evidence,
   `localize-current-selection-workstation-detail-card-copy`, and
-  `cover-gocoveragecheck-malformed-percentage-parser-branches`.
+  `cover-cli-docs-command-surface`.
+
+## 2026-05-07T10:03:45.2950540-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, confirmed the branch-local remote was current, then
+  fetched and compared against live `origin/main`; that showed merged PR `#159`
+  and a new open PR `#160`, so I rebased this meta branch with
+  `git pull --rebase --autostash origin main` while preserving the user-owned
+  tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and live
+  `pkg/cli`, `ui/src/features/current-selection`, `ui/src/features/terminal-work`,
+  and `ui/src/features/workflow-activity` candidate seams.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while visible idea files are ignored local
+  operating residue.
+- Confirmed the previously queued ignored idea
+  `factory/inputs/idea/default/cover-gocoveragecheck-malformed-percentage-parser-branches.md`
+  is stale because merged PR `#159` already landed that exact lane on `main`,
+  then replaced that slot with
+  `factory/inputs/idea/default/cover-cli-docs-command-surface.md`.
+- Confirmed open PR `#160`
+  (`localize-current-selection-workstation-detail-card-copy`) now owns the next
+  concentrated current-selection UI localization lane, so the replacement queue
+  slot needs to stay outside that feature.
+- Used delegated explorer passes, graph-backed discovery, direct code reads,
+  and fresh focused coverage evidence to choose the next non-overlapping backend
+  seam: on live `main`, `go test -cover ./pkg/cli` reports `93.5%`, while
+  `pkg/cli/root.go` still leaves `newDocsTopicCommand` and `Execute` partially
+  uncovered and `pkg/cli/root_test.go` still lacks the docs-topic writer
+  failure path and the thin `Execute()` wrapper path.
+- Recorded one backup UI seam from direct reads as well:
+  `ui/src/features/workflow-activity/dashboard-flow-axis-legend.tsx` still
+  hardcodes concentrated visible and accessible legend copy, but that remains a
+  backup lane rather than one of the three active backlog slots because the
+  customer ask is better served by keeping the replacement slot on backend
+  testing while PR `#160` is already covering the next UI seam.
 
 ## 2026-05-07T09:02:56.1302415-07:00 - meta state refresh
 

@@ -2,9 +2,10 @@
 
 ## world state
 
-- as of `2026-05-07T09:02:56.1302415-07:00`, this meta refresh rebases
+- as of `2026-05-07T10:03:45.2950540-07:00`, this meta refresh rebases
   `meta-refresh-world-state-20260507-050344` onto live `origin/main` through
-  merged PR `#158` and merged PR `#157`
+  merged PR `#159`, while open PR `#160` now owns the next workstation-detail
+  localization lane
 - the canonical maintainer ask surface remains `factory/logs/meta/asks.md`
 - the only tracked local dirtiness outside this meta refresh remains the
   user-maintained canonical ask file `factory/logs/meta/asks.md`
@@ -35,19 +36,16 @@
   - `factory/inputs/thoughts/default/.gitkeep`
 - `.gitignore` still keeps live workflow submissions under `factory/inputs/**`
   out of normal commits except for those sentinel paths
-- the ignored idea files
-  `factory/inputs/idea/default/localize-selected-work-dispatch-history-card-copy.md`
-  and
-  `factory/inputs/idea/default/cover-releasetagcheck-command-owner-parse-failure-branch.md`
-  are now stale on live `main` because merged PR `#158` landed on
-  `2026-05-07T15:53:40Z` and merged PR `#157` landed on
-  `2026-05-07T15:20:04Z`
-- after pruning those stale residues, the maintainer-owned ignored queue now
-  carries three fresh non-overlapping idea files so the autonomous lane still
+- the ignored idea file
+  `factory/inputs/idea/default/cover-gocoveragecheck-malformed-percentage-parser-branches.md`
+  is now stale on live `main` because merged PR `#159` landed on
+  `2026-05-07T16:32:36Z`
+- after pruning that stale residue, the maintainer-owned ignored queue still
+  carries three narrow non-overlapping idea files so the autonomous lane
   matches the standing ask to keep at least three tasks running:
   - `audit-repository-against-2026-website-and-backend-checklists.md`
   - `localize-current-selection-workstation-detail-card-copy.md`
-  - `cover-gocoveragecheck-malformed-percentage-parser-branches.md`
+  - `cover-cli-docs-command-surface.md`
 
 ## customer-ask truth
 
@@ -93,23 +91,20 @@
   - merged PR `#158` localized
     `ui/src/features/current-selection/selected-work-dispatch-history-card.tsx`
     and added focused locale regressions for that surface
-  - `ui/src/features/current-selection/workstation-detail-card.tsx` still
-    hardcodes concentrated user-facing copy such as `Workstation summary`,
-    `Active work`, `Historical requests`, `Historical runs`, `Request history`,
-    `Run history`, `Expand`, `Collapse`, `Open request`, `Open request details`,
-    `Open work item`, `Work selected`, `Request selected`, and multiple empty
-    or unavailable-state strings
-  - the workstation-detail surface has focused component tests, but no
-    locale-aware regression for default and non-default locales
-- the next narrow backend testing seam on live `main` is now
-  `cmd/gocoveragecheck`:
-  - `go test -cover ./cmd/gocoveragecheck` reports `94.3%` statement coverage
-    on `2026-05-07`
-  - the remaining command-owner gap stays local to
-    `cmd/gocoveragecheck/main.go` and `cmd/gocoveragecheck/main_test.go`
-  - parser helper coverage remains concentrated in malformed numeric tokens
-    that still reach `strconv.ParseFloat` error branches in
-    `parseTotalCoverage()` and `parseZeroCoveragePackagesFromReport()`
+  - open PR `#160` now owns the remaining concentrated workstation-detail copy
+    and locale-regression lane across
+    `ui/src/features/current-selection/workstation-detail-card.tsx`,
+    adjacent feature-local messages, and focused tests
+  - live `main` therefore still needs that PR to land before the surface stops
+    hardcoding the remaining workstation-detail copy
+- the next narrow backend testing seam on live `main` is now `pkg/cli`:
+  - `go test -cover ./pkg/cli` reports `93.5%` statement coverage on
+    `2026-05-07`
+  - `pkg/cli/root.go` leaves `newDocsTopicCommand` at `83.3%` and `Execute`
+    at `0.0%` in focused coverage output
+  - existing tests in `pkg/cli/root_test.go` already cover docs help and
+    successful markdown rendering, but they still miss the docs-topic writer
+    failure path and the thin `Execute()` wrapper path
 
 ## replay truth
 
@@ -124,6 +119,8 @@
 ## recent repo movement
 
 - recent merged PRs on `main` now include:
+  - `#159` `cover-gocoveragecheck-malformed-percentage-parser-branches`,
+    merged on `2026-05-07T16:32:36Z`
   - `#158` `localize-selected-work-dispatch-history-card-copy`, merged on
     `2026-05-07T15:53:40Z`
   - `#157` `cover-releasetagcheck-command-owner-parse-failure-branch`, merged
@@ -137,6 +134,7 @@
   - `#153` `close-gocoveragecheck-helper-runtime-and-parser-branches`, merged
     on `2026-05-07T13:26:42Z`
 - `gh pr list --state open` now reports:
+  - `#160` `localize-current-selection-workstation-detail-card-copy`
   - `#152` `docs: refresh meta world state`
   - `#145` `docs: refresh meta world state`
   - `#143` `docs: refresh meta world state`
@@ -144,36 +142,31 @@
   - `#139` `docs: refresh meta world state`
   - `#123` `docs: refresh meta world state`
   - `#120` `docs: refresh meta world state`
-- open PR `#141` already owns the current checklist-audit lane, so new backlog
-  replacements must avoid its doc surface while still acting on live code gaps
+- open PR `#141` already owns the current checklist-audit lane, and open
+  PR `#160` already owns the next concentrated current-selection UI lane, so
+  new backlog replacements must avoid both surfaces while still acting on live
+  code gaps
 
 ## next cleanup candidates
 
 - the repo-wide standards audit remains the highest-priority checklist ask on
   live `main`, but PR `#141` already owns that documentation lane
-- the next narrow UI checklist-alignment seam is the current-selection
-  workstation detail card:
-  - `ui/src/features/current-selection/workstation-detail-card.tsx` still
-    hardcodes dense user-facing copy across the summary, active-work list,
-    request or run history labels, toggle labels, CTA labels, and empty-state
-    messaging
-  - `ui/src/features/current-selection/current-selection-locale.tsx` already
-    exists on live `main`, so this is now a feature-local follow-up rather
-    than a new i18n foundation project
-  - focused tests already exist in
-    `ui/src/features/current-selection/workstation-detail-card.test.tsx`, but
-    the surface still lacks a locale-aware regression
-- the next narrow backend testing seam is `cmd/gocoveragecheck`:
-  - `go test -cover ./cmd/gocoveragecheck` reports `94.3%` statement coverage
-  - remaining coverage is concentrated in one malformed-percentage parser lane
-    that stays inside `parseTotalCoverage()` and
-    `parseZeroCoveragePackagesFromReport()`
-- the next backup UI seam after that is the dashboard terminal-work message
-  lane in `ui/src/features/terminal-work/terminal-work-card.tsx`:
-  - the widget still hardcodes `Completed and failed work`,
-    `Terminal work outcomes`, row empty states, session-summary fallback copy,
-    and generic `Expand`/`Collapse` labels that do not expose row-specific
-    accessible names
+- the next concentrated current-selection UI seam is already owned by open
+  PR `#160`, so the next replacement backlog slot should stay outside that
+  feature until the PR lands
+- the next narrow backend testing seam is `pkg/cli/root.go`:
+  - `go test -cover ./pkg/cli` reports `93.5%` statement coverage
+  - remaining gaps stay local to `newDocsTopicCommand` and `Execute`
+  - the missing assertions are behavioral docs-command owner branches, not a
+    broad runtime startup gap
+- the next backup UI seam after that is the dashboard flow-axis legend in
+  `ui/src/features/workflow-activity/dashboard-flow-axis-legend.tsx`:
+  - the widget still hardcodes `Graph legend`, `Legend`, `Expand graph legend`,
+    `Collapse graph legend`, `Active flow`, `Failure path`, and default icon
+    labels
+  - focused component, parent-card, and Storybook coverage already exist, but
+    they still assert the English vocabulary directly instead of a locale-backed
+    message source
 
 ## theory of mind
 
@@ -196,9 +189,13 @@
   re-read the adjacent workstation-detail card before jumping to broader
   dashboard widgets; the next concentrated English-only residue can stay
   inside the same feature
-- when a repo-owned parser already covers happy-path and missing-line shapes,
-  inspect malformed numeric tokens next; regex-matched bad percentages can
-  leave narrow parse-error branches uncovered without widening the lane
+- when that adjacent current-selection follow-up has already advanced into an
+  open PR, refill the third backlog slot with a non-overlapping repo-owned
+  backend package seam instead of stacking another sibling UI idea onto the
+  same feature
+- when a repo-owned command or package already covers happy-path docs rendering,
+  inspect thin writer-failure and wrapper branches next; those can keep small
+  owner coverage gaps alive without requiring broader runtime refactors
 - when the linked external checklist repo omits one requested source such as
   `asks.md`, record that as an evidence gap and continue from the sources that
   are actually retrievable instead of inventing missing checklist content
