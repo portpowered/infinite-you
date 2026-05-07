@@ -159,19 +159,29 @@
   `origin/main` directly; a plain branch-local `git pull` can leave the branch
   current with its own remote tracking ref while still missing newer mainline
   merges that change PR ownership or the next cleanup seam.
+- When only one productive non-meta feature PR remains open, queue two fresh
+  non-overlapping idea files so the active cleanup lanes still total three;
+  stacked meta-refresh PRs do not count toward the customer ask.
 - After a localized dashboard dialog merges, re-read the adjacent header
   controls and status accessibility labels next; concentrated English-only
   residue often remains there rather than in another dialog.
 - When a helper still carries an explicitly backwards-compatible variadic
   parameter but the live production caller already passes one concrete explicit
   value, prefer deleting the shim over preserving two call shapes.
+- When a dashboard feature already has focused tests but no feature-local
+  `messages/` owner, that is usually the next safe localization seam after an
+  adjacent UI lane merges.
+- When a runtime config package exposes the same lookup behavior through an
+  alias type, an internal map holder, and a private bounce method, prefer
+  collapsing the package-local indirection while preserving the public
+  interface contract and behavior tests.
 
 ## Current Summary
 
-- As of `2026-05-07T12:06:28.9599999-07:00`, `HEAD` points to `cb24fe4` on
+- As of `2026-05-07T12:36:57.0000000-07:00`, `HEAD` points to `df7db2a` on
   branch `meta-refresh-world-state-20260507-110000`, rebased onto live
-  `origin/main` through merged PR `#162`
-  (`localize-dashboard-flow-axis-legend-copy`).
+  `origin/main` through merged PR `#165`
+  (`localize-workflow-activity-graph-import-copy`).
 - The canonical ask surface remains `factory/logs/meta/asks.md`.
 - The checked-in maintainer workflow is `thoughts -> idea -> plan -> task`
   with `idea/task:to-complete`, same-name `consume`, `.claude/worktrees`
@@ -183,10 +193,9 @@
   user-owned tracked edit and the maintainer meta refresh updates the tracked
   view/progress docs; ignored workflow files under `factory/inputs/**` remain
   operating state rather than canonical queue truth.
-- Recent merged PRs now include `#162`, `#161`, and `#160`; open PR `#141`
-  owns the checklist-audit lane and open PR `#164` owns terminal-work
-  localization, while the older meta refresh PRs remain stacked beside this
-  branch.
+- Recent merged PRs now include `#165`, `#164`, `#162`, `#161`, and `#160`;
+  open PR `#141` now stands as the only productive non-meta feature lane while
+  the older meta refresh PRs remain stacked beside this branch.
 - The canonical ask surface remains the quality-oriented rewrite in
   `factory/logs/meta/asks.md`; the active asks are external checklist
   alignment, stronger backend and website testing, ongoing simplification, and
@@ -197,12 +206,14 @@
 - The external website and backend checklist URLs remain readable on
   `2026-05-07`, but the linked external `asks.md` URL still does not produce a
   readable checklist document and must be treated as a source-evidence gap.
-- The previously queued ignored idea
-  `localize-terminal-work-card-copy.md` is stale because that lane has now
-  advanced into open PR `#164`.
-- The next maintainer-owned operating queue slot should now be
-  `localize-workflow-activity-graph-import-copy.md`, which keeps three
-  non-overlapping active lanes alongside open PR `#141` and open PR `#164`.
+- The previously queued ignored ideas
+  `localize-terminal-work-card-copy.md` and
+  `localize-workflow-activity-graph-import-copy.md` are stale because merged
+  PRs `#164` and `#165` already landed those exact lanes on `main`.
+- The next maintainer-owned operating queue slots should now be
+  `localize-work-outcome-trend-cards-copy.md` and
+  `simplify-loaded-runtime-definition-lookups.md`, which restore three
+  productive non-overlapping lanes alongside open PR `#141`.
 
 ## 2026-05-07T12:06:28.9599999-07:00 - meta state refresh
 
@@ -2162,3 +2173,47 @@
   `factory/inputs/idea/default/localize-terminal-work-card-copy.md` so the
   active maintainers' work returns to three non-overlapping lanes alongside
   open PR `#141` and open PR `#162`.
+
+## 2026-05-07T12:36:57.0000000-07:00 - meta state refresh
+
+- Ran `git pull --ff-only`, confirmed the branch was still one merge behind
+  live `origin/main` because merged PR `#165` had landed after the prior meta
+  refresh commit, then ran `git pull --rebase --autostash origin main` to
+  rebase this branch onto live `main` through merged PRs `#164` and `#165`
+  while preserving the user-owned tracked edit in `factory/logs/meta/asks.md`.
+- Re-read `factory/logs/meta/view.md`, `factory/logs/meta/progress.txt`,
+  `factory/logs/meta/asks.md`, `factory/logs/agent-fails.json`,
+  `factory/logs/agent-fails.replay.json`, `factory/README.md`, current PR
+  state, the tracked-versus-ignored `factory/inputs/**` surface, and the live
+  candidate UI and backend seams.
+- Re-validated tracked queue truth with `git ls-files factory/inputs` and
+  `Get-ChildItem -Recurse -Force factory/inputs`, confirming the checked-in
+  inboxes remain sentinel-only while the visible idea file was ignored local
+  operating residue.
+- Confirmed the previously visible ignored idea
+  `factory/inputs/idea/default/localize-workflow-activity-graph-import-copy.md`
+  is stale because merged PR `#165` already landed that exact cleanup on
+  `main`, and observed that open PR `#141` is now the only productive
+  non-meta feature lane still active.
+- Used delegated explorer passes, graph-backed discovery, direct reads of
+  `ui/src/features/work-outcome/trend-cards.tsx`,
+  `ui/src/features/work-outcome/trends.ts`, and
+  `pkg/config/runtime_config.go`, plus focused test inventory reads, to choose
+  two replacement lanes that restore three productive non-overlapping asks in
+  flight:
+  `localize-work-outcome-trend-cards-copy.md` and
+  `simplify-loaded-runtime-definition-lookups.md`.
+- Verified the work-outcome lane is implementation-ready because
+  `trend-cards.tsx` still hardcodes user-facing and accessible copy for the
+  failure, rework, and timing cards, `trends.ts` still hardcodes shared
+  throughput labels such as `Queued`, `In-flight`, `Completed`,
+  `Failed/retried`, and `Session`, and focused coverage already exists in
+  `ui/src/features/work-outcome/trend-cards.test.tsx`.
+- Verified the runtime-config lane is implementation-ready because
+  `pkg/config/runtime_config.go` still carries one redundant package-local
+  lookup layer through `lookup`, `runtimeDefinitionLookup()`,
+  `runtimeDefinitionLookupMaps`, the `runtimeDefinitionConfig` alias, and
+  `newRuntimeDefinitionConfig()`, while focused behavior coverage already
+  exists in `pkg/config/runtime_config_test.go`,
+  `pkg/factory/projections/topology_projection_test.go`,
+  `pkg/factory/event_history_test.go`, and `pkg/service/factory_test.go`.
