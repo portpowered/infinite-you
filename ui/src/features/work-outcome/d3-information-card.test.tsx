@@ -2,7 +2,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 
 import { installDashboardBrowserTestShims } from "../../components/dashboard/test-browser-shims";
 import { D3CompletionInformationCard } from "./d3-information-card";
-import type { WorkChartModel } from "./trends";
+import { buildWorkChartModel, type WorkChartModel } from "./trends";
 
 const populatedTrend: WorkChartModel = {
   delta: {
@@ -127,10 +127,16 @@ describe("D3CompletionInformationCard", () => {
     );
 
     const card = screen.getByRole("article", { name: "Work outcome chart" });
-    expect(within(card).queryByRole("combobox", { name: "Time range" })).toBeNull();
-    expect(within(card).queryByRole("list", { name: "Work outcome totals" })).toBeNull();
+    expect(
+      within(card).queryByRole("combobox", { name: "Time range" }),
+    ).toBeNull();
+    expect(
+      within(card).queryByRole("list", { name: "Work outcome totals" }),
+    ).toBeNull();
     expect(within(card).queryByText("Completed in range")).toBeNull();
-    const chart = within(card).getByRole("img", { name: "Work outcome chart for 15m" });
+    const chart = within(card).getByRole("img", {
+      name: "Work outcome chart for 15m",
+    });
     expect(chart).toBeTruthy();
     expect(card.querySelector(".recharts-wrapper")).toBeTruthy();
     expect(within(chart).getByText("Queued")).toBeTruthy();
@@ -140,7 +146,9 @@ describe("D3CompletionInformationCard", () => {
     expect(within(chart).getByText("Ticks")).toBeTruthy();
     expect(within(chart).getByText("Work count")).toBeTruthy();
     expect(chart.getAttribute("data-work-chart-ready")).toBe("true");
-    const chartRegion = within(card).getByLabelText("Work outcome chart region");
+    const chartRegion = within(card).getByLabelText(
+      "Work outcome chart region",
+    );
     expect(chartRegion.className).toContain("px-4");
     expect(chartRegion.className).toContain("sm:px-5");
     expect(chart.className).toContain("px-5");
@@ -149,7 +157,9 @@ describe("D3CompletionInformationCard", () => {
     expect(chart.className).toContain("sm:px-6");
     expect(chart.className).toContain("sm:pb-6");
     expect(chart.className).toContain("sm:pt-5");
-    const overlay = chart.querySelector<HTMLElement>("[data-work-chart-overlay='true']");
+    const overlay = chart.querySelector<HTMLElement>(
+      "[data-work-chart-overlay='true']",
+    );
     expect(overlay).toBeTruthy();
     expect(overlay?.className).toContain("px-5");
     expect(overlay?.className).toContain("pb-4");
@@ -160,16 +170,16 @@ describe("D3CompletionInformationCard", () => {
   });
 
   it("renders an explicit empty state without a chart when samples are unavailable", () => {
-    render(
-      <D3CompletionInformationCard
-        model={emptyTrend}
-      />,
-    );
+    render(<D3CompletionInformationCard model={emptyTrend} />);
 
-    expect(screen.queryByRole("img", { name: "Work outcome chart for 15m" })).toBeNull();
+    expect(
+      screen.queryByRole("img", { name: "Work outcome chart for 15m" }),
+    ).toBeNull();
     expect(screen.getByText("No work outcome samples")).toBeTruthy();
     expect(
-      screen.getByText("Work outcome data appears after the event stream receives work history."),
+      screen.getByText(
+        "Work outcome data appears after the event stream receives work history.",
+      ),
     ).toBeTruthy();
   });
 
@@ -182,11 +192,53 @@ describe("D3CompletionInformationCard", () => {
     );
 
     const card = screen.getByRole("article", { name: "Work outcome chart" });
-    expect(within(card).queryByRole("combobox", { name: "Time range" })).toBeNull();
+    expect(
+      within(card).queryByRole("combobox", { name: "Time range" }),
+    ).toBeNull();
     expect(within(card).getByRole("status")).toBeTruthy();
     expect(within(card).getByText("Loading work outcome samples")).toBeTruthy();
     expect(
       within(card).queryByRole("img", { name: "Work outcome chart for 15m" }),
     ).toBeNull();
+  });
+
+  it("renders localized throughput labels from the work-outcome model", () => {
+    const localizedModel = buildWorkChartModel(
+      populatedTrend.samples,
+      "session",
+      2000,
+      "ja",
+    );
+
+    render(<D3CompletionInformationCard model={localizedModel} />);
+
+    const chart = screen.getByRole("img", {
+      name: "Work outcome chart for セッション",
+    });
+
+    expect(within(chart).getByText("待機中")).toBeTruthy();
+    expect(within(chart).getByText("進行中")).toBeTruthy();
+    expect(within(chart).getByText("完了")).toBeTruthy();
+    expect(within(chart).getByText("失敗/再試行")).toBeTruthy();
+  });
+
+  it("renders English throughput labels when the requested locale is unsupported", () => {
+    const fallbackModel = buildWorkChartModel(
+      populatedTrend.samples,
+      "session",
+      2000,
+      "fr",
+    );
+
+    render(<D3CompletionInformationCard model={fallbackModel} />);
+
+    const chart = screen.getByRole("img", {
+      name: "Work outcome chart for Session",
+    });
+
+    expect(within(chart).getByText("Queued")).toBeTruthy();
+    expect(within(chart).getByText("In-flight")).toBeTruthy();
+    expect(within(chart).getByText("Completed")).toBeTruthy();
+    expect(within(chart).getByText("Failed/retried")).toBeTruthy();
   });
 });
