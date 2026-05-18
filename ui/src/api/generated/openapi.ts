@@ -700,7 +700,7 @@ export interface components {
          *         "requiredTools": [
          *           {
          *             "name": "python",
-         *             "command": "python",
+         *             "command": "python3",
          *             "purpose": "Runs bundled translation scripts",
          *             "versionArgs": [
          *               "--version"
